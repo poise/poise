@@ -16,8 +16,23 @@
 # limitations under the License.
 #
 
-notifying_block_test 'one'
+notifying_block_test_one 'a'
 
-notifying_block_test 'two' do
+notifying_block_test_one 'b' do
   inner_action :nothing
+end
+
+notifying_block_test_two 'a'
+
+notifying_block_test_two 'b' do
+  inner_action_one :nothing
+end
+
+notifying_block_test_two 'c' do
+  inner_action_two :nothing
+end
+
+notifying_block_test_two 'd' do
+  inner_action_one :nothing
+  inner_action_two :nothing
 end

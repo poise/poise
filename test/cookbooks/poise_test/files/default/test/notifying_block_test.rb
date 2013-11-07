@@ -17,11 +17,27 @@
 #
 
 class NotifyingBlockTest < MiniTest::Chef::TestCase
-  def test_one_updated
-    assert run_context.resource_collection.find(notifying_block_test: 'one').updated?
+  def test_one_a_updated
+    assert run_context.resource_collection.find(notifying_block_test_one: 'a').updated?
   end
 
-  def test_two_not_updated
-    assert !run_context.resource_collection.find(notifying_block_test: 'two').updated?
+  def test_one_b_not_updated
+    assert !run_context.resource_collection.find(notifying_block_test_one: 'b').updated?
+  end
+
+  def test_two_a_updated
+    assert run_context.resource_collection.find(notifying_block_test_two: 'a').updated?
+  end
+
+  def test_two_b_updated
+    assert run_context.resource_collection.find(notifying_block_test_two: 'b').updated?
+  end
+
+  def test_two_c_updated
+    assert run_context.resource_collection.find(notifying_block_test_two: 'c').updated?
+  end
+
+  def test_two_d_not_updated
+    assert !run_context.resource_collection.find(notifying_block_test_two: 'd').updated?
   end
 end

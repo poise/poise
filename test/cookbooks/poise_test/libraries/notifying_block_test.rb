@@ -17,20 +17,67 @@
 #
 
 class Chef
-  class Resource::NotifyingBlockTest < Resource::LWRPBase
-    self.resource_name = :notifying_block_test
-    default_action(:run)
+  # Simple test with one internal resource
+  class Resource::NotifyingBlockTestOne < Resource
+    def initialize(*args)
+      super
+      @resource_name = :notifying_block_test_one
+      @action = :run
+    end
 
-    attribute(:inner_action, default: :run)
+    def inner_action(arg=nil)
+      set_or_return(:inner_action, arg, default: :run)
+    end
   end
 
-  class Provider::NotifyingBlockTest < Provider::LWRPBase
+  class Provider::NotifyingBlockTestOne < Provider
     include Poise::Provider::NotifyingBlock
+
+    def load_current_resource
+    end
 
     def action_run
       notifying_block do
         ruby_block 'notifying_block_test_inner' do
           action new_resource.inner_action
+          block {}
+        end
+      end
+    end
+  end
+
+  # Test with two internal resources
+  class Resource::NotifyingBlockTestTwo < Resource
+    def initialize(*args)
+      super
+      @resource_name = :notifying_block_test_two
+      @action = :run
+    end
+
+    def inner_action_one(arg=nil)
+      set_or_return(:inner_action_one, arg, default: :run)
+    end
+
+    def inner_action_two(arg=nil)
+      set_or_return(:inner_action_two, arg, default: :run)
+    end
+  end
+
+  class Provider::NotifyingBlockTestTwo < Provider
+    include Poise::Provider::NotifyingBlock
+
+    def load_current_resource
+    end
+
+    def action_run
+      notifying_block do
+        ruby_block 'notifying_block_test_inner_one' do
+          action new_resource.inner_action_one
+          block {}
+        end
+
+        ruby_block 'notifying_block_test_inner_two' do
+          action new_resource.inner_action_two
           block {}
         end
       end
