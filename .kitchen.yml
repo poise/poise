@@ -14,6 +14,12 @@ platforms:
   - recipe[minitest-handler]
 
 suites:
+- name: subcontext_block
+  run_list:
+  - recipe[poise_test::subcontext_block]
 - name: notifying_block
   run_list:
   - recipe[poise_test::notifying_block]
+- name: include_recipe
+  run_list:
+  - recipe[poise_test::include_recipe]
