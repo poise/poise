@@ -19,3 +19,11 @@
 include_recipe_test_one 'a' do
   included_recipe 'poise_test::include_recipe_a'
 end
+
+include_recipe_test_two 'b' do
+  included_recipe 'poise_test::include_recipe_b'
+end
+
+include_recipe_test_three 'c' do
+  included_recipe 'poise_test::include_recipe_c'
+end

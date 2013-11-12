@@ -16,17 +16,22 @@
 # limitations under the License.
 #
 
-class IncludeRecipeTest < MiniTest::Chef::TestCase
-  def test_one_run
-    # Inner recipe should be run and should viaible in global resource collection
-    assert run_context.resource_collection.find(ruby_block: 'include_recipe_a').updated?
-  end
+Chef::Resource::LazyDefaultTestOne.global_variable = :a
 
-  def test_two_run
-    assert run_context.resource_collection.find(ruby_block: 'include_recipe_b').updated?
-  end
+lazy_default_test_one 'a'
 
-  def test_three_run
-    assert run_context.resource_collection.find(ruby_block: 'include_recipe_c').updated?
-  end
-end
+Chef::Resource::LazyDefaultTestOne.global_variable = :b
+
+
+Chef::Resource::LazyDefaultTestTwo.global_variable = :c
+
+lazy_default_test_two 'b'
+
+Chef::Resource::LazyDefaultTestTwo.global_variable = :d
+
+
+Chef::Resource::LazyDefaultTestThree.global_variable = :e
+
+lazy_default_test_three 'c'
+
+Chef::Resource::LazyDefaultTestThree.global_variable = :f

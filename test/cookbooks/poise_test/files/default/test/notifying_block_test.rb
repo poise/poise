@@ -26,11 +26,11 @@ class NotifyingBlockTest < MiniTest::Chef::TestCase
   end
 
   def test_one_a_run
-    assert node.run_context[:notifying_block_test_inner] && node.run_context[:notifying_block_test_inner].include?('a')
+    assert node.run_state[:notifying_block_test_inner] && node.run_state[:notifying_block_test_inner].include?('a')
   end
 
   def test_one_b_not_run
-    refute node.run_context[:notifying_block_test_inner] && node.run_context[:notifying_block_test_inner].include?('b')
+    refute node.run_state[:notifying_block_test_inner] && node.run_state[:notifying_block_test_inner].include?('b')
   end
 
   def test_two_a_updated
@@ -50,23 +50,23 @@ class NotifyingBlockTest < MiniTest::Chef::TestCase
   end
 
   def test_two_a_run
-    assert node.run_context[:notifying_block_test_inner] && node.run_context[:notifying_block_test_inner_one].include?('a')
-    assert node.run_context[:notifying_block_test_inner] && node.run_context[:notifying_block_test_inner_two].include?('a')
+    assert node.run_state[:notifying_block_test_inner_one] && node.run_state[:notifying_block_test_inner_one].include?('a')
+    assert node.run_state[:notifying_block_test_inner_two] && node.run_state[:notifying_block_test_inner_two].include?('a')
   end
 
   def test_two_b_run
-    refute node.run_context[:notifying_block_test_inner] && node.run_context[:notifying_block_test_inner_one].include?('b')
-    assert node.run_context[:notifying_block_test_inner] && node.run_context[:notifying_block_test_inner_two].include?('b')
+    refute node.run_state[:notifying_block_test_inner_one] && node.run_state[:notifying_block_test_inner_one].include?('b')
+    assert node.run_state[:notifying_block_test_inner_two] && node.run_state[:notifying_block_test_inner_two].include?('b')
   end
 
   def test_two_c_run
-    assert node.run_context[:notifying_block_test_inner] && node.run_context[:notifying_block_test_inner_one].include?('c')
-    refute node.run_context[:notifying_block_test_inner] && node.run_context[:notifying_block_test_inner_two].include?('c')
+    assert node.run_state[:notifying_block_test_inner_one] && node.run_state[:notifying_block_test_inner_one].include?('c')
+    refute node.run_state[:notifying_block_test_inner_two] && node.run_state[:notifying_block_test_inner_two].include?('c')
   end
 
   def test_two_d_not_run
-    refute node.run_context[:notifying_block_test_inner] && node.run_context[:notifying_block_test_inner_one].include?('d')
-    refute node.run_context[:notifying_block_test_inner] && node.run_context[:notifying_block_test_inner_two].include?('d')
+    refute node.run_state[:notifying_block_test_inner_one] && node.run_state[:notifying_block_test_inner_one].include?('d')
+    refute node.run_state[:notifying_block_test_inner_two] && node.run_state[:notifying_block_test_inner_two].include?('d')
   end
 
 end

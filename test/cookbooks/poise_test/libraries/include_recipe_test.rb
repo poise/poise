@@ -17,6 +17,7 @@
 #
 
 class Chef
+  # Using the actual module
   class Resource::IncludeRecipeTestOne < Resource
     def initialize(*args)
       super
@@ -25,12 +26,60 @@ class Chef
     end
 
     def included_recipe(arg=nil)
-      set_or_return(:included_recipe, arg)
+      set_or_return(:included_recipe, arg, {})
     end
   end
 
   class Provider::IncludeRecipeTestOne < Provider
     include Poise::Provider::IncludeRecipe
+
+    def load_current_resource
+    end
+
+    def action_run
+      include_recipe new_resource.included_recipe
+    end
+  end
+
+  # Using the Poise::Provider helper
+  class Resource::IncludeRecipeTestTwo < Resource
+    def initialize(*args)
+      super
+      @resource_name = :include_recipe_test_two
+      @action = :run
+    end
+
+    def included_recipe(arg=nil)
+      set_or_return(:included_recipe, arg, {})
+    end
+  end
+
+  class Provider::IncludeRecipeTestTwo < Provider
+    include Poise::Provider
+
+    def load_current_resource
+    end
+
+    def action_run
+      include_recipe new_resource.included_recipe
+    end
+  end
+
+  # Using the Poise helper
+  class Resource::IncludeRecipeTestThree < Resource
+    def initialize(*args)
+      super
+      @resource_name = :include_recipe_test_three
+      @action = :run
+    end
+
+    def included_recipe(arg=nil)
+      set_or_return(:included_recipe, arg, {})
+    end
+  end
+
+  class Provider::IncludeRecipeTestThree < Provider
+    include Poise
 
     def load_current_resource
     end

@@ -23,3 +23,6 @@ suites:
 - name: include_recipe
   run_list:
   - recipe[poise_test::include_recipe]
+- name: lazy_default
+  run_list:
+  - recipe[poise_test::lazy_default]

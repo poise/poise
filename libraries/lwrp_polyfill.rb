@@ -18,25 +18,43 @@
 
 module Poise
   module Resource
+    # Provide default_action and actions like LWRPBase but better equipped for subclassing
     module LWRPPolyfill
       module ClassMethods
-        def default_action(name)
+        def default_action(name=nil)
+          if name
+            @default_action = name
+            actions(name)
+          end
+          @default_action || (superclass.respond_to?(:default_action) ? superclass.default_action.dup : actions.first)
         end
 
         def actions(*names)
+          @actions ||= ( superclass.respond_to?(:actions) ? superclass.actions.dup : [] )
+          (@actions << names).uniq!
+          @actions
+        end
+
+        def attribute(name, opts)
+          # Ruby 1.8 can go to hell
+          define_method(name) do |arg=nil|
+            set_or_return(name, arg, opts)
+          end
         end
 
         def included(klass)
           super
           klass.extend ClassMethods
         end
+      end
 
-        extend ClassMethods
+      extend ClassMethods
 
-        def initialize(*args)
-          super
-        end
-
+      def initialize(*args)
+        super
+        # Try to not stomp on stuff if already set in a parent
+        @action = self.class.default_action if @action == :nothing
+        @allowed_actions << self.class.actions
       end
     end
   end
@@ -48,14 +66,15 @@ module Poise
         def included(klass)
           super
           klass.extend ClassMethods
-          # Warning: relatively brittle check if this class has a real impl :-(
-          # This has to handle the simple case of inheriting from Provider, but
-          # also subclassing existing providers and possible LWRPBase.
-          loc = klass.instance_method(:load_current_resource).source_location[0]
-          if loc.end_with?(::File.join('', 'lib', 'chef', 'provider.rb'))
-            # Probably the original one, mask it to prevent errors
-            klass.define_method(:load_current_resource) {}
+          if klass.is_a?(Class) && klass.superclass == Chef::Provider
+            # Mask Chef::Provider#load_current_resource because it throws NotImplementedError
+            klass.class_exec { include Implementation }
           end
+        end
+      end
+
+      module Implementation
+        def load_current_resource
         end
       end
 

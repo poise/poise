@@ -16,17 +16,16 @@
 # limitations under the License.
 #
 
-class IncludeRecipeTest < MiniTest::Chef::TestCase
-  def test_one_run
-    # Inner recipe should be run and should viaible in global resource collection
-    assert run_context.resource_collection.find(ruby_block: 'include_recipe_a').updated?
-  end
+require 'chef/mixin/convert_to_class_name'
 
-  def test_two_run
-    assert run_context.resource_collection.find(ruby_block: 'include_recipe_b').updated?
-  end
-
-  def test_three_run
-    assert run_context.resource_collection.find(ruby_block: 'include_recipe_c').updated?
+module Poise
+  module Resource
+    # Helper module to automatically set @resource_name
+    module ResourceName
+      def initialize(*args)
+        super
+        @resource_name ||= Chef::Mixin::ConvertToClassName.convert_to_snake_case(self.class.name, 'Chef::Resource').to_sym
+      end
+    end
   end
 end

@@ -38,6 +38,7 @@ class Chef
 
     def action_run
       run_state = node.run_state
+      name = new_resource.name
       notifying_block do
         ruby_block 'notifying_block_test_inner' do
           action new_resource.inner_action
@@ -86,7 +87,7 @@ class Chef
         ruby_block 'notifying_block_test_inner_two' do
           action new_resource.inner_action_two
           block do
-            (run_state[:notifying_block_test_inner_one] ||= []) << name
+            (run_state[:notifying_block_test_inner_two] ||= []) << name
           end
         end
       end

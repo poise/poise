@@ -17,14 +17,18 @@
 #
 
 require File.expand_path('../include_recipe', __FILE__)
-require File.expand_path('../notifying_block', __FILE__)
 require File.expand_path('../lazy_default', __FILE__)
+require File.expand_path('../lwrp_polyfill', __FILE__)
+require File.expand_path('../notifying_block', __FILE__)
 require File.expand_path('../option_collector', __FILE__)
+require File.expand_path('../resource_name', __FILE__)
 
 module Poise
   module Resource
     include LazyDefault
+    include LWRPPolyfill
     include OptionCollector
+    include ResourceName
 
     def self.included(klass)
       super
@@ -41,14 +45,49 @@ module Poise
 
   module Provider
     include IncludeRecipe
+    include LWRPPolyfill
     include NotifyingBlock
   end
 
   def self.included(klass)
+    super
     if klass < Chef::Resource
       klass.class_exec { include Poise::Resource }
     elsif klass < Chef::Provider
       klass.class_exec { include Poise::Provider }
     end
   end
+end
+
+# Callable form to allow passing in options:
+#   include Poise(ParentResource)
+#   include Poise(parent: ParentResource)
+#   include Poise(container: true)
+def Poise(options=nil)
+  # Allow passing a class as a shortcut
+  if options.is_a?(Class)
+    options = {parent: options}
+  end
+
+  # Create a new anonymous module
+  mod = Module.new
+
+  # Fake the name
+  def mod.name
+    super || 'Poise'
+  end
+
+  def mod.included(klass)
+    super
+    # Pull in the main helper to cover most of the needed logic
+    klass.class_exec { include Poise }
+    # Resource-specific options
+    if klass < Chef::Resource
+      klass.poise_subresource(options[:parent]) if options[:parent]
+      klass.poise_subresource_container if options[:container]
+    end
+    # Add Provider-specific options here when needed
+  end
+
+  mod
 end
