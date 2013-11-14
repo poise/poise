@@ -77,8 +77,8 @@ def Poise(options=nil)
     super || 'Poise'
   end
 
-  def mod.included(klass)
-    super
+  mod.define_singleton_method(:included) do |klass|
+    super(klass)
     # Pull in the main helper to cover most of the needed logic
     klass.class_exec { include Poise }
     # Resource-specific options

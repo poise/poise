@@ -124,7 +124,7 @@ module Poise
             raise "Parent type must be a class" unless type.is_a?(Class)
             @parent_type = type
           end
-          @parent_type
+          @parent_type || (superclass.respond_to?(:parent_type) ? superclass.parent_type : Chef::Resource)
         end
 
         def included(klass)
