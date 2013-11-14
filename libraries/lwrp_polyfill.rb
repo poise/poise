@@ -54,7 +54,7 @@ module Poise
         super
         # Try to not stomp on stuff if already set in a parent
         @action = self.class.default_action if @action == :nothing
-        (@allowed_actions << self.class.actions).flatten!
+        (@allowed_actions << self.class.actions).flatten!.uniq!
       end
     end
   end
