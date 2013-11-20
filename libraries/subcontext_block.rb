@@ -28,6 +28,14 @@ module Poise
     rescue Chef::Exceptions::ResourceNotFound
       @parent.lookup(resource)
     end
+
+    # Iterate and expand all nested contexts
+    def recursive_each(&block)
+      if @parent && @parent.respond_to?(:recursive_each)
+        @parent.recursive_each(&block)
+      end
+      each(&block)
+    end
   end
 
   module SubContextBlock
