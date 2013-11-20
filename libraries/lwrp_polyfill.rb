@@ -26,7 +26,7 @@ module Poise
             @default_action = name
             actions(name)
           end
-          @default_action || ( superclass.respond_to?(:default_action) && superclass.default_action ) || actions.first
+          @default_action || ( superclass.respond_to?(:default_action) && superclass.default_action ) || actions.first || :nothing
         end
 
         def actions(*names)
