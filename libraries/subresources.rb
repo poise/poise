@@ -119,13 +119,12 @@ module Poise
       end
 
       module ClassMethods
-        def parent_types(*types)
-          unless types.empty?
-            types.flatten!
-            raise "Parent type must be a class" unless types.all? {|t| t.is_a?(Class) }
-            @parent_types = types
+        def parent_type(type=nil)
+          if type
+            raise "Parent type must be a class" unless type.is_a?(Class)
+            @parent_type = type
           end
-          @parent_types || (superclass.respond_to?(:parent_types) ? superclass.parent_types : [Chef::Resource])
+          @parent_type || (superclass.respond_to?(:parent_type) ? superclass.parent_type : [Chef::Resource])
         end
 
         def parent_optional(value=nil)
@@ -150,19 +149,10 @@ module Poise
       def parent(arg=nil)
         if arg
           if arg.is_a?(String) && !arg.includes?('[')
-            # Scan all parent types for a match
-            found = nil
-            self.class.parent_types.each do |parent_type|
-              parent_class_name = Chef::Mixin::ConvertToClassName.convert_to_snake_case(parent_type.name, 'Chef::Resource')
-              begin
-                found = @run_context.resource_collection.find("#{parent_class_name}[#{arg}]")
-                break
-              rescue Chef::Exceptions::ResourceNotFound
-              end
-            end
-            raise "Unable to find valid parent for bare name \"#{arg}\"" unless found
-            arg = found
-          elsif arg.is_a?(String) || arg.is_a?(Hash)
+             parent_class_name = Chef::Mixin::ConvertToClassName.convert_to_snake_case(self.class.parent_type.name, 'Chef::Resource')
+             arg = "#{parent_class_name}[#{arg}]"
+          end
+          if arg.is_a?(String) || arg.is_a?(Hash)
             arg = @run_context.resource_collection.find(arg)
           elsif !arg.is_a?(self.class.parent_type)
             raise "Unknown parent resource: #{arg}"
