@@ -24,15 +24,28 @@ module Poise
       include SubContextBlock
 
       def include_recipe(*recipes)
+        loaded_recipes = []
         context = global_run_context
         subcontext = subcontext_block(context) do
-          run_context.include_recipe(*recipes)
+          recipe.each do |recipe|
+            case recipe
+            when String
+              # Process normally
+              loaded_recipes += run_context.include_recipe(recipe)
+            when Proc
+              # Pretend its a block of recipe code
+              recipe = Chef::Recipe.new(cookbook_name, new_resource.recipe_name, run_context)
+              recipe.instance_eval(&recipe)
+              loaded_recipes << recipe
+            end
+          end
         end
         # Converge the new context.
         Chef::Runner.new(subcontext).converge
         subcontext.resource_collection.each do |r|
           context.resource_collection.insert(r)
         end
+        loaded_recipes
       end
     end
   end
