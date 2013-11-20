@@ -27,16 +27,16 @@ module Poise
         loaded_recipes = []
         context = global_run_context
         subcontext = subcontext_block(context) do
-          recipe.each do |recipe|
+          recipes.each do |recipe|
             case recipe
             when String
               # Process normally
               loaded_recipes += run_context.include_recipe(recipe)
             when Proc
               # Pretend its a block of recipe code
-              recipe = Chef::Recipe.new(cookbook_name, new_resource.recipe_name, run_context)
-              recipe.instance_eval(&recipe)
-              loaded_recipes << recipe
+              fake_recipe = Chef::Recipe.new(cookbook_name, new_resource.recipe_name, run_context)
+              fake_recipe.instance_eval(&recipe)
+              loaded_recipes << fake_recipe
             end
           end
         end
