@@ -173,7 +173,7 @@ module Poise
       def after_created
         super
         begin
-          parent.subresources.lookup(self)
+          parent.subresources.lookup(self) if parent
         rescue Chef::Exceptions::ResourceNotFound
           Chef::Log.debug("#{self}: Adding to subresources of #{parent}")
           parent.subresources.insert(self)
