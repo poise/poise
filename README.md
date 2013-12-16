@@ -37,21 +37,23 @@ end
 
 ## Patterns
 
-### Sub-context Block
-
 ### Notifying Block
 
+Module: `Poise::Provider::NotifyingBlock`
+
+
+
 ### Include Recipe
-
-### Lazy Attribute Default
-
-### Option Collector
 
 ### Sub-resources
 
 #### Container
 
 #### Child
+
+### Lazy Attribute Default
+
+### Option Collector
 
 ## Helpers
 
