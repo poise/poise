@@ -31,8 +31,12 @@ module Poise
 
     # Iterate and expand all nested contexts
     def recursive_each(&block)
-      if @parent && @parent.respond_to?(:recursive_each)
-        @parent.recursive_each(&block)
+      if @parent
+        if @parent.respond_to?(:recursive_each)
+          @parent.recursive_each(&block)
+        else
+          @parent.each(&block)
+        end
       end
       each(&block)
     end
