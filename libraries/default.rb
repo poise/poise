@@ -22,6 +22,7 @@ require File.expand_path('../lwrp_polyfill', __FILE__)
 require File.expand_path('../notifying_block', __FILE__)
 require File.expand_path('../option_collector', __FILE__)
 require File.expand_path('../resource_name', __FILE__)
+require File.expand_path('../template_content', __FILE__)
 
 module Poise
   module Resource
@@ -29,6 +30,7 @@ module Poise
     include LWRPPolyfill
     include OptionCollector
     include ResourceName
+    include TemplateContent
 
     def self.included(klass)
       super

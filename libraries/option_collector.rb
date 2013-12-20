@@ -39,7 +39,7 @@ module Poise
       end
 
       module ClassMethods
-        def attribute(name, options)
+        def attribute(name, options={})
           is_option_collector = options.delete(:option_collector)
           if is_option_collector
             options[:default] ||= {}

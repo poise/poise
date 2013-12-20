@@ -19,3 +19,4 @@
 name 'poise_test'
 
 depends 'poise'
+depends 'poise_test2'

@@ -25,3 +25,7 @@ suites:
   run_list:
   - recipe[minitest-handler]
   - recipe[poise_test::lazy_default]
+- name: template_content
+  run_list:
+  - recipe[minitest-handler]
+  - recipe[poise_test::template_content]
