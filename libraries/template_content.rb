@@ -75,10 +75,10 @@ module Poise
             # Validate that arguments work
             define_method("_#{name_prefix}validate") do
               # Use instance_variable_get to avoid triggering the actual render
-              if options[:required] && !send("_#{name_prefix}source") && !instance_variable_get(:"@#{name_prefix}content")
+              if options[:required] && !send("_#{name_prefix}source") && !instance_variable_get("@#{name_prefix}content")
                 raise Chef::Exceptions::ValidationFailed, "#{self}: One of #{name_prefix}source or #{name_prefix}content is required"
               end
-              if send("#{name_prefix}source") && instance_variable_get(:"@#{name_prefix}content")
+              if send("#{name_prefix}source") && instance_variable_get("@#{name_prefix}content")
                 raise Chef::Exceptions::ValidationFailed, "#{self}: Only one of #{name_prefix}source or #{name_prefix}content can be specified"
               end
             end
@@ -99,7 +99,7 @@ module Poise
               # Run validation again
               send("_#{name_prefix}validate")
               # Get all the relevant parameters
-              content = instance_variable_get(:"@#{name_prefix}content")
+              content = instance_variable_get("@#{name_prefix}content")
               source = send("_#{name_prefix}source")
               default = options[:default]
               if content
