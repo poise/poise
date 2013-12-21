@@ -85,3 +85,5 @@ template_content_test_four 'a' do
   content 'I will shout.'
 end
 
+
+template_content_test_six 'a'

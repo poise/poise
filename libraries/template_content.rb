@@ -32,20 +32,29 @@ module Poise
 
       module ClassMethods
         def attribute(name, options={})
-          if default_cookbook = options.delete(:template)
+          if options.delete(:template)
             name_prefix = name.empty? ? '' : "#{name}_"
 
+            # If you are reading this, I'm so sorry
+            # This is used for computing the default cookbook below
+            parent_filename = caller.first.reverse.split(':', 4).last.reverse
+
             # Template source path if using a template
-            attribute("#{name_prefix}source", kind_of: String, default: options[:default_source])
+            attribute("#{name_prefix}source", kind_of: String)
+            define_method("_#{name_prefix}source") do
+              send("#{name_prefix}source") || options[:default_source]
+            end
 
             # Template cookbook name if using a template
             attribute("#{name_prefix}cookbook", kind_of: [String, Symbol], default: lazy do
               # Use instance_variable_get since we need to know if it was
               # actually set or if it was from the default
-              if instance_variable_get("@#{name_prefix}source")
+              if send("#{name_prefix}source")
                 cookbook_name
+              elsif options[:default_cookbook]
+                options[:default_cookbook]
               else
-                default_cookbook
+                Poise::Resource::TemplateContent._find_cookbook_file_filename(run_context, parent_filename)
               end
             end)
 
@@ -66,7 +75,7 @@ module Poise
             # Validate that arguments work
             define_method("_#{name_prefix}validate") do
               # Use instance_variable_get to avoid triggering the actual render
-              if options[:required] && !send("#{name_prefix}source") && !instance_variable_get(:"@#{name_prefix}content")
+              if options[:required] && !send("_#{name_prefix}source") && !instance_variable_get(:"@#{name_prefix}content")
                 raise Chef::Exceptions::ValidationFailed, "#{self}: One of #{name_prefix}source or #{name_prefix}content is required"
               end
               if send("#{name_prefix}source") && instance_variable_get(:"@#{name_prefix}content")
@@ -91,7 +100,7 @@ module Poise
               send("_#{name_prefix}validate")
               # Get all the relevant parameters
               content = instance_variable_get(:"@#{name_prefix}content")
-              source = send("#{name_prefix}source")
+              source = send("_#{name_prefix}source")
               default = options[:default]
               if content
                 content
@@ -126,6 +135,20 @@ module Poise
       end
 
       extend ClassMethods
+
+      def self._find_cookbook_file_filename(run_context, filename)
+        run_context.cookbook_collection.each do |name, ver|
+          Chef::CookbookVersion::COOKBOOK_SEGMENTS.each do |seg|
+            ver.segment_filenames(seg).each do |file|
+              if file == filename
+                return name
+              end
+            end
+          end
+        end
+        raise Chef::Exceptions::ValidationFailed, "Unable to find cookbook for file '#{filename}'"
+      end
+
     end
   end
 end

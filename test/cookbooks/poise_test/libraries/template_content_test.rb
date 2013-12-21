@@ -108,4 +108,6 @@ class Chef
 
   class Provider::TemplateContentTestFive < Provider::TemplateContentTest; end
 
+  # Six is located in poise_test2
+
 end

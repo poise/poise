@@ -100,4 +100,10 @@ class TemplateContentTest < MiniTest::Chef::TestCase
     res.after_created
     assert res.after_created_called
   end
+
+
+  def test_six_a
+    assert_equal run_context.resource_collection.find(template_content_test_six: 'a').content, "Tip me over.\n"
+  end
+
 end
