@@ -1,0 +1,10 @@
+language: ruby
+rvm:
+- 2.0.0
+env:
+  secure: Xga8nAa0GwKwmF+Hd8MdGViyQ6d3urCSRnX+yUDT4Omfv8x0bpVLNLTKSgGR0X919YuRV8yhKKj+nT442ouF0WUx1snnpmnkBSxuNAAduUXtDt0jtJHpoLqJIQvSP3G0zNrnHjGE2raByDp03gClb6aOAfXZZThhNB1R/xABaUY=
+bundler_args: --deployment --binstubs
+script:
+- ./bin/foodcritic -f any .
+- cp .kitchen.travis.yml .kitchen.local.yml
+- ./bin/kitchen -d always -p
