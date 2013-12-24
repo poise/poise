@@ -3,7 +3,7 @@ rvm:
 - 2.0.0
 env:
   global:
-    secure: X/Ch2TUu3GtM0z9t/M1GT0sAotSe8nVl45LTZGzZhATGwQyZRPQjeXdlpnoOxFGwpf5j+tAFGqMzExEmvfv5m0acn3o5zFLru2VVxlH8E2BhsxSv7i3ThqhiwqZjSdOmoTQAu0/K/LZm0aewTuyVErw2f2V4EYxXSVzsqVlfZX4=
+  - secure: hbs7ns6tQwIVmtl68EWw8TIzH0ZVN9z+h4xvC3wWNzvFoGXG+cuAHnug46f3Oz/SEmBZYANGth9VtB1Yq20oD4R+fDK+wLQuK9b8xHnzRnPSBineTKAHVXM+7+SulTk4qG/jshB7nDeEob8mdzSxdft8YirxGEWX8yvVark3mEs=
 bundler_args: --deployment --binstubs
 script:
 - ./bin/foodcritic -f any .
