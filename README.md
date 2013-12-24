@@ -1,5 +1,7 @@
 # Poise
 
+[![Build Status](https://travis-ci.org/poise/poise.png?branch=master)](https://travis-ci.org/poise/poise)
+
 The poise cookbook provides patterns and helpers for writing reusable Chef
 code.
 
