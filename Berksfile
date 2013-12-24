@@ -16,8 +16,7 @@
 # limitations under the License.
 #
 
-chef_api :config
-site :opscode
+source 'https://api.berkshelf.com'
 
 metadata
 

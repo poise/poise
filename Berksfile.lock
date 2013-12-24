@@ -1,15 +1,18 @@
 {
-  "sources": {
+  "dependencies": {
     "poise": {
+      "locked_version": "1.0.0",
       "path": "."
     },
     "minitest-handler": {
       "locked_version": "1.1.2"
     },
     "poise_test": {
+      "locked_version": "0.0.0",
       "path": "./test/cookbooks/poise_test"
     },
     "poise_test2": {
+      "locked_version": "0.0.0",
       "path": "./test/cookbooks/poise_test2"
     },
     "chef_handler": {
