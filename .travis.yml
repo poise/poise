@@ -8,5 +8,5 @@ bundler_args: --deployment --binstubs
 script:
 - ./bin/foodcritic -f any .
 - cp .kitchen.travis.yml .kitchen.local.yml
-- ssh-keygen -b 768 -P ''
+- ssh-keygen -f ~/.ssh/id_rsa -b 768 -P ''
 - ./bin/kitchen test -d always -p
