@@ -47,8 +47,6 @@ module Poise
 
             # Template cookbook name if using a template
             attribute("#{name_prefix}cookbook", kind_of: [String, Symbol], default: lazy do
-              # Use instance_variable_get since we need to know if it was
-              # actually set or if it was from the default
               if send("#{name_prefix}source")
                 cookbook_name
               elsif options[:default_cookbook]
@@ -63,9 +61,9 @@ module Poise
 
             # The big one, get/set content, but if you are getting and no
             # explicit content was given, try to render the template
-            define_method("#{name_prefix}content") do |arg=nil|
+            define_method("#{name_prefix}content") do |arg=nil, no_compute=false|
               ret = set_or_return("#{name_prefix}content", arg, kind_of: String)
-              if !ret && !arg
+              if !ret && !arg && !no_compute
                 # Some caching might be good here, but leaving that for another day
                 ret = send("_#{name_prefix}content")
               end
@@ -74,11 +72,10 @@ module Poise
 
             # Validate that arguments work
             define_method("_#{name_prefix}validate") do
-              # Use instance_variable_get to avoid triggering the actual render
-              if options[:required] && !send("_#{name_prefix}source") && !instance_variable_get("@#{name_prefix}content")
+              if options[:required] && !send("_#{name_prefix}source") && !send("#{name_prefix}content", nil, true)
                 raise Chef::Exceptions::ValidationFailed, "#{self}: One of #{name_prefix}source or #{name_prefix}content is required"
               end
-              if send("#{name_prefix}source") && instance_variable_get("@#{name_prefix}content")
+              if send("#{name_prefix}source") && send("#{name_prefix}content", nil, true)
                 raise Chef::Exceptions::ValidationFailed, "#{self}: Only one of #{name_prefix}source or #{name_prefix}content can be specified"
               end
             end
@@ -99,7 +96,7 @@ module Poise
               # Run validation again
               send("_#{name_prefix}validate")
               # Get all the relevant parameters
-              content = instance_variable_get("@#{name_prefix}content")
+              content = send("#{name_prefix}content", nil, true)
               source = send("_#{name_prefix}source")
               default = options[:default]
               if content
