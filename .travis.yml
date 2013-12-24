@@ -2,7 +2,8 @@ language: ruby
 rvm:
 - 2.0.0
 env:
-  secure: Xga8nAa0GwKwmF+Hd8MdGViyQ6d3urCSRnX+yUDT4Omfv8x0bpVLNLTKSgGR0X919YuRV8yhKKj+nT442ouF0WUx1snnpmnkBSxuNAAduUXtDt0jtJHpoLqJIQvSP3G0zNrnHjGE2raByDp03gClb6aOAfXZZThhNB1R/xABaUY=
+  global:
+    secure: X/Ch2TUu3GtM0z9t/M1GT0sAotSe8nVl45LTZGzZhATGwQyZRPQjeXdlpnoOxFGwpf5j+tAFGqMzExEmvfv5m0acn3o5zFLru2VVxlH8E2BhsxSv7i3ThqhiwqZjSdOmoTQAu0/K/LZm0aewTuyVErw2f2V4EYxXSVzsqVlfZX4=
 bundler_args: --deployment --binstubs
 script:
 - ./bin/foodcritic -f any .
