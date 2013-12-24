@@ -7,4 +7,4 @@ bundler_args: --deployment --binstubs
 script:
 - ./bin/foodcritic -f any .
 - cp .kitchen.travis.yml .kitchen.local.yml
-- ./bin/kitchen -d always -p
+- ./bin/kitchen test -d always -p
