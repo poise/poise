@@ -1,6 +1,15 @@
 GIT
+  remote: git://github.com/RoboticCheese/kitchen-rackspace.git
+  revision: e320b2980e33829b0d2d5c27fc9e569d54ee497d
+  specs:
+    kitchen-rackspace (0.3.1.dev)
+      fog (~> 1.18)
+      test-kitchen (~> 1.1)
+      unf
+
+GIT
   remote: git://github.com/berkshelf/berkshelf.git
-  revision: cc0e330413ccb6b0b5a1ec260306d6741f30d866
+  revision: a78528b2616afdeca97a5bbf50ba8325a77ed8c9
   specs:
     berkshelf (3.0.0.beta4)
       addressable (~> 2.3.4)
@@ -16,23 +25,14 @@ GIT
       thor (~> 0.18.0)
 
 GIT
-  remote: git://github.com/coderanger/kitchen-rackspace.git
-  revision: 527686e2fbec4796bba33a7cb6288c91fec6461a
-  specs:
-    kitchen-rackspace (0.3.1.dev)
-      fog (~> 1.18)
-      test-kitchen (~> 1.1)
-      unf
-
-GIT
   remote: git://github.com/test-kitchen/test-kitchen.git
-  revision: a47e193e79dc24a59c9419cefb9693deb5f2d891
+  revision: eb7743e5ecafdac2b056e4ce6b5f17be9174cc21
   specs:
     test-kitchen (1.1.2.dev)
       mixlib-shellout (~> 1.2)
       net-scp (~> 1.1)
       net-ssh (~> 2.7)
-      safe_yaml (~> 0.9)
+      safe_yaml (~> 1.0.0rc2)
       thor (~> 0.18)
 
 GEM
@@ -114,7 +114,7 @@ GEM
       solve (>= 0.4.4)
       varia_model (~> 0.1)
     ruby-hmac (0.4.0)
-    safe_yaml (0.9.7)
+    safe_yaml (1.0.0rc2)
     solve (0.8.2)
     thor (0.18.1)
     timers (1.1.0)

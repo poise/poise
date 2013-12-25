@@ -4,9 +4,9 @@ rvm:
 env:
   global:
   - secure: hbs7ns6tQwIVmtl68EWw8TIzH0ZVN9z+h4xvC3wWNzvFoGXG+cuAHnug46f3Oz/SEmBZYANGth9VtB1Yq20oD4R+fDK+wLQuK9b8xHnzRnPSBineTKAHVXM+7+SulTk4qG/jshB7nDeEob8mdzSxdft8YirxGEWX8yvVark3mEs=
+  - KITCHEN_LOCAL_YAML=.kitchen.travis.local
 bundler_args: --deployment --binstubs
 script:
 - ./bin/foodcritic -f any .
-- cp .kitchen.travis.yml .kitchen.local.yml
 - ssh-keygen -f ~/.ssh/id_rsa -b 768 -P ''
 - ./bin/kitchen test -d always -p
