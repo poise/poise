@@ -4,7 +4,7 @@ rvm:
 env:
   global:
   - secure: hbs7ns6tQwIVmtl68EWw8TIzH0ZVN9z+h4xvC3wWNzvFoGXG+cuAHnug46f3Oz/SEmBZYANGth9VtB1Yq20oD4R+fDK+wLQuK9b8xHnzRnPSBineTKAHVXM+7+SulTk4qG/jshB7nDeEob8mdzSxdft8YirxGEWX8yvVark3mEs=
-  - KITCHEN_LOCAL_YAML=.kitchen.travis.local
+  - KITCHEN_LOCAL_YAML=.kitchen.travis.yml
 bundler_args: --deployment --binstubs
 script:
 - ./bin/foodcritic -f any .
