@@ -42,7 +42,7 @@ module Poise
             # Template source path if using a template
             attribute("#{name_prefix}source", kind_of: String)
             define_method("_#{name_prefix}source") do
-              send("#{name_prefix}source") || options[:default_source]
+              send("#{name_prefix}source") || maybe_eval(options[:default_source])
             end
 
             # Template cookbook name if using a template
@@ -50,7 +50,7 @@ module Poise
               if send("#{name_prefix}source")
                 cookbook_name
               elsif options[:default_cookbook]
-                options[:default_cookbook]
+                maybe_eval(options[:default_cookbook])
               else
                 Poise::Resource::TemplateContent._find_cookbook_file_filename(run_context, parent_filename)
               end
@@ -98,24 +98,25 @@ module Poise
               # Get all the relevant parameters
               content = send("#{name_prefix}content", nil, true)
               source = send("_#{name_prefix}source")
-              default = options[:default]
               if content
                 content
               elsif source
                 cookbook = send("#{name_prefix}cookbook")
                 template_options = send("#{name_prefix}options")
                 send("_#{name_prefix}render_template", source, cookbook, template_options)
-              elsif default
-                default.is_a?(Chef::DelayedEvaluator) ? instance_eval(&default) : default
+              else
+                maybe_eval(options[:default])
               end
             end
 
             # Actually render a template
             define_method("_#{name_prefix}render_template") do |source, cookbook, template_options|
-              template_options.update(options[:template_options]) if options[:template_options]
-              template_options[:new_resource] = self
+              all_template_options = {}
+              all_template_options.update(maybe_eval(options[:default_options])) if options[:default_options]
+              all_template_options.update(template_options)
+              all_template_options[:new_resource] = self
               finder = Chef::Provider::TemplateFinder.new(run_context, cookbook, node)
-              context = Chef::Mixin::Template::TemplateContext.new(template_options)
+              context = Chef::Mixin::Template::TemplateContext.new(all_template_options)
               context[:node] = node
               context[:template_finder] = finder
               context.render_template(finder.find(source))
@@ -144,6 +145,17 @@ module Poise
           end
         end
         raise Chef::Exceptions::ValidationFailed, "Unable to find cookbook for file '#{filename}'"
+      end
+
+      private
+
+      # Evaluate lazy blocks if needed
+      def maybe_eval(val)
+        if val.is_a?(Chef::DelayedEvaluator)
+          instance_eval(&val)
+        else
+          val
+        end
       end
 
     end
