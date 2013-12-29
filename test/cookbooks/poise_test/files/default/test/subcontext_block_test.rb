@@ -29,4 +29,11 @@ class NotifyingBlockTest < MiniTest::Chef::TestCase
     assert !node.run_state[:subcontext_block_test_inner]
   end
 
+  def test_one_a_context_match
+    assert node.run_state[:subcontext_block_test_global_collection]
+    assert node.run_state[:subcontext_block_test_collection]
+    assert_equal run_context.resource_collection.object_id, node.run_state[:subcontext_block_test_global_collection].object_id
+    refute_equal run_context.resource_collection.object_id, node.run_state[:subcontext_block_test_collection].object_id
+    assert_equal run_context.resource_collection.object_id, node.run_state[:subcontext_block_test_collection].parent.object_id
+  end
 end

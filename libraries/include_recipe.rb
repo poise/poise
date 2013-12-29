@@ -25,8 +25,7 @@ module Poise
 
       def include_recipe(*recipes)
         loaded_recipes = []
-        context = global_run_context
-        subcontext = subcontext_block(context) do
+        subcontext = subcontext_block do
           recipes.each do |recipe|
             case recipe
             when String
@@ -43,11 +42,13 @@ module Poise
         end
         # Converge the new context.
         Chef::Runner.new(subcontext).converge
+        collection = global_resource_collection
         subcontext.resource_collection.each do |r|
+          Chef::Log.debug("Poise::IncludeRecipe: Adding #{r.to_s} to global collection #{collection.object_id}")
           # Insert the local resource into the global context
-          context.resource_collection.insert(r)
+          collection.insert(r)
           # Skip the iterator forward so we don't double-execute the inserted resource
-          context.resource_collection.iterator.skip_forward
+          collection.iterator.skip_forward
         end
         loaded_recipes
       end

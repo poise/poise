@@ -35,6 +35,8 @@ class Chef
     def action_run
       run_state = node.run_state
       subcontext_block do
+        run_state[:subcontext_block_test_collection] = run_context.resource_collection
+        run_state[:subcontext_block_test_global_collection] = global_resource_collection
         ruby_block 'subcontext_block_test_inner' do
           block do
             run_state[:subcontext_block_test_inner] = true

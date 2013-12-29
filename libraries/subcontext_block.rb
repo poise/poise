@@ -18,6 +18,8 @@
 
 module Poise
   class SubContextResourceCollection < Chef::ResourceCollection
+    attr_accessor :parent
+
     def initialize(parent)
       @parent = parent
       super()
@@ -53,7 +55,8 @@ module Poise
       # Declare sub-resources within the sub-run-context. Since they
       # are declared here, they do not pollute the parent run-context.
       begin
-        outer_run_context, @run_context = @run_context, sub_run_context
+        outer_run_context = @run_context
+        @run_context = sub_run_context
         instance_eval(&block)
       ensure
         @run_context = outer_run_context
@@ -63,12 +66,12 @@ module Poise
       sub_run_context
     end
 
-    def global_run_context
-      context = @run_context
-      while context.respond_to?(:parent) && context.parent
-        context = context.parent
+    def global_resource_collection
+      collection = @run_context.resource_collection
+      while collection.respond_to?(:parent) && collection.parent
+        collection = collection.parent
       end
-      context
+      collection
     end
   end
 end
