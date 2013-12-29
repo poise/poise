@@ -17,5 +17,8 @@
 #
 
 ruby_block 'include_recipe_a' do
-  block {}
+  block do
+    node.run_state[:include_recipe_a] ||= 0
+    node.run_state[:include_recipe_a] += 1
+  end
 end

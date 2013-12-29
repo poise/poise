@@ -16,6 +16,16 @@
 # limitations under the License.
 #
 
-ruby_block 'include_recipe_b' do
-  block {}
+ruby_block 'include_recipe_b_1' do
+  block do
+    node.run_state[:include_recipe_b_1] ||= 0
+    node.run_state[:include_recipe_b_1] += 1
+  end
+end
+
+ruby_block 'include_recipe_b_2' do
+  block do
+    node.run_state[:include_recipe_b_2] ||= 0
+    node.run_state[:include_recipe_b_2] += 1
+  end
 end

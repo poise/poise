@@ -17,13 +17,24 @@
 #
 
 class IncludeRecipeTest < MiniTest::Chef::TestCase
+  # Inner resources should be run and should viaible in global resource collection
   def test_one_run
-    # Inner recipe should be run and should viaible in global resource collection
     assert run_context.resource_collection.find(ruby_block: 'include_recipe_a').updated?
   end
 
+  # Inner resources should be run exactly once
+  def test_one_run_once
+    assert_equal node.run_state[:include_recipe_a], 1
+  end
+
   def test_two_run
-    assert run_context.resource_collection.find(ruby_block: 'include_recipe_b').updated?
+    assert run_context.resource_collection.find(ruby_block: 'include_recipe_b_1').updated?
+    assert run_context.resource_collection.find(ruby_block: 'include_recipe_b_2').updated?
+  end
+
+  def test_two_run_once
+    assert_equal node.run_state[:include_recipe_b_1], 1
+    assert_equal node.run_state[:include_recipe_b_2], 1
   end
 
   def test_three_run

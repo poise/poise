@@ -31,6 +31,7 @@ module Poise
             case recipe
             when String
               # Process normally
+              Chef::Log.debug("Loading recipe #{recipe} via include_recipe (poise)")
               loaded_recipes += run_context.include_recipe(recipe)
             when Proc
               # Pretend its a block of recipe code
@@ -43,7 +44,10 @@ module Poise
         # Converge the new context.
         Chef::Runner.new(subcontext).converge
         subcontext.resource_collection.each do |r|
+          # Insert the local resource into the global context
           context.resource_collection.insert(r)
+          # Skip the iterator forward so we don't double-execute the inserted resource
+          context.resource_collection.iterator.skip_forward
         end
         loaded_recipes
       end
