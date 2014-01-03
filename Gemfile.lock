@@ -79,6 +79,8 @@ GEM
       multi_json (~> 1.3)
     hashie (2.0.5)
     json (1.8.1)
+    kitchen-vagrant (0.14.0)
+      test-kitchen (~> 1.0)
     mime-types (2.0)
     minitar (0.5.4)
     mixlib-authentication (1.3.0)
@@ -124,6 +126,7 @@ GEM
     unf (0.1.3)
       unf_ext
     unf_ext (0.0.6)
+    vagrant-wrapper (1.2.1.1)
     varia_model (0.2.0)
       buff-extensions (~> 0.2)
       hashie (>= 2.0.2)
@@ -136,4 +139,6 @@ DEPENDENCIES
   berkshelf!
   foodcritic (>= 3.0.3)
   kitchen-rackspace!
+  kitchen-vagrant
   test-kitchen!
+  vagrant-wrapper
