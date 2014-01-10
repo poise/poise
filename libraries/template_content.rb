@@ -39,6 +39,11 @@ module Poise
             # This is used for computing the default cookbook below
             parent_filename = caller.first.reverse.split(':', 4).last.reverse
 
+            # If our parent class also declared a template_content attribute on the same name, inherit its options
+            if superclass.respond_to?("_#{name_prefix}_template_content_options")
+              options = superclass.send("_#{name_prefix}_template_content_options").merge(options)
+            end
+
             # Template source path if using a template
             attribute("#{name_prefix}source", kind_of: String)
             define_method("_#{name_prefix}source") do
@@ -120,6 +125,11 @@ module Poise
               context[:node] = node
               context[:template_finder] = finder
               context.render_template(finder.find(source))
+            end
+
+            # Used to check if a parent class already defined a template_content thing here
+            define_singleton_method("_#{name_prefix}_template_content_options") do
+              options
             end
           else
             super if defined?(super)

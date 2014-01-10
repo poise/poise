@@ -106,4 +106,13 @@ class TemplateContentTest < MiniTest::Chef::TestCase
     assert_equal run_context.resource_collection.find(template_content_test_six: 'a').content, "Tip me over.\n"
   end
 
+
+  def test_seven_outer_a
+    assert_equal run_context.resource_collection.find(template_content_test_seven_outer: 'a').content, "And pour you out.\n"
+  end
+
+  def test_seven_a
+    assert_equal run_context.resource_collection.find(template_content_test_seven: 'a').content, "And pour me out.\n"
+  end
+
 end

@@ -35,7 +35,7 @@ class Chef
       @action = :run
     end
 
-    attribute('', template: 'poise_test')
+    attribute('', template: true)
   end
 
   class Provider::TemplateContentTestOne < Provider::TemplateContentTest; end
@@ -50,7 +50,7 @@ class Chef
       @action = :run
     end
 
-    attribute(:thing, template: 'poise_test')
+    attribute(:thing, template: true)
   end
 
   class Provider::TemplateContentTestTwo < Provider::TemplateContentTest; end
@@ -65,7 +65,7 @@ class Chef
       @action = :run
     end
 
-    attribute('', template: 'poise_test', default: 'Hello world')
+    attribute('', template: true, default: 'Hello world')
   end
 
   class Provider::TemplateContentTestThree < Provider::TemplateContentTest; end
@@ -80,7 +80,7 @@ class Chef
       @action = :run
     end
 
-    attribute('', template: 'poise_test', required: true)
+    attribute('', template: true, required: true)
   end
 
   class Provider::TemplateContentTestFour < Provider::TemplateContentTest; end
@@ -103,11 +103,37 @@ class Chef
       @action = :run
     end
 
-    attribute('', template: 'poise_test')
+    attribute('', template: true)
   end
 
   class Provider::TemplateContentTestFive < Provider::TemplateContentTest; end
 
   # Six is located in poise_test2
+
+  # Test for options inheritance behavior
+  class Resource::TemplateContentTestSevenOuter < Resource
+    include Poise::Resource::TemplateContent
+
+    def initialize(*args)
+      super
+      @resource_name = :template_content_test_seven_outer
+      @action = :run
+    end
+
+    attribute('', template: true, default_source: 'seven_outer.erb', default_options: {direction: 'out'})
+  end
+
+  class Provider::TemplateContentTestSevenOuter < Provider::TemplateContentTest; end
+
+  class Resource::TemplateContentTestSeven < Resource::TemplateContentTestSevenOuter
+    def initialize(*args)
+      super
+      @resource_name = :template_content_test_seven
+    end
+
+    attribute('', template: true, default_source: 'seven.erb')
+  end
+
+  class Provider::TemplateContentTestSeven < Provider::TemplateContentTest; end
 
 end
