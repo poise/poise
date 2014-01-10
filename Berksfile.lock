@@ -1,7 +1,7 @@
 {
   "dependencies": {
     "poise": {
-      "locked_version": "1.0.1",
+      "locked_version": "1.0.3",
       "path": "."
     },
     "minitest-handler": {
