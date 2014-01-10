@@ -88,6 +88,8 @@ end
 
 template_content_test_six 'a'
 
+template_content_test_six_inner 'a'
+
 
 template_content_test_seven_outer 'a'
 

@@ -110,6 +110,18 @@ class Chef
 
   # Six is located in poise_test2
 
+  # Test for options inheritance across cookbooks
+  class Resource::TemplateContentTestSixInner < Resource::TemplateContentTestSix
+    def initialize(*args)
+      super
+      @resource_name = :template_content_test_six_inner
+    end
+
+    attribute('', template: true)
+  end
+
+  class Provider::TemplateContentTestSixInner < Provider::TemplateContentTest; end
+
   # Test for options inheritance behavior
   class Resource::TemplateContentTestSevenOuter < Resource
     include Poise::Resource::TemplateContent
