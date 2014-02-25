@@ -1,22 +1,18 @@
-{
-  "dependencies": {
-    "poise": {
-      "locked_version": "1.0.5",
-      "path": "."
-    },
-    "minitest-handler": {
-      "locked_version": "1.1.2"
-    },
-    "poise_test": {
-      "locked_version": "0.0.0",
-      "path": "./test/cookbooks/poise_test"
-    },
-    "poise_test2": {
-      "locked_version": "0.0.0",
-      "path": "./test/cookbooks/poise_test2"
-    },
-    "chef_handler": {
-      "locked_version": "1.1.4"
-    }
-  }
-}
+DEPENDENCIES
+  minitest-handler
+  poise
+    path: .
+  poise_test
+    path: ./test/cookbooks/poise_test
+  poise_test2
+    path: ./test/cookbooks/poise_test2
+
+GRAPH
+  chef_handler (1.1.4)
+  minitest-handler (1.1.2)
+    chef_handler (>= 0.0.0)
+  poise (1.0.5)
+  poise_test (0.0.0)
+    poise (>= 0.0.0)
+    poise_test2 (>= 0.0.0)
+  poise_test2 (0.0.0)

@@ -1,44 +1,28 @@
 GIT
-  remote: git://github.com/RoboticCheese/kitchen-rackspace.git
-  revision: e320b2980e33829b0d2d5c27fc9e569d54ee497d
-  specs:
-    kitchen-rackspace (0.3.1.dev)
-      fog (~> 1.18)
-      test-kitchen (~> 1.1)
-      unf
-
-GIT
   remote: git://github.com/berkshelf/berkshelf.git
-  revision: a78528b2616afdeca97a5bbf50ba8325a77ed8c9
+  revision: 8e8dbe0738733c623859b31c43aa3550921519f2
   specs:
-    berkshelf (3.0.0.beta4)
+    berkshelf (3.0.0.beta7)
       addressable (~> 2.3.4)
+      berkshelf-api-client (~> 1.1)
       buff-config (~> 0.2)
       buff-extensions (~> 0.4)
       buff-shell_out (~> 0.1)
       faraday (~> 0.8.5)
-      hashie (>= 2.0.2)
       minitar (~> 0.5.4)
+      octokit (~> 2.6)
       retryable (~> 1.3.3)
       ridley (~> 2.3)
       solve (>= 0.8.0)
       thor (~> 0.18.0)
 
-GIT
-  remote: git://github.com/test-kitchen/test-kitchen.git
-  revision: eb7743e5ecafdac2b056e4ce6b5f17be9174cc21
-  specs:
-    test-kitchen (1.1.2.dev)
-      mixlib-shellout (~> 1.2)
-      net-scp (~> 1.1)
-      net-ssh (~> 2.7)
-      safe_yaml (~> 1.0.0rc2)
-      thor (~> 0.18)
-
 GEM
   remote: https://rubygems.org/
   specs:
     addressable (2.3.5)
+    amq-protocol (1.9.2)
+    berkshelf-api-client (1.1.1)
+      faraday (~> 0.8.5)
     buff-config (0.4.0)
       buff-extensions (~> 0.3)
       varia_model (~> 0.1)
@@ -48,16 +32,30 @@ GEM
     buff-shell_out (0.1.1)
       buff-ruby_engine (~> 0.1.0)
     builder (3.2.2)
+    bunny (1.1.3)
+      amq-protocol (>= 1.9.2)
     celluloid (0.15.2)
       timers (~> 1.1.0)
     celluloid-io (0.15.0)
       celluloid (>= 0.15.0)
       nio4r (>= 0.5.0)
+    chef (0.8.10)
+      bunny (>= 0.6.0)
+      erubis
+      extlib
+      json
+      mixlib-authentication (>= 1.1.0)
+      mixlib-cli (>= 1.1.0)
+      mixlib-config (>= 1.1.0)
+      mixlib-log (>= 1.1.0)
+      moneta
+      ohai (>= 0.5.0)
     erubis (2.7.0)
     excon (0.31.0)
-    faraday (0.8.8)
+    extlib (0.9.16)
+    faraday (0.8.9)
       multipart-post (~> 1.2.0)
-    fog (1.19.0)
+    fog (1.20.0)
       builder
       excon (~> 0.31.0)
       formatador (~> 0.2.0)
@@ -65,8 +63,7 @@ GEM
       multi_json (~> 1.0)
       net-scp (~> 1.1)
       net-ssh (>= 2.1.3)
-      nokogiri (~> 1.5)
-      ruby-hmac
+      nokogiri (>= 1.5.11)
     foodcritic (3.0.3)
       erubis
       gherkin (~> 2.11.7)
@@ -78,27 +75,45 @@ GEM
     gherkin (2.11.8)
       multi_json (~> 1.3)
     hashie (2.0.5)
+    ipaddress (0.8.0)
     json (1.8.1)
+    kitchen-rackspace (0.4.0)
+      fog (~> 1.18)
+      test-kitchen (~> 1.1)
+      unf
     kitchen-vagrant (0.14.0)
       test-kitchen (~> 1.0)
-    mime-types (2.0)
+    mime-types (2.1)
     minitar (0.5.4)
     mixlib-authentication (1.3.0)
       mixlib-log
+    mixlib-cli (1.4.0)
+    mixlib-config (2.1.0)
     mixlib-log (1.6.0)
     mixlib-shellout (1.3.0)
-    multi_json (1.8.2)
+    moneta (0.7.20)
+    multi_json (1.8.4)
     multipart-post (1.2.0)
-    net-http-persistent (2.9)
+    net-http-persistent (2.9.4)
     net-scp (1.1.2)
       net-ssh (>= 2.6.5)
-    net-ssh (2.7.0)
-    nio4r (0.5.0)
+    net-ssh (2.8.0)
+    nio4r (1.0.0)
     nokogiri (1.5.11)
-    polyglot (0.3.3)
+    octokit (2.7.1)
+      sawyer (~> 0.5.2)
+    ohai (6.20.0)
+      ipaddress
+      mixlib-cli
+      mixlib-config
+      mixlib-log
+      mixlib-shellout
+      systemu (~> 2.5.2)
+      yajl-ruby
+    polyglot (0.3.4)
     rake (10.1.1)
-    retryable (1.3.3)
-    ridley (2.4.0)
+    retryable (1.3.5)
+    ridley (2.5.1)
       addressable
       buff-config (~> 0.2)
       buff-extensions (~> 0.3)
@@ -107,17 +122,26 @@ GEM
       celluloid (~> 0.15)
       celluloid-io (~> 0.15)
       erubis
-      faraday (>= 0.8.4)
+      faraday (~> 0.8.4)
       hashie (>= 2.0.2)
       json (>= 1.7.7)
       mixlib-authentication (>= 1.3.0)
       net-http-persistent (>= 2.8)
       retryable
       solve (>= 0.4.4)
-      varia_model (~> 0.1)
-    ruby-hmac (0.4.0)
-    safe_yaml (1.0.0rc2)
+      varia_model (~> 0.3)
+    safe_yaml (1.0.1)
+    sawyer (0.5.3)
+      addressable (~> 2.3.5)
+      faraday (~> 0.8, < 0.10)
     solve (0.8.2)
+    systemu (2.5.2)
+    test-kitchen (1.2.1)
+      mixlib-shellout (~> 1.2)
+      net-scp (~> 1.1)
+      net-ssh (~> 2.7)
+      safe_yaml (~> 1.0)
+      thor (~> 0.18)
     thor (0.18.1)
     timers (1.1.0)
     treetop (1.4.15)
@@ -127,7 +151,7 @@ GEM
       unf_ext
     unf_ext (0.0.6)
     vagrant-wrapper (1.2.1.1)
-    varia_model (0.2.0)
+    varia_model (0.3.2)
       buff-extensions (~> 0.2)
       hashie (>= 2.0.2)
     yajl-ruby (1.1.0)
@@ -137,8 +161,10 @@ PLATFORMS
 
 DEPENDENCIES
   berkshelf!
+  chef
   foodcritic (>= 3.0.3)
-  kitchen-rackspace!
+  kitchen-rackspace
   kitchen-vagrant
-  test-kitchen!
+  nokogiri (= 1.5.11)
+  test-kitchen
   vagrant-wrapper
