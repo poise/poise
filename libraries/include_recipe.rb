@@ -48,7 +48,8 @@ module Poise
           # Insert the local resource into the global context
           collection.insert(r)
           # Skip the iterator forward so we don't double-execute the inserted resource
-          collection.iterator.skip_forward
+          # If running at compile time, the iterator is nil
+          collection.iterator.skip_forward if collection.iterator
         end
         loaded_recipes
       end

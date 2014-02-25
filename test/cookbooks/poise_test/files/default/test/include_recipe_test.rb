@@ -40,4 +40,8 @@ class IncludeRecipeTest < MiniTest::Chef::TestCase
   def test_three_run
     assert run_context.resource_collection.find(ruby_block: 'include_recipe_c').updated?
   end
+
+  def test_three_one_compile_time
+    assert run_context.resource_collection.find(ruby_block: 'include_recipe_d').updated?
+  end
 end
