@@ -44,6 +44,25 @@ module Poise
     end
   end
 
+  class SubRunner < Chef::Runner
+    def initialize(resource, *args)
+      super(*args)
+      @resource = resource
+    end
+
+    def run_delayed_notifications(error=nil)
+      delayed_actions.each do |notification|
+        notifications = run_context.delayed_notifications(@resource)
+        if run_context.delayed_notifications(@resource).any? { |existing_notification| existing_notification.duplicates?(notification) }
+            Chef::Log.info( "#{@resource} not queuing delayed action #{notification.action} on #{notification.resource}"\
+                            " (delayed), as it's already been queued")
+        else
+          notifications << notification
+        end
+      end
+    end
+  end
+
   module SubContextBlock
     private
     def subcontext_block(parent_context=nil, &block)

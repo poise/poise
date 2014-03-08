@@ -32,7 +32,7 @@ module Poise
         begin
           subcontext = subcontext_block(&block)
           # Converge the new context.
-          Chef::Runner.new(subcontext).converge
+          Poise::SubRunner.new(new_resource, subcontext).converge
         ensure
           new_resource.updated_by_last_action(
             subcontext && subcontext.resource_collection.any?(&:updated?)

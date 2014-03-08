@@ -69,4 +69,14 @@ class NotifyingBlockTest < MiniTest::Chef::TestCase
     refute node.run_state[:notifying_block_test_inner_two] && node.run_state[:notifying_block_test_inner_two].include?('d')
   end
 
+  def test_three_a_run
+    assert node.run_state[:notifying_block_test_inner_three] && node.run_state[:notifying_block_test_inner_three].include?('a')
+    assert node.run_state[:notifying_block_test_inner_four] && node.run_state[:notifying_block_test_inner_four].include?('a')
+  end
+
+  def test_three_b_run
+    assert node.run_state[:notifying_block_test_inner_three] && node.run_state[:notifying_block_test_inner_three].include?('a')
+    assert node.run_state[:notifying_block_test_inner_four] && node.run_state[:notifying_block_test_inner_four].include?('a')
+  end
+
 end

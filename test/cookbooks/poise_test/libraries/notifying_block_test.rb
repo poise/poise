@@ -93,4 +93,53 @@ class Chef
       end
     end
   end
+
+  # Test with two internal resources and notifications
+  class Resource::NotifyingBlockTestThree < Resource
+    def initialize(*args)
+      super
+      @resource_name = :notifying_block_test_three
+      @action = :run
+    end
+
+    def inner_action_one(arg=nil)
+      set_or_return(:inner_action_one, arg, default: :run)
+    end
+
+    def inner_action_two(arg=nil)
+      set_or_return(:inner_action_two, arg, default: :nothing)
+    end
+
+    def notification_mode(arg=nil)
+      set_or_return(:notification_mode, arg, default: :delayed)
+    end
+  end
+
+  class Provider::NotifyingBlockTestThree < Provider
+    include Poise::Provider::NotifyingBlock
+
+    def load_current_resource
+    end
+
+    def action_run
+      run_state = node.run_state
+      name = new_resource.name
+      notifying_block do
+        ruby_block 'notifying_block_test_inner_three' do
+          action new_resource.inner_action_one
+          block do
+            (run_state[:notifying_block_test_inner_three] ||= []) << name
+          end
+          notifies :run, 'ruby_block[notifying_block_test_inner_four]', new_resource.notification_mode
+        end
+
+        ruby_block 'notifying_block_test_inner_four' do
+          action new_resource.inner_action_two
+          block do
+            (run_state[:notifying_block_test_inner_four] ||= []) << name
+          end
+        end
+      end
+    end
+  end
 end

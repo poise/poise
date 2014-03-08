@@ -36,3 +36,21 @@ notifying_block_test_two 'd' do
   inner_action_one :nothing
   inner_action_two :nothing
 end
+
+notifying_block_test_three 'a'
+
+ruby_block 'check delayed notification' do
+  block do
+    raise "Failed" if node.run_state[:notifying_block_test_inner_four] && node.run_state[:notifying_block_test_inner_four].include?('a')
+  end
+end
+
+notifying_block_test_three 'b' do
+  notification_mode :immediately
+end
+
+ruby_block 'check delayed notification b' do
+  block do
+    raise "Failed" unless node.run_state[:notifying_block_test_inner_four] && node.run_state[:notifying_block_test_inner_four].include?('b')
+  end
+end
