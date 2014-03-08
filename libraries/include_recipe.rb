@@ -41,7 +41,7 @@ module Poise
           end
         end
         # Converge the new context.
-        Chef::Runner.new(subcontext).converge
+        Poise::SubRunner.new(new_resource, subcontext).converge
         collection = global_resource_collection
         subcontext.resource_collection.each do |r|
           Chef::Log.debug("Poise::IncludeRecipe: Adding #{r.to_s} to global collection #{collection.object_id}")
