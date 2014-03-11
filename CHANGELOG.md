@@ -1,6 +1,17 @@
 Changelog
 =========
 
+v1.0.8
+------
+
+* Delayed notifications from nested converges will still only run at the end of
+  the main converge.
+
+v1.0.6
+------
+
+* The include_recipe helper now works correctly when used at compile time.
+
 v1.0.4
 ------
 
