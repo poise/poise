@@ -11,7 +11,7 @@ GRAPH
   chef_handler (1.1.4)
   minitest-handler (1.1.2)
     chef_handler (>= 0.0.0)
-  poise (1.0.8)
+  poise (1.0.9)
   poise_test (0.0.0)
     poise (>= 0.0.0)
     poise_test2 (>= 0.0.0)

@@ -17,7 +17,7 @@
 #
 
 name 'poise'
-version '1.0.8'
+version '1.0.9'
 
 maintainer 'Noah Kantrowitz'
 maintainer_email 'noah@coderanger.net'
