@@ -25,6 +25,10 @@ suites:
   run_list:
   - recipe[minitest-handler]
   - recipe[poise_test::lazy_default]
+- name: lwrp_polyfill
+  run_list:
+  - recipe[minitest-handler]
+  - recipe[poise_test::lwrp_polyfill]
 - name: template_content
   run_list:
   - recipe[minitest-handler]
