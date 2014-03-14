@@ -1,6 +1,12 @@
 Changelog
 =========
 
+v1.0.10
+-------
+
+* Fixes an issue with the LWRPPolyfill helper and false values.
+
+
 v1.0.8
 ------
 
