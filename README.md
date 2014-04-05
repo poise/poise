@@ -2,22 +2,33 @@
 
 [![Build Status](https://travis-ci.org/poise/poise.png?branch=master)](https://travis-ci.org/poise/poise)
 
-The poise cookbook provides patterns and helpers for writing reusable Chef
-code.
+## What is Poise?
 
-## Quick start
+The poise cookbook is a set of libraries for writing reusable cookbooks. It
+providers helpers for common patterns and a standard structure to make it easier to create flexible cookbooks.
 
-Create a `libraries/default.rb` file in your cookbook like so:
+## Writing your first resource
+
+Rather than LWRPs, Poise promotes the idea of using normal, or "heavy weight"
+resources, while including helpers to reduce much of boilerplate needed for this. Each resource goes in its own file under `libraries/` named to match
+the resource, which is in turn based on the class name. This means that the file `libraries/my_app.rb` would contain `Chef::Resource::MyApp` which maps to the resource `my_app`.
+
+An example of a simple shell to start from:
 
 ```ruby
 class Chef
-  class Resource::MyResource < Resource
+  class Resource::MyApp < Resource
     include Poise
-    actions(:enable, :disable)
+
+    actions(:enable)
+
     attribute(:path, kind_of: String)
+    ... # Other attribute definitions
   end
 
-  class Provider::MyResource < Provider
+  class Provider::MyApp < Provider
+    include Poise
+
     def action_enable
       converge_by("enable resource #{new_resource.name}") do
         notifying_block do
@@ -29,39 +40,140 @@ class Chef
 end
 ```
 
-You can then use this resource like any other Chef resource:
+Starting from the top, first we declare the resource class, which inherits from
+`Chef::Resource`. This is similar to the `resources/` file in an LWRP, and a similar DSL can be used. In order to load the helpers into the class, we
+include the `Poise` mixin. Then we use the familiar DSL, though with a few additions we'll cover later.
+
+Then we declare the provider class, again similar to the `providers/` file in an LWRP. We include the `Poise` mixin again to get access to all the helpers. Rather than use the `action :enable do ... end` DSL from LWRPs, we just define the action method directly, and use the `converge_by` method to provide a description of what the action does. The implementation of action comes from a block of recipe code wrapped with `notifying_block` to capture changes in much the same way as `use_inline_resources`, see below for more information about all the features of `notifying_block`.
+
+We can then use this resource like any other Chef resource:
 
 ```ruby
-my_resource 'one' do
+my_app 'one' do
   path '/tmp'
 end
 ```
 
-## Patterns
+## Helpers
+
+While not exposed as a specific method, Poise will automatically set the
+`resource_name` based on the class name.
 
 ### Notifying Block
 
-Module: `Poise::Provider::NotifyingBlock`
+As mentioned above, `notifying_block` is similar to `use_inline_resources` in LWRPs. Any Chef resource created inside the block will be converged in a sub-context and if any have updated it will trigger notifications on the current resource. Unlike `use_inline_resources`, resources inside the sub-context can still see resources outside of it, with lookups propagating up sub-contexts until a match is found. Also any delayed notifications are scheduled to run at the end of the main converge cycle, instead of the end of this inner converge.
 
-
+This can be used to write action methods using the normal Chef recipe DSL, while still offering more flexibility through subclassing and other forms of code reuse.
 
 ### Include Recipe
+
+In keeping with `notifying_block` to implement action methods using the Chef DSL, Poise adds an `include_recipe` helper to match the method of the same name in recipes. This will load and converge the requested recipe.
+
+### Resource DSL
+
+To make writing resource classes easier, Poise exposes a DSL similar to LWRPs for defining actions and attributes. Both `actions` and
+`default_action` are just like in LWRPs, though `default_action` is rarely needed as the first action becomes the default. `attribute` is also available just like in LWRPs, but with some enhancements noted below.
+
+One notable difference over the standard DSL method is that Poise attributes
+can take a block argument.
+
+#### Template Content
+
+A common pattern with resources is to allow passing either a template filename or raw file content to be used in a configuration file. Poise exposes a new attribute flag to help with this behavior:
+
+```ruby
+attribute(:name, template: true)
+```
+
+This creates four methods on the class, `name_source`, `name_cookbook`,
+`name_content`, and `name_options`. If the name is set to `''`, no prefix is applied to the function names. The content method can be set directly, but if not set and source is set, then it will render the template and return it as a string. Default values can also be set for any of these:
+
+```ruby
+attribute(:name, template: true, default_source: 'app.cfg.erb',
+          default_options: {host: 'localhost'})
+```
+
+As an example, you can replace this:
+
+```ruby
+if new_resource.source
+  template new_resource.path do
+    source new_resource.source
+    owner 'app'
+    group 'app'
+    variables new_resource.options
+  end
+else
+  file new_resource.path do
+    content new_resource.content
+    owner 'app'
+    group 'app'
+  end
+end
+```
+
+with simply:
+
+```ruby
+file new_resource.path do
+  content new_resource.content
+  owner 'app'
+  group 'app'
+end
+```
+
+As the content method returns the rendered template as a string, this can also
+be useful within other templates to build from partials.
+
+#### Lazy Initializers
+
+One issue with Poise-style resources is that when the class definition is executed, Chef hasn't loaded very far so things like the node object are not
+yet available. This means setting defaults based on node attributes does not work directly:
+
+```ruby
+attribute(:path, default: node['myapp']['path'])
+...
+NameError: undefined local variable or method 'node'
+```
+
+To work around this, Poise extends the idea of lazy initializers from Chef recipes to work with resource definitions as well:
+
+```ruby
+attribute(:path, default: lazy { node['myapp']['path'] })
+```
+
+These initializers are run in the context of the resource object, allowing
+complex default logic to be moved to a method if desired:
+
+```ruby
+attribute(:path, default: lazy { my_default_path })
+
+def my_default_path
+  ...
+end
+```
+
+#### Option Collector
+
+Another common pattern with resources is to need a set of key/value pairs for
+configuration data or options. This can done with a simple Hash, but an option collector attribute can offer a nicer syntax:
+
+```ruby
+attribute(:mydata, option_collector: true)
+...
+
+my_app 'name' do
+  mydata do
+    key1 'value1'
+    key2 'value2'
+  end
+end
+```
+
+This will be converted to `{key1: 'value1', key2: 'value2'}`. You can also pass a Hash to an option collector attribute just as you would with a normal attribute.
 
 ### Sub-resources
 
 #### Container
 
 #### Child
-
-### Lazy Attribute Default
-
-### Option Collector
-
-## Helpers
-
-### LWRP API
-
-### Resource Name
-
-## Using the Poise module
-
