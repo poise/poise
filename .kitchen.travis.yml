@@ -1,5 +1,6 @@
 driver:
   name: docker
+  binary: ./docker
   socket: tcp://docker.poise.io:443
   tlsverify: true
   tlscacert: .docker.ca
