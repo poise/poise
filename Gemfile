@@ -18,11 +18,11 @@
 
 source 'https://rubygems.org'
 
-gem 'nokogiri', '= 1.5.11' # https://github.com/acrmp/foodcritic/pull/217
 gem 'test-kitchen'
-gem 'berkshelf', github: 'berkshelf/berkshelf'
-gem 'kitchen-rackspace'
+gem 'berkshelf'
 gem 'chef'
 gem 'kitchen-vagrant'
 gem 'vagrant-wrapper'
 gem 'foodcritic', '>= 3.0.3'
+gem 'kitchen-docker', github: 'coderanger/kitchen-docker'
+gem 'travis'

@@ -1,7 +1,17 @@
 ---
 driver:
   name: vagrant
-  require_chef_omnibus: latest
+  require_chef_omnibus: <%= ENV['KITCHEN_CHEF_VERSION'] || 'latest' %>
+
+chef_versions:
+- 11.0.0
+- 11.2.0
+- 11.4.0
+- 11.6.0
+- 11.8.0
+- 11.10.0
+- 11.12.0
+- 11.12.2
 
 platforms:
 - name: ubuntu-12.04

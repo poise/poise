@@ -1,2 +1,7 @@
 driver:
-  name: rackspace
+  name: docker
+  socket: tcp://docker.poise.io:443
+  tlsverify: true
+  tlscacert: .docker.ca
+  tlscert: .docker.pem
+  tlskey: .docker.key
