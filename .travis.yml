@@ -23,4 +23,4 @@ script:
 - openssl rsa -in .docker.pem -passin file:.docker.pass -out .docker.key
 - wget https://get.docker.io/builds/Linux/x86_64/docker-latest -O docker
 - chmod +x docker
-- "./bin/kitchen test -d always -p"
+- "./bin/kitchen test -d always"
