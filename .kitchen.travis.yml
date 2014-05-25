@@ -1,5 +1,6 @@
 driver:
   name: docker
+  require_chef_omnibus: <%= ENV['CHEF_VERSION'] || 'latest' %>
   binary: ./docker
   socket: tcp://docker.poise.io:443
   tlsverify: true
