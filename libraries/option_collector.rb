@@ -42,11 +42,10 @@ module Poise
         def attribute(name, options={})
           is_option_collector = options.delete(:option_collector)
           if is_option_collector
-            options[:default] ||= {}
             # Unlock LWRPBase.attribute, I don't care about Ruby 1.8. Worlds tiniest violin.
             define_method(name.to_sym) do |arg=nil, &block|
               iv_sym = :"@#{name}"
-              value = instance_variable_get(iv_sym) || options[:default].dup
+              value = instance_variable_get(iv_sym) || options[:default] || {}
               if arg
                 raise Exceptions::ValidationFailed, "Option #{name} must be a Hash" if arg && !arg.is_a?(Hash)
                 # Should this and the update below be a depp merge?
