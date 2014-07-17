@@ -172,8 +172,7 @@ end
 
 This will be converted to `{key1: 'value1', key2: 'value2'}`. You can also pass a Hash to an option collector attribute just as you would with a normal attribute.
 
-### Sub-resources
 
-#### Container
+## Sponsors
 
-#### Child
+The Poise test server infrastructure is generously sponsored by [Rackspace](https://rackspace.com/). Thanks Rackspace!
