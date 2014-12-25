@@ -71,6 +71,9 @@ module Poise
             # Mask Chef::Provider#load_current_resource because it throws NotImplementedError
             klass.class_exec { include Implementation }
           end
+
+          # reinstate the Chef DSL, brokn in Chef 12
+          klass.class_exec { include Chef::DSL::Recipe }
         end
       end
 
