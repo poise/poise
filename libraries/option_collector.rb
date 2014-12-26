@@ -46,10 +46,15 @@ module Poise
             # Unlock LWRPBase.attribute, I don't care about Ruby 1.8. Worlds tiniest violin.
             define_method(name.to_sym) do |arg=nil, &block|
               iv_sym = :"@#{name}"
-              value = instance_variable_get(iv_sym) || options[:default].dup
+
+              value = instance_variable_get(iv_sym) || begin
+                default = options[:default]
+                default = instance_eval(&default) if default.is_a?(Chef::DelayedEvaluator) # Handle lazy{}
+                default.dup # Dup because we are mutating below
+              end
               if arg
                 raise Exceptions::ValidationFailed, "Option #{name} must be a Hash" if arg && !arg.is_a?(Hash)
-                # Should this and the update below be a depp merge?
+                # Should this and the update below be a deep merge?
                 value.update(arg)
               end
               if block
