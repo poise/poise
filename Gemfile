@@ -18,12 +18,12 @@
 
 source 'https://rubygems.org'
 
-gem 'test-kitchen'
-gem 'berkshelf'
-gem 'chef'
+gem 'test-kitchen', github: 'test-kitchen/test-kitchen' # For mixlib-shellout conflict
+gem 'berkshelf', '~> 3.0'
+gem 'chef', '~> 12.0'
 gem 'kitchen-vagrant'
 gem 'vagrant-wrapper'
 gem 'foodcritic', '>= 3.0.3'
-gem 'kitchen-docker', github: 'coderanger/kitchen-docker'
+gem 'kitchen-docker'
 gem 'travis'
 gem 'kitchen-sync'
