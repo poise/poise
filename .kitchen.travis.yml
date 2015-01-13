@@ -3,7 +3,7 @@ driver:
   require_chef_omnibus: <%= ENV['CHEF_VERSION'] || 'latest' %>
   binary: ./docker
   socket: tcp://docker.poise.io:443
-  tlsverify: true
-  tlscacert: .docker.ca
-  tlscert: .docker.pem
-  tlskey: .docker.key
+  tls_verify: true
+  tls_cacert: .docker.ca
+  tls_cert: .docker.pem
+  tls_key: .docker.key
