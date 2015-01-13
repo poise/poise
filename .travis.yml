@@ -14,6 +14,8 @@ env:
 before_install:
 - curl -O https://poise-gecode.s3.amazonaws.com/gecode-3.7.3-ubuntu12.04-x86_64.tar.gz
 - tar xzvf gecode-3.7.3-ubuntu12.04-x86_64.tar.gz
+after_failure:
+- cat /home/travis/build/poise/poise/vendor/bundle/ruby/2.1.0/extensions/x86_64-linux/2.1.0/dep_selector-1.0.3/gem_make.out
 bundler_args: "--deployment --binstubs"
 script:
 - "./bin/foodcritic -f any ."
