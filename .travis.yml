@@ -1,5 +1,6 @@
 ---
 sudo: false
+cache: bundler
 language: ruby
 rvm:
 - 2.1.4
@@ -12,16 +13,11 @@ before_install:
 - curl -o ~/gecode.tar.gz https://poise-gecode.s3.amazonaws.com/gecode-3.7.3-ubuntu12.04-x86_64.tar.gz
 - tar xzf ~/gecode.tar.gz -C ~
 - rm ~/gecode.tar.gz
-after_script:
-- cat /home/travis/build/poise/poise/vendor/bundle/ruby/2.1.0/extensions/x86_64-linux/2.1.0/dep_selector-1.0.3/gem_make.out
-- cat /home/travis/build/poise/poise/vendor/bundle/ruby/2.1.0/extensions/x86_64-linux/2.1.0/dep_selector-1.0.3/mkmf.log
-bundler_args: "--deployment --binstubs"
-install: true
-script:
 - 'bundle config build.dep_selector "--with-cflags=\"-I$HOME/gecode-3.7.3/include\" --with-cppflags=\"-I$HOME/gecode-3.7.3/include\" --with-ldflags=\"-L$HOME/gecode-3.7.3/lib -Wl,-rpath=$HOME/gecode-3.7.3/lib\""'
-- "bundle install --jobs=3 --deployment --binstubs"
-#- "./bin/foodcritic -f any ."
-#- openssl rsa -in .docker.pem -passin env:KITCHEN_DOCKER_PASS -out .docker.key
-#- wget https://get.docker.io/builds/Linux/x86_64/docker-latest -O docker
-#- chmod +x docker
-#- "./bin/kitchen test -d always"
+bundler_args: "--deployment --binstubs"
+script:
+- "./bin/foodcritic -f any ."
+- openssl rsa -in .docker.pem -passin env:KITCHEN_DOCKER_PASS -out .docker.key
+- wget https://get.docker.io/builds/Linux/x86_64/docker-latest -O docker
+- chmod +x docker
+- "./bin/kitchen test -d always"
