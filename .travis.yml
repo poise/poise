@@ -5,6 +5,13 @@ language: ruby
 rvm:
 - 2.1.4
 env:
+  matrix:
+  - CHEF_VERSION="11.10"
+  - CHEF_VERSION="11.12"
+  - CHEF_VERSION="11.14"
+  - CHEF_VERSION="11.16"
+  - CHEF_VERSION="11"
+  - CHEF_VERSION="12"
   global:
   - USE_SYSTEM_GECODE=true
   - KITCHEN_LOCAL_YAML=.kitchen.travis.yml
