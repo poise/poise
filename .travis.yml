@@ -1,14 +1,9 @@
 ---
+sudo: false
 language: ruby
 rvm:
-- 1.9.3-p484
+- 2.1.4
 env:
-  matrix:
-  - CHEF_VERSION="11.6.0"
-  - CHEF_VERSION="11.8.0"
-  - CHEF_VERSION="11.10.0"
-  - CHEF_VERSION="11.12.0"
-  - CHEF_VERSION="11.12.2"
   global:
   - USE_SYSTEM_GECODE=true
   - KITCHEN_LOCAL_YAML=.kitchen.travis.yml
@@ -19,8 +14,7 @@ before_install:
 bundler_args: "--deployment --binstubs"
 script:
 - "./bin/foodcritic -f any ."
-- ruby -e 'IO.write(".docker.pass", ENV["KITCHEN_DOCKER_PASS"])'
-- openssl rsa -in .docker.pem -passin file:.docker.pass -out .docker.key
+- openssl rsa -in .docker.pem -passin env:KITCHEN_DOCKER_PASS -out .docker.key
 - wget https://get.docker.io/builds/Linux/x86_64/docker-latest -O docker
 - chmod +x docker
 - "./bin/kitchen test -d always"
