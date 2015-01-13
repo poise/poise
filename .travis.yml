@@ -1,4 +1,3 @@
----
 sudo: false
 cache: bundler
 language: ruby
@@ -8,12 +7,14 @@ env:
   global:
   - USE_SYSTEM_GECODE=true
   - KITCHEN_LOCAL_YAML=.kitchen.travis.yml
-  - secure: bLPw2OC3WBL9b9yW4HjPRk33JXA6enTczrwgZD6+1MZsQKUowIRMdFjcXA1mMLFESLxFETRK52YXRqDSbH0sWqrFVs8GF2a9epgEl/yPGTeIjW1QP7hLQVrCWxBfVoGij7G/0db230ErK54G1tfwyzp+XgFbcxGn+rTq6fFNxss=
+  - secure: u/3UBlGft2QsW6IaBkMwEitjp8jw8YMfiPTRJyHQQoAIQPEBE575Ibt5tjWWwq7LezL7Xe2oFLP6HFBswt4nxXlgeXJ4awEuxPogi2i5qRzNXKzS1lwAQxMlMYtUlRvnFTXqlQJTREc8EZLsGVyDaxtXyKkr1/AGg0Faa9yYyKs=
 before_install:
 - curl -o ~/gecode.tar.gz https://poise-gecode.s3.amazonaws.com/gecode-3.7.3-ubuntu12.04-x86_64.tar.gz
 - tar xzf ~/gecode.tar.gz -C ~
 - rm ~/gecode.tar.gz
-- 'bundle config build.dep_selector "--with-cflags=\"-I$HOME/gecode-3.7.3/include\" --with-cppflags=\"-I$HOME/gecode-3.7.3/include\" --with-ldflags=\"-L$HOME/gecode-3.7.3/lib -Wl,-rpath=$HOME/gecode-3.7.3/lib\""'
+- bundle config build.dep_selector "--with-cflags=\"-I$HOME/gecode-3.7.3/include\"
+  --with-cppflags=\"-I$HOME/gecode-3.7.3/include\" --with-ldflags=\"-L$HOME/gecode-3.7.3/lib
+  -Wl,-rpath=$HOME/gecode-3.7.3/lib\""
 bundler_args: "--deployment --binstubs"
 script:
 - "./bin/foodcritic -f any ."
