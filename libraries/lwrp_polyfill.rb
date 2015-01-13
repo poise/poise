@@ -72,7 +72,7 @@ module Poise
             klass.class_exec { include Implementation }
           end
 
-          # reinstate the Chef DSL, brokn in Chef 12
+          # reinstate the Chef DSL, removed in Chef 12
           klass.class_exec { include Chef::DSL::Recipe }
         end
       end

@@ -28,6 +28,7 @@ class Chef
 
   class Provider::SubcontextBlockTestOne < Provider
     include Poise::SubContextBlock
+    include Chef::DSL::Recipe
 
     def load_current_resource
     end

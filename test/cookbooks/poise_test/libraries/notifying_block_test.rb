@@ -32,6 +32,7 @@ class Chef
 
   class Provider::NotifyingBlockTestOne < Provider
     include Poise::Provider::NotifyingBlock
+    include Chef::DSL::Recipe
 
     def load_current_resource
     end
@@ -69,6 +70,7 @@ class Chef
 
   class Provider::NotifyingBlockTestTwo < Provider
     include Poise::Provider::NotifyingBlock
+    include Chef::DSL::Recipe
 
     def load_current_resource
     end
@@ -117,6 +119,7 @@ class Chef
 
   class Provider::NotifyingBlockTestThree < Provider
     include Poise::Provider::NotifyingBlock
+    include Chef::DSL::Recipe
 
     def load_current_resource
     end
