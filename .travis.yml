@@ -9,8 +9,9 @@ env:
   - KITCHEN_LOCAL_YAML=.kitchen.travis.yml
   - secure: bLPw2OC3WBL9b9yW4HjPRk33JXA6enTczrwgZD6+1MZsQKUowIRMdFjcXA1mMLFESLxFETRK52YXRqDSbH0sWqrFVs8GF2a9epgEl/yPGTeIjW1QP7hLQVrCWxBfVoGij7G/0db230ErK54G1tfwyzp+XgFbcxGn+rTq6fFNxss=
 before_install:
+- ls /var/lib /var/lib/dpkg || true
 - mkdir -p ~/var/lib
-- cp -r /var/lib/dkpg ~/var/lib
+- cp -r /var/lib/dpkg ~/var/lib
 - curl -O https://opscode-omnibus-packages.s3.amazonaws.com/ubuntu/12.04/x86_64/chefdk_0.3.5-1_amd64.deb
 - dpkg -i --force-not-root --root=$HOME chefdk_0.3.5-1_amd64.deb
 bundler_args: "--deployment --binstubs"
