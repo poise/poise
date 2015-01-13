@@ -2,14 +2,15 @@ DEPENDENCIES
   minitest-handler
   poise
     path: .
+    metadata: true
   poise_test
     path: test/cookbooks/poise_test
   poise_test2
     path: test/cookbooks/poise_test2
 
 GRAPH
-  chef_handler (1.1.4)
-  minitest-handler (1.1.2)
+  chef_handler (1.1.6)
+  minitest-handler (1.3.2)
     chef_handler (>= 0.0.0)
   poise (1.0.10)
   poise_test (0.0.0)
