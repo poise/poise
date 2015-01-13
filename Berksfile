@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-source 'https://api.berkshelf.com'
+source 'https://supermarket.chef.io/'
 
 metadata
 
