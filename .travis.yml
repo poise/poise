@@ -14,14 +14,14 @@ env:
 before_install:
 - curl -O https://poise-gecode.s3.amazonaws.com/gecode-3.7.3-ubuntu12.04-x86_64.tar.gz
 - tar xzf gecode-3.7.3-ubuntu12.04-x86_64.tar.gz
-after_scripe:
+after_script:
 - cat /home/travis/build/poise/poise/vendor/bundle/ruby/2.1.0/extensions/x86_64-linux/2.1.0/dep_selector-1.0.3/gem_make.out
 bundler_args: "--deployment --binstubs"
 install: true
 script:
 - "bundle install --jobs=3 --deployment --binstubs"
-- "./bin/foodcritic -f any ."
-- openssl rsa -in .docker.pem -passin env:KITCHEN_DOCKER_PASS -out .docker.key
-- wget https://get.docker.io/builds/Linux/x86_64/docker-latest -O docker
-- chmod +x docker
-- "./bin/kitchen test -d always"
+#- "./bin/foodcritic -f any ."
+#- openssl rsa -in .docker.pem -passin env:KITCHEN_DOCKER_PASS -out .docker.key
+#- wget https://get.docker.io/builds/Linux/x86_64/docker-latest -O docker
+#- chmod +x docker
+#- "./bin/kitchen test -d always"
