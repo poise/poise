@@ -17,7 +17,9 @@ before_install:
 after_failure:
 - cat /home/travis/build/poise/poise/vendor/bundle/ruby/2.1.0/extensions/x86_64-linux/2.1.0/dep_selector-1.0.3/gem_make.out
 bundler_args: "--deployment --binstubs"
+install: true
 script:
+- "bundle install --jobs=3 --deployment --binstubs"
 - "./bin/foodcritic -f any ."
 - openssl rsa -in .docker.pem -passin env:KITCHEN_DOCKER_PASS -out .docker.key
 - wget https://get.docker.io/builds/Linux/x86_64/docker-latest -O docker
