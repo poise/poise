@@ -18,7 +18,7 @@ after_script:
 bundler_args: "--deployment --binstubs"
 install: true
 script:
-- "bundle config build.dep_selector --with-cxxflags=-I$HOME/gecode-3.7.3/include -L$HOME/gecode-3.7.3/lib -Wl,-rpath=$HOME/gecode-3.7.3/lib"
+- "bundle config build.dep_selector \"--with-cflags=-I$HOME/gecode-3.7.3/include -L$HOME/gecode-3.7.3/lib -Wl,-rpath=$HOME/gecode-3.7.3/lib;--with-cppflags=-I$HOME/gecode-3.7.3/include\""
 - "bundle install --jobs=3 --deployment --binstubs"
 #- "./bin/foodcritic -f any ."
 #- openssl rsa -in .docker.pem -passin env:KITCHEN_DOCKER_PASS -out .docker.key
