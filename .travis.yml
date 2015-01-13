@@ -16,6 +16,7 @@ before_install:
 - tar xzf gecode-3.7.3-ubuntu12.04-x86_64.tar.gz
 after_script:
 - cat /home/travis/build/poise/poise/vendor/bundle/ruby/2.1.0/extensions/x86_64-linux/2.1.0/dep_selector-1.0.3/gem_make.out
+- cat /home/travis/build/poise/poise/vendor/bundle/ruby/2.1.0/extensions/x86_64-linux/2.1.0/dep_selector-1.0.3/mkmf.log
 bundler_args: "--deployment --binstubs"
 install: true
 script:
