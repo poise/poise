@@ -5,6 +5,10 @@ rvm:
 - 2.1.4
 env:
   global:
+  - CFLAGS=-I$HOME/gecode-3.7.3/include
+  - CPPFLAGS=-I$HOME/gecode-3.7.3/include
+  - CXXFLAGS=-I$HOME/gecode-3.7.3/include
+  - LDFLAGS=-L$HOME/gecode-3.7.3/lib -Wl,-rpath=$HOME/gecode-3.7.3/lib
   - USE_SYSTEM_GECODE=true
   - KITCHEN_LOCAL_YAML=.kitchen.travis.yml
   - secure: bLPw2OC3WBL9b9yW4HjPRk33JXA6enTczrwgZD6+1MZsQKUowIRMdFjcXA1mMLFESLxFETRK52YXRqDSbH0sWqrFVs8GF2a9epgEl/yPGTeIjW1QP7hLQVrCWxBfVoGij7G/0db230ErK54G1tfwyzp+XgFbcxGn+rTq6fFNxss=
@@ -18,8 +22,7 @@ after_script:
 bundler_args: "--deployment --binstubs"
 install: true
 script:
-- ls $HOME/gecode-3.7.3/lib
-- "bundle config build.dep_selector --with-cflags=-I$HOME/gecode-3.7.3/include -L$HOME/gecode-3.7.3/lib -Wl,-rpath=$HOME/gecode-3.7.3/lib"
+#- "bundle config build.dep_selector --with-cflags=-I$HOME/gecode-3.7.3/include -L$HOME/gecode-3.7.3/lib -Wl,-rpath=$HOME/gecode-3.7.3/lib"
 - "bundle install --jobs=3 --deployment --binstubs"
 #- "./bin/foodcritic -f any ."
 #- openssl rsa -in .docker.pem -passin env:KITCHEN_DOCKER_PASS -out .docker.key
