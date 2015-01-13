@@ -10,7 +10,7 @@ env:
   - secure: bLPw2OC3WBL9b9yW4HjPRk33JXA6enTczrwgZD6+1MZsQKUowIRMdFjcXA1mMLFESLxFETRK52YXRqDSbH0sWqrFVs8GF2a9epgEl/yPGTeIjW1QP7hLQVrCWxBfVoGij7G/0db230ErK54G1tfwyzp+XgFbcxGn+rTq6fFNxss=
 before_install:
 - curl -o ~/gecode.tar.gz https://poise-gecode.s3.amazonaws.com/gecode-3.7.3-ubuntu12.04-x86_64.tar.gz
-- tar -C ~ xzf ~/gecode.tar.gz
+- tar xzf ~/gecode.tar.gz -C ~
 - rm ~/gecode.tar.gz
 after_script:
 - cat /home/travis/build/poise/poise/vendor/bundle/ruby/2.1.0/extensions/x86_64-linux/2.1.0/dep_selector-1.0.3/gem_make.out
@@ -18,6 +18,7 @@ after_script:
 bundler_args: "--deployment --binstubs"
 install: true
 script:
+- ls $HOME/gecode-3.7.3/lib
 - "bundle config build.dep_selector --with-cflags=-I$HOME/gecode-3.7.3/include -L$HOME/gecode-3.7.3/lib -Wl,-rpath=$HOME/gecode-3.7.3/lib"
 - "bundle install --jobs=3 --deployment --binstubs"
 #- "./bin/foodcritic -f any ."
