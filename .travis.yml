@@ -10,6 +10,7 @@ env:
   - secure: bLPw2OC3WBL9b9yW4HjPRk33JXA6enTczrwgZD6+1MZsQKUowIRMdFjcXA1mMLFESLxFETRK52YXRqDSbH0sWqrFVs8GF2a9epgEl/yPGTeIjW1QP7hLQVrCWxBfVoGij7G/0db230ErK54G1tfwyzp+XgFbcxGn+rTq6fFNxss=
 before_install:
 - curl -O https://poise-gecode.s3.amazonaws.com/gecode-3.7.3-ubuntu12.04-x86_64.tar.gz
+- pwd
 - tar xzf gecode-3.7.3-ubuntu12.04-x86_64.tar.gz
 after_script:
 - cat /home/travis/build/poise/poise/vendor/bundle/ruby/2.1.0/extensions/x86_64-linux/2.1.0/dep_selector-1.0.3/gem_make.out
