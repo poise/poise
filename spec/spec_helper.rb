@@ -101,8 +101,14 @@ module Poise
           patch_module(Chef::Provider, name, provider_class) { ex.run }
         end
       end
+
+      def included(klass)
+        super
+        klass.extend ClassMethods
+      end
     end
 
+    extend ClassMethods
   end
 end
 
@@ -118,5 +124,4 @@ RSpec.configure do |config|
   config.order = 'random'
 
   config.include Poise::SpecHelpers
-  config.extend Poise::SpecHelpers::ClassMethods
 end
