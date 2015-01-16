@@ -13,16 +13,18 @@ class HaliteRunner < ChefSpec::SoloRunner
     end
   end
 
-  def initialize(options = {})
-    options[:cookbook_path] = '/Users/coderanger/src/poise/empty'
-    super(options)
-  end
-
   def converge(&block)
     super do
       recipe = Chef::Recipe.new(nil, nil, run_context)
       recipe.instance_exec(&block)
     end
+  end
+
+  private
+
+  # Don't try to autodetect
+  def calling_cookbook_path(kaller)
+    '/Users/coderanger/src/poise/empty'
   end
 end
 
