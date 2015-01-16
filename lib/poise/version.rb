@@ -14,8 +14,6 @@
 # limitations under the License.
 #
 
-source 'https://rubygems.org/'
-
-gemspec
-
-gem 'halite', path: '../halite'
+module Poise
+  VERSION = '1.1.0'
+end

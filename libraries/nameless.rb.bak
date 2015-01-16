@@ -1,5 +1,7 @@
 #
-# Copyright 2013-2015, Noah Kantrowitz
+# Author:: Noah Kantrowitz <noah@coderanger.net>
+#
+# Copyright 2013, Balanced, Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,8 +16,24 @@
 # limitations under the License.
 #
 
-source 'https://rubygems.org/'
+module Poise
+  module Resource
+    module Nameless
 
-gemspec
+      def initialize(*args)
+        name = args.find {|arg| arg.is_a?(String)}
+        run_context = args.find {|arg| arg.is_a?(Chef::RunContext)}
+        super(name, run_context)
+      end
 
-gem 'halite', path: '../halite'
+      def parent(arg=nil)
+        parent = super
+        if !name && parent
+          @name = "#{parent.name}::#{resource_name}"
+        end
+        parent
+      end
+
+    end
+  end
+end

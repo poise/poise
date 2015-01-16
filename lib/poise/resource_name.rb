@@ -14,8 +14,16 @@
 # limitations under the License.
 #
 
-source 'https://rubygems.org/'
+require 'chef/mixin/convert_to_class_name'
 
-gemspec
-
-gem 'halite', path: '../halite'
+module Poise
+  module Resource
+    # Helper module to automatically set @resource_name
+    module ResourceName
+      def initialize(*args)
+        super
+        @resource_name ||= Chef::Mixin::ConvertToClassName.convert_to_snake_case(self.class.name, 'Chef::Resource').to_sym
+      end
+    end
+  end
+end
