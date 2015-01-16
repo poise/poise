@@ -37,7 +37,7 @@ describe Poise::Resource::LWRPPolyfill do
   end
 
   context 'with string value' do
-     recipe do
+    recipe do
       poise_test 'true' do
         boolean 'boom'
       end
