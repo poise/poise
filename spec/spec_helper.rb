@@ -70,7 +70,7 @@ module Poise
       def resource(name, &block)
         # Create the resource class
         resource_class = Class.new(Chef::Resource) do
-          instance_exec(&block)
+          class_exec(&block) if block
           # Wrap some stuff around initialize because I'm lazy
           old_init = instance_method(:initialize)
           define_method(:initialize) do |*args|
@@ -110,7 +110,7 @@ module Poise
           def action_run
           end
 
-          instance_exec(&block) if block
+          class_exec(&block) if block
         end
 
         around do |ex|
