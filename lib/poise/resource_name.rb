@@ -22,7 +22,7 @@ module Poise
     module ResourceName
       def initialize(*args)
         super
-        @resource_name ||= Chef::Mixin::ConvertToClassName.convert_to_snake_case(self.class.name, 'Chef::Resource').to_sym
+        @resource_name ||= Chef::Mixin::ConvertToClassName.convert_to_snake_case(self.class.name, 'Chef::Resource').to_sym if self.class.name
       end
     end
   end
