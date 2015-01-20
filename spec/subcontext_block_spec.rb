@@ -42,7 +42,6 @@ describe Poise::SubContextBlock do
 
   it { is_expected.to_not run_ruby_block('inner') }
 
-  # Make sure the .parent forwarding works
   describe '#global_resource_collection' do
     provider(:poise_test) do
       include Poise::SubContextBlock
@@ -58,6 +57,42 @@ describe Poise::SubContextBlock do
       end
     end
 
-    it { subject }
-  end
+    it 'recursively calls #parent when available' do
+      run_chef
+    end
+  end # /describe #global_resource_collection
+
+  describe '#recursive_each', :focus do
+    provider(:poise_test) do
+      include Poise::SubContextBlock
+      include Chef::DSL::Recipe
+
+      def action_run
+        ctx = subcontext_block do
+          ruby_block 'a'
+          ctx2 = subcontext_block do
+            ruby_block 'b'
+            ruby_block 'c'
+          end
+          expect(names(ctx2)).to eq %w{test a b c}
+          ruby_block 'd'
+        end
+        expect(names(ctx)).to eq %w{test a d}
+      end
+
+      private
+
+      def names(ctx)
+        [].tap do |names|
+          ctx.resource_collection.recursive_each do |r|
+            names << r.name
+          end
+        end
+      end
+    end
+
+    it 'finds all recursive resources' do
+      run_chef
+    end
+  end # /describe #recursive_each
 end
