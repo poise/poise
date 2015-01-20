@@ -71,11 +71,9 @@ module Poise
       begin
         block.call
       ensure
-        if old_class
-          mod.const_set(class_name, old_class)
-        else
-          mod.send(:remove_const, class_name)
-        end
+        # Same as above, have to remove before set because warnings
+        mod.send(:remove_const, class_name)
+        mod.const_set(class_name, old_class) if old_class
       end
     end
 
