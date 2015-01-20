@@ -114,6 +114,9 @@ module Poise
 
       def provider(name, &block)
         provider_class = Class.new(Chef::Provider) do
+          # Pull in RSpec expectations
+          include RSpec::Matchers
+
           # Default blank impl to avoid error
           def load_current_resource
           end
