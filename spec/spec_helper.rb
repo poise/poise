@@ -49,6 +49,11 @@ module Poise
     extend RSpec::SharedContext
     let(:step_into) { [] }
 
+    # An alias for slightly more semantic meaning, just forces the lazy #subject to run.
+    def run_chef
+      subject
+    end
+
     private
 
     def patch_module(mod, name, obj, &block)
