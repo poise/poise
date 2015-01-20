@@ -53,12 +53,24 @@ module Poise
 
     def patch_module(mod, name, obj, &block)
       class_name = Chef::Mixin::ConvertToClassName.convert_to_class_name(name.to_s)
-      raise "#{mod.name}::#{class_name} is already defined" if mod.const_defined?(class_name, false)
+      if mod.const_defined?(class_name, false)
+        old_class = mod.const_get(class_name, false)
+        # We are only allowed to patch over things installed by patch_module
+        raise "#{mod.name}::#{class_name} is already defined" if !old_class.instance_variable_get(:@poise_spec_helper)
+        # Remove it before setting to avoid the redefinition warning
+        mod.send(:remove_const, class_name)
+      end
+      # Tag our objects so we know we are allows to overwrite those, but not other stuff.
+      obj.instance_variable_set(:@poise_spec_helper, true)
       mod.const_set(class_name, obj)
       begin
         block.call
       ensure
-        mod.send(:remove_const, class_name)
+        if old_class
+          mod.const_set(class_name, old_class)
+        else
+          mod.send(:remove_const, class_name)
+        end
       end
     end
 
