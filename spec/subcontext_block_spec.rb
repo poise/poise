@@ -62,7 +62,7 @@ describe Poise::SubContextBlock do
     end
   end # /describe #global_resource_collection
 
-  describe '#recursive_each', :focus do
+  describe '#recursive_each' do
     provider(:poise_test) do
       include Poise::SubContextBlock
       include Chef::DSL::Recipe
