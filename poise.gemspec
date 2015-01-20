@@ -42,7 +42,7 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'chefspec', '~> 4.2.0'
   spec.add_development_dependency 'fuubar', '~> 2.0.0'
   spec.add_development_dependency 'pry'
-  # spec.add_development_dependency 'simplecov', '~> 0.9.1'
+  spec.add_development_dependency 'simplecov', '~> 0.9.1'
   # spec.add_development_dependency 'mixlib-shellout', '~> 2.0.0'
   # spec.add_development_dependency 'chef', '~> 12.0.0'
 end

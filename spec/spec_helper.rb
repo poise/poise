@@ -17,8 +17,8 @@
 require 'rspec'
 require 'chefspec'
 # require 'rspec/its'
-# require 'simplecov'
-# SimpleCov.start
+require 'simplecov'
+SimpleCov.start
 
 require 'poise'
 
