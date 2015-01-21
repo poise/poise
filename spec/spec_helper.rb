@@ -82,6 +82,10 @@ module Poise
         subject { HaliteRunner.new(step_into: step_into).converge(&block) }
       end
 
+      # A note about the :parent option below: You can't use resources that
+      # are defined via these helpers because they don't have a global const
+      # name until the actual tests are executing.
+
       def resource(name, options={}, &block)
         options = {auto: true, parent: Chef::Resource}.merge(options)
         # Create the resource class
