@@ -21,6 +21,8 @@ class LazyDefaultHelper < Chef::Resource
   include Poise::Resource::LazyDefault
 end
 
+LAZY_DEFAULT_GLOBAL = [0]
+
 describe Poise::Resource::LazyDefault do
   resource(:poise_test) do
     include Poise::Resource::LWRPPolyfill
@@ -34,6 +36,16 @@ describe Poise::Resource::LazyDefault do
 
   it { is_expected.to run_poise_test('test').with(value: 'test_lazy') }
 
+  context 'with an explicit value' do
+    recipe do
+      poise_test 'test' do
+        value 'value'
+      end
+    end
+
+    it { is_expected.to run_poise_test('test').with(value: 'value') }
+  end
+
   context 'in a subclass' do
     resource(:poise_test, parent: LazyDefaultHelper) do
       attribute(:value, default: lazy { name + '_lazy' })
@@ -42,5 +54,24 @@ describe Poise::Resource::LazyDefault do
     it { is_expected.to run_poise_test('test').with(value: 'test_lazy') }
   end
 
-  # TODO: Test that the value of the lazy eval isn't cached
+  context 'with an external global' do
+    resource(:poise_test) do
+      include Poise::Resource::LWRPPolyfill
+      include Poise::Resource::LazyDefault
+      attribute(:value, default: lazy { LAZY_DEFAULT_GLOBAL.first })
+    end
+
+    it 'does not cache the value before retrieval' do
+      LAZY_DEFAULT_GLOBAL[0] = 42
+      is_expected.to run_poise_test('test').with(value: 42)
+    end
+
+    # This is actually part of set_or_return, but make sure we didn't break semantics
+    it 'caches the value once retrieved' do
+      LAZY_DEFAULT_GLOBAL[0] = 0
+      is_expected.to run_poise_test('test').with(value: 0)
+      LAZY_DEFAULT_GLOBAL[0] = 42
+      is_expected.to run_poise_test('test').with(value: 0)
+    end
+  end
 end
