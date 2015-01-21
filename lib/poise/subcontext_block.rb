@@ -42,6 +42,7 @@ module Poise
     end
   end
 
+  # What is this for? Something about moving notifications to the upper context I think?
   class SubRunner < Chef::Runner
     def initialize(resource, *args)
       super(*args)
