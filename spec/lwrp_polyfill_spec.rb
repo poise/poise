@@ -82,6 +82,12 @@ describe Poise::Resource::LWRPPolyfill do
   end # /describe #default_action
 end
 
+class LWRPPolyfillProviderHelper < Chef::Provider
+  def load_current_resource
+    'helper'
+  end
+end
+
 describe Poise::Provider::LWRPPolyfill do
   describe 'load_current_resource override' do
     subject { Chef::Provider::PoiseTest.new(nil, nil).load_current_resource }
@@ -95,12 +101,11 @@ describe Poise::Provider::LWRPPolyfill do
     end
 
     context 'with an intermediary class' do
-      provider(:poise_test, auto: false, parent: Chef::Provider::RubyBlock) do
+      provider(:poise_test, auto: false, parent: LWRPPolyfillProviderHelper) do
         include Poise::Provider::LWRPPolyfill
       end
 
-      # Chef::Provider::RubyBlock#load_current_resource returns true, use that to check if we hit an override
-      it { is_expected.to be_truthy }
+      it { is_expected.to eq 'helper' }
     end
   end
 
