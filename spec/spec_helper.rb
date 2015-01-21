@@ -82,20 +82,23 @@ module Poise
         subject { HaliteRunner.new(step_into: step_into).converge(&block) }
       end
 
-      def resource(name, &block)
+      def resource(name, options={}, &block)
+        options = {auto: true, parent: Chef::Resource}.merge(options)
         # Create the resource class
-        resource_class = Class.new(Chef::Resource) do
+        resource_class = Class.new(options[:parent]) do
           class_exec(&block) if block
           # Wrap some stuff around initialize because I'm lazy
-          old_init = instance_method(:initialize)
-          define_method(:initialize) do |*args|
-            # Fill in the resource name because I know it
-            @resource_name = name.to_sym
-            old_init.bind(self).call(*args)
-            # ChefSpec doesn't seem to work well with action :nothing
-            if @action == :nothing
-              @action = :run
-              @allowed_actions |= [:run]
+          if options[:auto]
+            old_init = instance_method(:initialize)
+            define_method(:initialize) do |*args|
+              # Fill in the resource name because I know it
+              @resource_name = name.to_sym
+              old_init.bind(self).call(*args)
+              # ChefSpec doesn't seem to work well with action :nothing
+              if @action == :nothing
+                @action = :run
+                @allowed_actions |= [:run]
+              end
             end
           end
         end
@@ -115,17 +118,20 @@ module Poise
         end
       end
 
-      def provider(name, &block)
-        provider_class = Class.new(Chef::Provider) do
+      def provider(name, options={}, &block)
+        options = {auto: true, rspec: true, parent: Chef::Provider}.merge(options)
+        provider_class = Class.new(options[:parent]) do
           # Pull in RSpec expectations
-          include RSpec::Matchers
+          include RSpec::Matchers if options[:rspec]
 
-          # Default blank impl to avoid error
-          def load_current_resource
-          end
+          if options[:auto]
+            # Default blank impl to avoid error
+            def load_current_resource
+            end
 
-          # Blank action because I do that so much
-          def action_run
+            # Blank action because I do that so much
+            def action_run
+            end
           end
 
           class_exec(&block) if block

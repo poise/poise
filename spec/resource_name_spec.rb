@@ -17,14 +17,8 @@
 require 'spec_helper'
 
 describe Poise::Resource::ResourceName do
-  resource(:poise_test) do
+  resource(:poise_test, auto: false) do
     include Poise::Resource::ResourceName
-
-    # Undo the setting from the spec_helper
-    def initialize(*args)
-      @resource_name = nil
-      super
-    end
   end
 
   it 'sets the resource_name' do
