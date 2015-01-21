@@ -58,4 +58,25 @@ describe Poise::Resource::OptionCollector do
 
     it { is_expected.to run_poise_test('test').with(options: {one: '1', two: 3, three: 'three'}) }
   end
+
+  context 'with a normal attribute too' do
+    resource(:poise_test) do
+      include Poise::Resource::LWRPPolyfill
+      include Poise::Resource::OptionCollector
+      attribute(:options, option_collector: true)
+      attribute(:value)
+    end
+    recipe do
+      poise_test 'test' do
+        options do
+          one '1'
+        end
+        value 2
+      end
+    end
+
+    it { is_expected.to run_poise_test('test').with(options: {one: '1'}, value: 2) }
+  end
+
+  # TODO: Write tests for mixed symbol/string data
 end
