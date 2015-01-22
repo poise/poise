@@ -20,6 +20,7 @@ require 'poise/lwrp_polyfill'
 require 'poise/notifying_block'
 require 'poise/option_collector'
 require 'poise/resource_name'
+require 'poise/subresources'
 require 'poise/template_content'
 
 module Poise
@@ -64,7 +65,7 @@ end
 #   include Poise(ParentResource)
 #   include Poise(parent: ParentResource)
 #   include Poise(container: true)
-def Poise(options=nil)
+def Poise(options={})
   # Allow passing a class as a shortcut
   if options.is_a?(Class)
     options = {parent: options}
