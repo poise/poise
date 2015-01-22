@@ -79,7 +79,9 @@ module Poise
 
     module ClassMethods
       def recipe(&block)
-        subject { HaliteRunner.new(step_into: step_into).converge(&block) }
+        # Keep the actual logic in a let in case I want to define the subject as something else
+        let(:chef_run) { HaliteRunner.new(step_into: step_into).converge(&block) }
+        subject { chef_run }
       end
 
       # A note about the :parent option below: You can't use resources that
