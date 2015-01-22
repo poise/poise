@@ -128,7 +128,10 @@ module Poise
         options = {auto: true, rspec: true, parent: Chef::Provider}.merge(options)
         provider_class = Class.new(options[:parent]) do
           # Pull in RSpec expectations
-          include RSpec::Matchers if options[:rspec]
+          if options[:rspec]
+            include RSpec::Matchers
+            include RSpec::Mocks::ExampleMethods
+          end
 
           if options[:auto]
             # Default blank impl to avoid error
