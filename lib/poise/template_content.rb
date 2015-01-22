@@ -67,8 +67,9 @@ module Poise
             define_method("#{name_prefix}content") do |arg=nil, no_compute=false|
               ret = set_or_return("#{name_prefix}content", arg, kind_of: String)
               if !ret && !arg && !no_compute
-                # Some caching might be good here, but leaving that for another day
                 ret = send("_#{name_prefix}content")
+                # Cache the results for next time
+                set_or_return("#{name_prefix}content", ret, {}) if ret
               end
               ret
             end
