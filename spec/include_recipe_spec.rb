@@ -22,15 +22,7 @@ describe Poise::Provider::IncludeRecipe do
     include Poise::Provider::IncludeRecipe
 
     def action_run
-      # When you call #dup, mock'd methods aren't carried over.
-      fix_include_recipe = Proc.new do |obj|
-        expect(obj).to receive(:include_recipe).with('other').and_return(['other::default'])
-      end
-      run_context.define_singleton_method(:dup) do
-        Object.instance_method(:dup).bind(self).call.tap do |obj|
-          fix_include_recipe(obj)
-        end
-      end
+      expect_any_instance_of(Chef::RunContext).to receive(:include_recipe).with('other').and_return(['other::default'])
       include_recipe 'other'
     end
   end
