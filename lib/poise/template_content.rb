@@ -103,7 +103,7 @@ module Poise
               content = send("#{name_prefix}content", nil, true)
               source = send("_#{name_prefix}source")
               if content
-                content
+                content # I don't think it can ever hit this branch
               elsif source
                 cookbook = send("#{name_prefix}cookbook")
                 template_options = send("#{name_prefix}options")
@@ -143,6 +143,8 @@ module Poise
 
       extend ClassMethods
 
+      # Can't get coverage because this won't work under RSpec
+      # :nocov:
       def self._find_cookbook_file_filename(run_context, filename)
         run_context.cookbook_collection.each do |name, ver|
           Chef::CookbookVersion::COOKBOOK_SEGMENTS.each do |seg|
@@ -155,6 +157,7 @@ module Poise
         end
         raise Chef::Exceptions::ValidationFailed, "Unable to find cookbook for file '#{filename}'"
       end
+      # :nocov:
 
       private
 
