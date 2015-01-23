@@ -19,7 +19,17 @@ require 'chefspec'
 require 'rspec/its'
 require 'halite/spec_helper'
 require 'simplecov'
-SimpleCov.start
+
+# If we have a token, use coveralls
+if ENV['COVERALLS_REPO_TOKEN']
+  require 'coveralls'
+  SimpleCov.formatter = Coveralls::SimpleCov::Formatter
+end
+
+SimpleCov.start do
+  # Don't get coverage on the test cases themselves
+  add_filter '/test/'
+end
 
 require 'poise'
 

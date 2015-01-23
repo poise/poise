@@ -1,7 +1,5 @@
 #
-# Author:: Noah Kantrowitz <noah@coderanger.net>
-#
-# Copyright 2013, Balanced, Inc.
+# Copyright 2013-2015, Noah Kantrowitz
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -16,12 +14,22 @@
 # limitations under the License.
 #
 
-source 'https://supermarket.chef.io/'
+require 'serverspec'
+set :backend, :exec
 
-metadata
+describe file('/srv/app') do
+  it { is_expected.to be_a_directory }
+  it { is_expected.to be_owned_by 'root' }
+end
 
-group :test do
-  cookbook 'minitest-handler'
-  cookbook 'poise_test', path: 'test/cookbooks/poise_test'
-  cookbook 'poise_test2', path: 'test/cookbooks/poise_test2'
+describe file('/srv/app/defaults.conf') do
+  it { is_expected.to be_a_file }
+  it { is_expected.to be_owned_by 'root' }
+  its(:content) { is_expected.to eq 'some defaults' }
+end
+
+describe file('/srv/app/user.conf') do
+  it { is_expected.to be_a_file }
+  it { is_expected.to be_owned_by 'root' }
+  its(:content) { is_expected.to eq 'user config' }
 end

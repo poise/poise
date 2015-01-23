@@ -16,14 +16,9 @@
 # limitations under the License.
 #
 
-source 'https://rubygems.org'
+source 'https://supermarket.chef.io/'
+extension 'halite'
 
-gem 'test-kitchen', github: 'test-kitchen/test-kitchen' # For mixlib-shellout conflict
-gem 'berkshelf', '~> 3.0'
-gem 'chef', '~> 12.0'
-gem 'kitchen-vagrant'
-gem 'vagrant-wrapper'
-gem 'foodcritic', '>= 3.0.3'
-gem 'kitchen-docker'
-gem 'travis'
-gem 'kitchen-sync'
+group :test do
+  cookbook 'poise_test', path: 'test/cookbooks/poise_test'
+end
