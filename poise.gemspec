@@ -49,4 +49,5 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'kitchen-docker'
   spec.add_development_dependency 'kitchen-sync'
   spec.add_development_dependency 'berkshelf'
+  spec.add_development_dependency 'foodcritic'
 end
