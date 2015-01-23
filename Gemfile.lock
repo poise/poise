@@ -1,6 +1,6 @@
 GIT
   remote: git://github.com/coderanger/halite.git
-  revision: 0799cb3c545e84ddff2b6ef041c74fb488cc8ae1
+  revision: f6038abfdc53eb12c6cb8a172571c65ab8ea1a39
   specs:
     halite (1.0.0)
       logify (~> 0.2.0)
