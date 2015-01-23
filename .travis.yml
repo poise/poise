@@ -24,7 +24,7 @@ before_install:
   -Wl,-rpath=$HOME/gecode-3.7.3/lib\""
 bundler_args: "--deployment --binstubs --jobs 3"
 script:
-- openssl rsa -in .docker.pem -passin env:KITCHEN_DOCKER_PASS -out .docker.key
+- openssl rsa -in test/docker/docker.pem -passin env:KITCHEN_DOCKER_PASS -out test/docker/docker.key
 - wget https://get.docker.io/builds/Linux/x86_64/docker-latest -O docker
 - chmod +x docker
 - "./bin/rake test"
