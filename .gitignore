@@ -1,4 +1,4 @@
 .kitchen/
 .kitchen.local.yml
-.docker.*
+test/docker/
 coverage/
