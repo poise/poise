@@ -18,4 +18,4 @@ source 'https://rubygems.org/'
 
 gemspec
 
-gem 'halite', path: '../halite'
+gem 'halite', github: 'coderanger/halite'

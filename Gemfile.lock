@@ -1,15 +1,16 @@
+GIT
+  remote: git://github.com/coderanger/halite.git
+  revision: f3e2577e0f58c4bc3b43ff047589f53af6717f34
+  specs:
+    halite (1.0.0)
+      logify (~> 0.2.0)
+      stove (~> 3.2.3)
+
 PATH
   remote: .
   specs:
     poise (1.1.0)
       halite
-
-PATH
-  remote: ../halite
-  specs:
-    halite (1.0.0)
-      logify (~> 0.2.0)
-      stove (~> 3.2.3)
 
 GEM
   remote: https://rubygems.org/
