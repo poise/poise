@@ -1,3 +1,4 @@
+Gemfile.lock
 .kitchen/
 .kitchen.local.yml
 test/docker/
