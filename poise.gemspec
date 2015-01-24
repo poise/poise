@@ -33,7 +33,7 @@ Gem::Specification.new do |spec|
   spec.test_files = spec.files.grep(%r{^(test|spec|features)/})
   spec.require_paths = %w{lib}
 
-  spec.add_dependency 'halite'
+  spec.add_dependency 'halite', '~> 1.0.0.rc.1'
 
   spec.add_development_dependency 'rake', '~> 10.4.2'
   spec.add_development_dependency 'bundler', '~> 1.6'
