@@ -20,10 +20,10 @@ require 'rspec/its'
 require 'halite/spec_helper'
 require 'simplecov'
 
-# If we have a token, use coveralls
-if ENV['COVERALLS_REPO_TOKEN']
-  require 'coveralls'
-  SimpleCov.formatter = Coveralls::SimpleCov::Formatter
+# If we have a token, use codeclimate
+if ENV['CODECLIMATE_REPO_TOKEN']
+  require 'codeclimate-test-reporter'
+  SimpleCov.formatter = CodeClimate::TestReporter::Formatter
 end
 
 SimpleCov.start do

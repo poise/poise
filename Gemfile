@@ -19,3 +19,7 @@ source 'https://rubygems.org/'
 gemspec
 
 gem 'halite', github: 'coderanger/halite'
+
+group :travis do
+  gem 'codeclimate-test-reporter'
+end
