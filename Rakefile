@@ -14,10 +14,24 @@
 # limitations under the License.
 #
 
-source 'https://rubygems.org/'
+task :default => [:test]
 
-gemspec
+# build/upload tasks
+require 'bundler/gem_tasks'
 
-group :travis do
-  gem 'codeclimate-test-reporter'
+# Spec runner
+require 'rspec/core/rake_task'
+RSpec::Core::RakeTask.new(:spec) do |t|
+  t.rspec_opts = [].tap do |a|
+    a << '--color'
+    a << '--format Fuubar'
+    a << '--backtrace '
+    a << "--default-path test"
+    a << '-I test/spec'
+  end.join(' ')
 end
+
+task :test => [:spec]
+
+# Halite helper tasks
+require 'halite/rake_tasks'

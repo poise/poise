@@ -14,10 +14,27 @@
 # limitations under the License.
 #
 
-source 'https://rubygems.org/'
+class Chef
+  class Resource::App < Resource
+    include Poise(container: true)
+    default_action(:install)
 
-gemspec
+    attribute(:path, kind_of: String, name_attribute: true)
+    attribute(:user, kind_of: String, default: 'root')
+    attribute(:group, kind_of: String, default: 'root')
+  end
 
-group :travis do
-  gem 'codeclimate-test-reporter'
+  class Provider::App < Provider
+    include Poise
+
+    def action_install
+      notifying_block do
+        directory new_resource.path do
+          owner new_resource.user
+          group new_resource.group
+          mode '755'
+        end
+      end
+    end
+  end
 end

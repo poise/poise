@@ -1,3 +1,6 @@
+Gemfile.lock
 .kitchen/
 .kitchen.local.yml
-.docker.*
+test/docker/
+coverage/
+pkg/

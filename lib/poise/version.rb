@@ -14,10 +14,6 @@
 # limitations under the License.
 #
 
-source 'https://rubygems.org/'
-
-gemspec
-
-group :travis do
-  gem 'codeclimate-test-reporter'
+module Poise
+  VERSION = '1.1.0'
 end

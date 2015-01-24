@@ -14,10 +14,22 @@
 # limitations under the License.
 #
 
-source 'https://rubygems.org/'
+require 'serverspec'
+set :backend, :exec
 
-gemspec
+describe file('/srv/app') do
+  it { is_expected.to be_a_directory }
+  it { is_expected.to be_owned_by 'root' }
+end
 
-group :travis do
-  gem 'codeclimate-test-reporter'
+describe file('/srv/app/defaults.conf') do
+  it { is_expected.to be_a_file }
+  it { is_expected.to be_owned_by 'root' }
+  its(:content) { is_expected.to eq 'some defaults' }
+end
+
+describe file('/srv/app/user.conf') do
+  it { is_expected.to be_a_file }
+  it { is_expected.to be_owned_by 'root' }
+  its(:content) { is_expected.to eq 'user config' }
 end

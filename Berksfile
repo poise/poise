@@ -17,11 +17,8 @@
 #
 
 source 'https://supermarket.chef.io/'
-
-metadata
+extension 'halite'
 
 group :test do
-  cookbook 'minitest-handler'
   cookbook 'poise_test', path: 'test/cookbooks/poise_test'
-  cookbook 'poise_test2', path: 'test/cookbooks/poise_test2'
 end

@@ -12,31 +12,8 @@ chef_versions:
 
 platforms:
 - name: ubuntu-12.04
-  run_list:
-  - recipe[minitest-handler]
 
 suites:
-- name: subcontext_block
+- name: default
   run_list:
-  - recipe[minitest-handler]
-  - recipe[poise_test::subcontext_block]
-- name: notifying_block
-  run_list:
-  - recipe[minitest-handler]
-  - recipe[poise_test::notifying_block]
-- name: include_recipe
-  run_list:
-  - recipe[minitest-handler]
-  - recipe[poise_test::include_recipe]
-- name: lazy_default
-  run_list:
-  - recipe[minitest-handler]
-  - recipe[poise_test::lazy_default]
-- name: lwrp_polyfill
-  run_list:
-  - recipe[minitest-handler]
-  - recipe[poise_test::lwrp_polyfill]
-- name: template_content
-  run_list:
-  - recipe[minitest-handler]
-  - recipe[poise_test::template_content]
+  - recipe[poise_test]

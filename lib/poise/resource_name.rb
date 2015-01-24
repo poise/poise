@@ -14,10 +14,16 @@
 # limitations under the License.
 #
 
-source 'https://rubygems.org/'
+require 'chef/mixin/convert_to_class_name'
 
-gemspec
-
-group :travis do
-  gem 'codeclimate-test-reporter'
+module Poise
+  module Resource
+    # Helper module to automatically set @resource_name
+    module ResourceName
+      def initialize(*args)
+        super
+        @resource_name ||= Chef::Mixin::ConvertToClassName.convert_to_snake_case(self.class.name, 'Chef::Resource').to_sym if self.class.name
+      end
+    end
+  end
 end

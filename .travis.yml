@@ -1,4 +1,3 @@
----
 sudo: false
 cache: bundler
 language: ruby
@@ -15,6 +14,7 @@ env:
   - USE_SYSTEM_GECODE=true
   - KITCHEN_LOCAL_YAML=.kitchen.travis.yml
   - secure: u/3UBlGft2QsW6IaBkMwEitjp8jw8YMfiPTRJyHQQoAIQPEBE575Ibt5tjWWwq7LezL7Xe2oFLP6HFBswt4nxXlgeXJ4awEuxPogi2i5qRzNXKzS1lwAQxMlMYtUlRvnFTXqlQJTREc8EZLsGVyDaxtXyKkr1/AGg0Faa9yYyKs=
+  - secure: opA5VgVxPPj3rOMr3RhjdKXTnJPx6JYEh0v+bhV2Hz9tCNpV3+keD/maG99wt3ES7tr6vTO8P7aIlOdmji0P+SQrS7bz62sv6Mgujb1QseuSnY8y4f9xwrA6zE/0V9uFy3sB4n5UNwya5VrWGtAGRbYJoN1UNSNNCbgCuo4QDZo=
 before_install:
 - curl -o ~/gecode.tar.gz https://poise-gecode.s3.amazonaws.com/gecode-3.7.3-ubuntu12.04-x86_64.tar.gz
 - tar xzf ~/gecode.tar.gz -C ~
@@ -22,10 +22,9 @@ before_install:
 - bundle config build.dep_selector "--with-cflags=\"-I$HOME/gecode-3.7.3/include\"
   --with-cppflags=\"-I$HOME/gecode-3.7.3/include\" --with-ldflags=\"-L$HOME/gecode-3.7.3/lib
   -Wl,-rpath=$HOME/gecode-3.7.3/lib\""
-bundler_args: "--deployment --binstubs"
+bundler_args: "--binstubs --jobs 3 --retry 3"
 script:
-- "./bin/foodcritic -f any ."
-- openssl rsa -in .docker.pem -passin env:KITCHEN_DOCKER_PASS -out .docker.key
+- openssl rsa -in test/docker/docker.pem -passin env:KITCHEN_DOCKER_PASS -out test/docker/docker.key
 - wget https://get.docker.io/builds/Linux/x86_64/docker-latest -O docker
 - chmod +x docker
-- "./bin/kitchen test -d always"
+- "./bin/rake test"

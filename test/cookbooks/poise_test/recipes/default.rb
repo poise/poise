@@ -14,10 +14,12 @@
 # limitations under the License.
 #
 
-source 'https://rubygems.org/'
+app '/srv/app' do
+  app_config 'defaults' do
+    content 'some defaults'
+  end
+end
 
-gemspec
-
-group :travis do
-  gem 'codeclimate-test-reporter'
+app_config 'user' do
+  content 'user config'
 end

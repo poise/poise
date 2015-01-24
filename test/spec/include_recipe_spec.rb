@@ -14,10 +14,21 @@
 # limitations under the License.
 #
 
-source 'https://rubygems.org/'
+require 'spec_helper'
 
-gemspec
+describe Poise::Provider::IncludeRecipe do
+  resource(:poise_test)
+  provider(:poise_test) do
+    include Poise::Provider::IncludeRecipe
 
-group :travis do
-  gem 'codeclimate-test-reporter'
+    def action_run
+      expect_any_instance_of(Chef::RunContext).to receive(:include_recipe).with('other').and_return(['other::default'])
+      include_recipe 'other'
+    end
+  end
+  recipe do
+    poise_test 'test'
+  end
+
+  it { chef_run }
 end

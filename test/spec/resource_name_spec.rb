@@ -14,10 +14,14 @@
 # limitations under the License.
 #
 
-source 'https://rubygems.org/'
+require 'spec_helper'
 
-gemspec
+describe Poise::Resource::ResourceName do
+  resource(:poise_test, auto: false) do
+    include Poise::Resource::ResourceName
+  end
 
-group :travis do
-  gem 'codeclimate-test-reporter'
+  it 'sets the resource_name' do
+    expect(Chef::Resource::PoiseTest.new(nil).resource_name).to eq :poise_test
+  end
 end
