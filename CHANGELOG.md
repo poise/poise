@@ -1,6 +1,11 @@
 Changelog
 =========
 
+v1.0.12
+-------
+
+* Correctly propagate errors from inside notifying_block.
+
 v1.0.10
 -------
 
