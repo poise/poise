@@ -50,6 +50,9 @@ module Poise
     end
 
     def run_delayed_notifications(error=nil)
+      # If there is an error, just do the normal thing. The return shouldn't
+      # ever fire because the superclass re-raises if there is an error.
+      return super if error
       delayed_actions.each do |notification|
         notifications = run_context.delayed_notifications(@resource)
         if run_context.delayed_notifications(@resource).any? { |existing_notification| existing_notification.duplicates?(notification) }

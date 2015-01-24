@@ -64,4 +64,24 @@ describe Poise::Provider::NotifyingBlock do
       expect(subject.find_resource('poise_test', 'test').updated_by_last_action?).to be_falsey
     end
   end # /context without updated inner resources
+
+  context 'with an exception raised inside the block', :focus do
+    provider(:poise_test) do
+      include Poise::Provider::LWRPPolyfill
+      include Poise::Provider::NotifyingBlock
+
+      def action_run
+        notifying_block do
+          ruby_block 'inner' do
+            block { raise 'Boom!' }
+          end
+        end
+      end
+    end
+    recipe do
+      poise_test 'test'
+    end
+
+    it { expect { subject }.to raise_error(RuntimeError) }
+  end # /context with an exception raised inside the block
 end
