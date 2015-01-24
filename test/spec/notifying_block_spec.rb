@@ -65,7 +65,7 @@ describe Poise::Provider::NotifyingBlock do
     end
   end # /context without updated inner resources
 
-  context 'with an exception raised inside the block', :focus do
+  context 'with an exception raised inside the block' do
     provider(:poise_test) do
       include Poise::Provider::LWRPPolyfill
       include Poise::Provider::NotifyingBlock
