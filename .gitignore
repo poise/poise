@@ -3,3 +3,4 @@ Gemfile.lock
 .kitchen.local.yml
 test/docker/
 coverage/
+pkg/
