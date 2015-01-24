@@ -1,4 +1,3 @@
----
 sudo: false
 cache: bundler
 language: ruby
@@ -15,6 +14,7 @@ env:
   - USE_SYSTEM_GECODE=true
   - KITCHEN_LOCAL_YAML=.kitchen.travis.yml
   - secure: u/3UBlGft2QsW6IaBkMwEitjp8jw8YMfiPTRJyHQQoAIQPEBE575Ibt5tjWWwq7LezL7Xe2oFLP6HFBswt4nxXlgeXJ4awEuxPogi2i5qRzNXKzS1lwAQxMlMYtUlRvnFTXqlQJTREc8EZLsGVyDaxtXyKkr1/AGg0Faa9yYyKs=
+  - secure: opA5VgVxPPj3rOMr3RhjdKXTnJPx6JYEh0v+bhV2Hz9tCNpV3+keD/maG99wt3ES7tr6vTO8P7aIlOdmji0P+SQrS7bz62sv6Mgujb1QseuSnY8y4f9xwrA6zE/0V9uFy3sB4n5UNwya5VrWGtAGRbYJoN1UNSNNCbgCuo4QDZo=
 before_install:
 - curl -o ~/gecode.tar.gz https://poise-gecode.s3.amazonaws.com/gecode-3.7.3-ubuntu12.04-x86_64.tar.gz
 - tar xzf ~/gecode.tar.gz -C ~
