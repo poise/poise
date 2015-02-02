@@ -81,16 +81,25 @@ module Poise
         return super unless name # Generally some kind of error
         Chef::Log.debug("#{self}: Creating subresource from #{method_symbol}(#{name})")
         self_ = self
+        resource = [] # Used to break block context, non-local return
         # Run this inside a subcontext to avoid adding to the current resource collection.
         # It will end up added later, indirected via @subresources to ensure ordering.
         subcontext_block do
-          super(method_symbol, "#{self.name}::#{name}") do
+          sub_name = if name && !name.empty?
+            "#{self.name}::#{name}"
+          else
+            # If you pass in nil or '', you just get the parent name
+            self.name
+          end
+          resource << super(method_symbol, sub_name) do
             # Apply the correct parent before anything else so it is available
             # in after_created for the subresource.
-            parent(self_)
+            parent(self_) if respond_to?(:parent)
             instance_exec(&block) if block
           end
         end
+        # Return whatever we have
+        resource.first
       end
 
       private
