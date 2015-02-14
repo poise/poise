@@ -34,20 +34,4 @@ Gem::Specification.new do |spec|
   spec.require_paths = %w{lib}
 
   spec.add_dependency 'halite', '~> 1.0.0.rc.1'
-
-  spec.add_development_dependency 'rake', '~> 10.4.2'
-  spec.add_development_dependency 'bundler', '~> 1.6'
-  spec.add_development_dependency 'rspec', '~> 3.1.0'
-  spec.add_development_dependency 'rspec-its', '~> 1.1.0'
-  spec.add_development_dependency 'chefspec', '~> 4.2.0'
-  spec.add_development_dependency 'fuubar', '~> 2.0.0'
-  spec.add_development_dependency 'pry'
-  spec.add_development_dependency 'simplecov', '~> 0.9.1'
-  spec.add_development_dependency 'test-kitchen', '~> 1.3.1'
-  spec.add_development_dependency 'kitchen-vagrant'
-  spec.add_development_dependency 'vagrant-wrapper'
-  spec.add_development_dependency 'kitchen-docker'
-  spec.add_development_dependency 'kitchen-sync'
-  spec.add_development_dependency 'berkshelf'
-  spec.add_development_dependency 'foodcritic'
 end

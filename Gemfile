@@ -18,6 +18,31 @@ source 'https://rubygems.org/'
 
 gemspec
 
+group :development do
+  gem 'rake', '~> 10.4.2'
+  gem 'bundler', '~> 1.6'
+  gem 'pry'
+  gem 'travis'
+end
+
+group :test do
+  gem 'rspec', '~> 3.1.0'
+  gem 'rspec-its', '~> 1.1.0'
+  gem 'chefspec', '~> 4.2.0'
+  gem 'fuubar', '~> 2.0.0'
+  gem 'simplecov', '~> 0.9.1'
+  gem 'foodcritic'
+end
+
+group :integration do
+  gem 'test-kitchen', '~> 1.3.1'
+  gem 'kitchen-vagrant'
+  gem 'vagrant-wrapper'
+  gem 'kitchen-docker'
+  gem 'kitchen-sync'
+  gem 'berkshelf'
+end
+
 group :travis do
   gem 'codeclimate-test-reporter'
 end

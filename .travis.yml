@@ -4,17 +4,11 @@ language: ruby
 rvm:
 - 2.1.4
 env:
-  matrix:
-  - CHEF_VERSION="11.12"
-  - CHEF_VERSION="11.14"
-  - CHEF_VERSION="11.16"
-  - CHEF_VERSION="11"
-  - CHEF_VERSION="12"
   global:
   - USE_SYSTEM_GECODE=true
   - KITCHEN_LOCAL_YAML=.kitchen.travis.yml
-  - secure: u/3UBlGft2QsW6IaBkMwEitjp8jw8YMfiPTRJyHQQoAIQPEBE575Ibt5tjWWwq7LezL7Xe2oFLP6HFBswt4nxXlgeXJ4awEuxPogi2i5qRzNXKzS1lwAQxMlMYtUlRvnFTXqlQJTREc8EZLsGVyDaxtXyKkr1/AGg0Faa9yYyKs=
-  - secure: opA5VgVxPPj3rOMr3RhjdKXTnJPx6JYEh0v+bhV2Hz9tCNpV3+keD/maG99wt3ES7tr6vTO8P7aIlOdmji0P+SQrS7bz62sv6Mgujb1QseuSnY8y4f9xwrA6zE/0V9uFy3sB4n5UNwya5VrWGtAGRbYJoN1UNSNNCbgCuo4QDZo=
+  - secure: ibzkIfnlc+qe1ki2VA9Zhg7HmjLPdlW2GMB2zxHDa2As//mUJo7m5f9oyL9+kO4zqbcBGMt51VxwjUbmDNc/XcieGKjwXRz+FBYWJwGcpuvcb3mN8iajgkrOqT07RYwrks0zVBBl4RB4UnXn3EctkTV+ond4Ee6reoYuXtPs2j0=
+  - secure: jEiZqcy6E5WC1nBmfJBSLPpYOUBFdpoo7DsLrvIpKVRpOw7slb+VgIru5AzbONvVD/8CYstgqiVVoGaCP/ywWWqakOQ2thp0BqWN/OVlsuPiemAdLRMMsmekkaFUdAa5l8QUUI0YiTSpSLUXQFWZrXbiARCALGAvDBbsqF1JhgA=
 before_install:
 - curl -o ~/gecode.tar.gz https://poise-gecode.s3.amazonaws.com/gecode-3.7.3-ubuntu12.04-x86_64.tar.gz
 - tar xzf ~/gecode.tar.gz -C ~
@@ -22,9 +16,19 @@ before_install:
 - bundle config build.dep_selector "--with-cflags=\"-I$HOME/gecode-3.7.3/include\"
   --with-cppflags=\"-I$HOME/gecode-3.7.3/include\" --with-ldflags=\"-L$HOME/gecode-3.7.3/lib
   -Wl,-rpath=$HOME/gecode-3.7.3/lib\""
-bundler_args: "--binstubs --jobs 3 --retry 3"
+bundler_args: "--binstubs=$PWD/bin --jobs 3 --retry 3"
 script:
-- openssl rsa -in test/docker/docker.pem -passin env:KITCHEN_DOCKER_PASS -out test/docker/docker.key
-- wget https://get.docker.io/builds/Linux/x86_64/docker-latest -O docker
-- chmod +x docker
-- "./bin/rake test"
+- "./bin/rake spec"
+- "./bin/rake chef:foodcritic"
+- if [ "$TRAVIS_SECURE_ENV_VARS" = true ]; then openssl rsa -in test/docker/docker.pem
+  -passin env:KITCHEN_DOCKER_PASS -out test/docker/docker.key; fi
+- if [ "$TRAVIS_SECURE_ENV_VARS" = true ]; then wget https://get.docker.io/builds/Linux/x86_64/docker-latest
+  -O docker; fi
+- if [ "$TRAVIS_SECURE_ENV_VARS" = true ]; then chmod +x docker; fi
+- if [ "$TRAVIS_SECURE_ENV_VARS" = true ]; then ./bin/kitchen test -d always; fi
+gemfile:
+- test/gemfiles/chef-11.12.gemfile
+- test/gemfiles/chef-11.14.gemfile
+- test/gemfiles/chef-11.16.gemfile
+- test/gemfiles/chef-11.gemfile
+- test/gemfiles/chef-12.gemfile
