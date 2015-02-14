@@ -16,7 +16,7 @@
 
 source 'https://rubygems.org/'
 
-gemspec
+gemspec path: File.expand_path('..', __FILE__)
 
 group :development do
   gem 'rake', '~> 10.4.2'
