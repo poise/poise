@@ -9,7 +9,6 @@ driver:
   - env GEM_HOME=/tmp/busser/gems GEM_PATH=/tmp/busser/gems GEM_CACHE=/tmp/busser/gems/cache /opt/chef/embedded/bin/gem install thor busser busser-serverspec serverspec
 
 chef_versions:
-- '11.12'
 - '11.14'
 - '11.16'
 - '11'
