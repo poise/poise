@@ -16,12 +16,24 @@
 
 require 'spec_helper'
 
+class ResourceNameHelper < Chef::Resource
+  include Poise::Resource::ResourceName
+  provides(:provides_test)
+end
+
 describe Poise::Resource::ResourceName do
-  resource(:poise_test, auto: false) do
-    include Poise::Resource::ResourceName
+  context 'via class.name' do
+    resource(:poise_test, auto: false) do
+      include Poise::Resource::ResourceName
+    end
+    subject { Chef::Resource::PoiseTest.new(nil).resource_name }
+
+    it { is_expected.to eq :poise_test }
   end
 
-  it 'sets the resource_name' do
-    expect(Chef::Resource::PoiseTest.new(nil).resource_name).to eq :poise_test
+  context 'via provides' do
+    subject { ResourceNameHelper.new(nil).resource_name }
+
+    it { is_expected.to eq :provides_test }
   end
 end
