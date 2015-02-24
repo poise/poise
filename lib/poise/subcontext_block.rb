@@ -14,6 +14,9 @@
 # limitations under the License.
 #
 
+require 'chef/resource_collection'
+require 'chef/runner'
+
 module Poise
   class SubContextResourceCollection < Chef::ResourceCollection
     attr_accessor :parent
