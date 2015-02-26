@@ -46,7 +46,7 @@ describe Poise::Resource::Fused do
     it { is_expected.to create_file('inner').with(content: 'test') }
   end # /context with a nested provider
 
-  xcontext 'with a subclass' do
+  context 'with a subclass' do
     resource(:poise_test2, parent: :poise_test) do
       action(:run) do
         super()
@@ -74,4 +74,21 @@ describe Poise::Resource::Fused do
     it { is_expected.to install_poise_test('test') }
     it { is_expected.to run_ruby_block('inner') }
   end # /context with setting a default action
+
+  context 'with an explicit provider' do
+    provider(:poise_test2) do
+      include Poise
+      def action_run
+        ruby_block 'explicit'
+      end
+    end
+    recipe do
+      poise_test 'test' do
+        provider :poise_test2
+      end
+    end
+
+    it { is_expected.to run_ruby_block('explicit') }
+    it { is_expected.to_not run_ruby_block('inner') }
+  end # /context with an explicit provider
 end

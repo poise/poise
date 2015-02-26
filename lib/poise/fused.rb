@@ -52,14 +52,7 @@ module Poise
       #
       # @!visibility private
       def provider_for_action(action)
-        unless provider
-          fused_action = self.class.fused_actions[action.to_sym]
-          fused_provider = Class.new(Chef::Provider) do
-            include Poise
-            define_method(:"action_#{action}", &fused_action)
-          end
-          provider(fused_provider)
-        end
+        provider(self.class.fused_provider_class) unless provider
         super
       end
 
@@ -88,6 +81,30 @@ module Poise
         # @!visibility private
         def fused_actions
           (@fused_actions ||= {})
+        end
+
+        # Create a provider class for the fused actions in this resource.
+        # Inherits from the fused provider class of the resource's superclass if
+        # present.
+        #
+        # @!visibility private
+        def fused_provider_class
+          @fused_provider_class ||= begin
+            provider_superclass = begin
+              self.superclass.fused_provider_class
+            rescue NoMethodError
+              Chef::Provider
+            end
+            actions = fused_actions
+            class_name = self.name
+            Class.new(provider_superclass) do
+              include Poise
+              define_singleton_method(:name) { class_name + ' (fused)' }
+              actions.each do |action, block|
+                define_method(:"action_#{action}", &block)
+              end
+            end
+          end
         end
 
         # @!visibility private
