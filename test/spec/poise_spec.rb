@@ -99,6 +99,16 @@ describe Poise do
         its(:parent_type) { is_expected.to eq Chef::Resource::RubyBlock }
         its(:parent_optional) { is_expected.to be_falsey }
       end # /context with both a parent and a container
+
+      context 'with fused' do
+        resource(:poise_test) do
+          include Poise(fused: true)
+        end
+
+        it { is_expected.to include(Poise) }
+        it { is_expected.to include(Poise::Resource) }
+        it { is_expected.to include(Poise::Resource::Fused) }
+      end # /context with fused
     end # /context as a function call
   end # /context for a Resource
 
@@ -185,6 +195,16 @@ describe Poise::Resource do
       its(:parent_optional) { is_expected.to be_truthy }
     end # /context with an optional parent
   end # /describe #poise_subresource
+
+  context 'with fused' do
+    resource(:poise_test) do
+      include Poise::Resource
+      poise_fused
+    end
+
+    it { is_expected.to include(Poise::Resource) }
+    it { is_expected.to include(Poise::Resource::Fused) }
+  end # /context with fused
 end # /describe Poise::Resource
 
 describe Poise::Provider do

@@ -14,6 +14,7 @@
 # limitations under the License.
 #
 
+require 'poise/fused'
 require 'poise/include_recipe'
 require 'poise/lazy_default'
 require 'poise/lwrp_polyfill'
@@ -41,6 +42,10 @@ module Poise
         include Poise::Resource::SubResource
         parent_type(parent_type) if parent_type
         parent_optional(parent_optional) if parent_optional
+      end
+
+      def klass.poise_fused
+        include Poise::Resource::Fused
       end
     end
   end
@@ -87,6 +92,7 @@ def Poise(options={})
     if klass < Chef::Resource
       klass.poise_subresource(options[:parent], options[:parent_optional]) if options[:parent]
       klass.poise_subresource_container if options[:container]
+      klass.poise_fused if options[:fused]
     end
     # Add Provider-specific options here when needed
   end
