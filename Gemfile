@@ -32,3 +32,4 @@ end
 
 dev_gem 'halite'
 dev_gem 'poise-boiler'
+dev_gem 'yard-classmethods'

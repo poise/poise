@@ -22,6 +22,17 @@ module Poise
     # implemented in the same class.
     #
     # @since 1.1.0
+    # @example
+    #   class Chef::Resource::MyResource < Chef::Resource
+    #     include Poise(fused: true)
+    #     attribute(:path, kind_of: String)
+    #     attribute(:message, kind_of: String)
+    #     action(:run) do
+    #       file new_resource.path do
+    #         content new_resource.message
+    #       end
+    #     end
+    #   end
     module Fused
 
       # Hack is_a? so that the DSL will consider this a Provider for the
@@ -52,6 +63,7 @@ module Poise
         super
       end
 
+      # @!classmethods
       module ClassMethods
         # Define a provider action. The block should contain the usual provider
         # code.
