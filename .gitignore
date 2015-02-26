@@ -4,3 +4,6 @@ Gemfile.lock
 test/docker/
 coverage/
 pkg/
+.yardoc/
+doc/
+
