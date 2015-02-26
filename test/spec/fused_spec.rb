@@ -44,4 +44,32 @@ describe Poise::Resource::Fused do
 
     it { is_expected.to create_file('inner').with(content: 'test') }
   end # /context with a nested provider
+
+  xcontext 'with a subclass' do
+    resource(:poise_test2, parent: :poise_test) do
+      action(:run) do
+        super()
+        ruby_block 'inner2'
+      end
+    end
+    recipe do
+      poise_test2 'test'
+    end
+
+    it { is_expected.to run_ruby_block('inner') }
+    it { is_expected.to run_ruby_block('inner2') }
+  end # /context with a subclass
+
+  xcontext 'with setting a default action' do
+    resource(:poise_test) do
+      include Poise::Resource::Fused
+
+      action(:install) do
+        ruby_block 'inner'
+      end
+    end
+
+    it { is_expected.to install_poise_test('test') }
+    it { is_expected.to run_ruby_block('inner') }
+  end # /context with setting a default action
 end
