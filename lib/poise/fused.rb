@@ -79,6 +79,10 @@ module Poise
         #   end
         def action(name, &block)
           fused_actions[name.to_sym] = block
+          # Make sure this action is allowed, also sets the default if first.
+          if respond_to?(:actions)
+            actions(name.to_sym)
+          end
         end
 
         # @!visibility private

@@ -16,6 +16,7 @@
 
 require 'spec_helper'
 require 'poise/fused'
+require 'poise/lwrp_polyfill'
 
 describe Poise::Resource::Fused do
   resource(:poise_test) do
@@ -60,9 +61,10 @@ describe Poise::Resource::Fused do
     it { is_expected.to run_ruby_block('inner2') }
   end # /context with a subclass
 
-  xcontext 'with setting a default action' do
+  context 'with setting a default action' do
     resource(:poise_test) do
       include Poise::Resource::Fused
+      include Poise::Resource::LWRPPolyfill
 
       action(:install) do
         ruby_block 'inner'
