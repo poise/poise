@@ -14,6 +14,7 @@
 # limitations under the License.
 #
 
+require 'poise/chefspec_matchers'
 require 'poise/fused'
 require 'poise/include_recipe'
 require 'poise/lazy_default'
@@ -26,6 +27,7 @@ require 'poise/template_content'
 
 module Poise
   module Resource
+    include ChefspecMatchers
     include LazyDefault
     include LWRPPolyfill
     include OptionCollector
