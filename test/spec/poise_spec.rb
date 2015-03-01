@@ -30,6 +30,7 @@ describe Poise do
     it { is_expected.to include(Poise::Resource::OptionCollector) }
     it { is_expected.to include(Poise::Resource::ResourceName) }
     it { is_expected.to include(Poise::Resource::TemplateContent) }
+    it { is_expected.to include(Poise::ChefspecMatchers) }
 
     context 'as a function call' do
       context 'with no arguments' do
@@ -151,6 +152,7 @@ describe Poise::Resource do
   it { is_expected.to include(Poise::Resource::OptionCollector) }
   it { is_expected.to include(Poise::Resource::ResourceName) }
   it { is_expected.to include(Poise::Resource::TemplateContent) }
+  it { is_expected.to include(Poise::ChefspecMatchers) }
 
   describe '#poise_subresource_container' do
     resource(:poise_test) do
