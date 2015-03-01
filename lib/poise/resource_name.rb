@@ -18,15 +18,11 @@ require 'chef/mixin/convert_to_class_name'
 
 module Poise
   module Resource
-    # Helper module to automatically set @resource_name
+    # Helper module to automatically set @resource_name.
     module ResourceName
       def initialize(*args)
         super
-        @resource_name ||= if self.class.provides_name
-          self.class.provides_name
-        elsif self.class.name
-          Chef::Mixin::ConvertToClassName.convert_to_snake_case(self.class.name, 'Chef::Resource').to_sym
-        end
+        @resource_name ||= self.class.resource_name
       end
 
       # @!classmethods
@@ -36,8 +32,10 @@ module Poise
           super if defined?(super)
         end
 
-        def provides_name
-          @provides_name
+        def resource_name
+          @provides_name || if name
+            Chef::Mixin::ConvertToClassName.convert_to_snake_case(name, 'Chef::Resource').to_sym
+          end
         end
 
         def included(klass)
