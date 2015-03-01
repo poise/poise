@@ -36,6 +36,7 @@ module Poise
         end
       end
 
+      # @!classmethods
       module ClassMethods
         def attribute(name, options={})
           is_option_collector = options.delete(:option_collector)

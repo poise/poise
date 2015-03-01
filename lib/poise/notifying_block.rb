@@ -22,6 +22,7 @@ module Poise
       include SubContextBlock
 
       private
+
       def notifying_block(&block)
         # Make sure to mark the resource as updated-by-last-action if
         # any sub-run-context resources were updated (any actual

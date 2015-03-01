@@ -17,6 +17,7 @@
 module Poise
   module Resource
     module LazyDefault
+      # @!classmethods
       module ClassMethods
         def lazy(&block)
           Chef::DelayedEvaluator.new(&block)

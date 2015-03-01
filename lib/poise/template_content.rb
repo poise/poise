@@ -28,6 +28,7 @@ module Poise
       include LWRPPolyfill
       include OptionCollector
 
+      # @!classmethods
       module ClassMethods
         def attribute(name, options={})
           if options.delete(:template)

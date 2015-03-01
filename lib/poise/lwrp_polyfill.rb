@@ -16,8 +16,9 @@
 
 module Poise
   module Resource
-    # Provide default_action and actions like LWRPBase but better equipped for subclassing
+    # Provide default_action and actions like LWRPBase but better equipped for subclassing.
     module LWRPPolyfill
+      # @!classmethods
       module ClassMethods
         def default_action(name=nil)
           if name
@@ -61,6 +62,7 @@ module Poise
   module Provider
     # Helper to handle load_current_resource for direct subclasses of Provider
     module LWRPPolyfill
+      # @!classmethods
       module ClassMethods
         def included(klass)
           super

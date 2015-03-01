@@ -29,6 +29,7 @@ module Poise
         end
       end
 
+      # @!classmethods
       module ClassMethods
         def provides(name)
           @provides_name = name

@@ -125,6 +125,7 @@ module Poise
         end
       end
 
+      # @!classmethods
       module ClassMethods
         def parent_type(type=nil)
           if type
