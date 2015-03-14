@@ -98,8 +98,18 @@ module Poise
             instance_exec(&block) if block
           end
         end
+        # Try and add to subresources. For normal subresources this is handled
+        # in the after_created.
+        register_subresource(resource.first) if resource.first
         # Return whatever we have
         resource.first
+      end
+
+      def register_subresource(resource)
+        subresources.lookup(resource)
+      rescue Chef::Exceptions::ResourceNotFound
+        Chef::Log.debug("#{self}: Adding #{resource} to subresources")
+        subresources.insert(resource)
       end
 
       private
@@ -180,12 +190,7 @@ module Poise
 
       def after_created
         super
-        begin
-          parent.subresources.lookup(self) if parent
-        rescue Chef::Exceptions::ResourceNotFound
-          Chef::Log.debug("#{self}: Adding to subresources of #{parent}")
-          parent.subresources.insert(self)
-        end
+        parent.register_subresource(self) if parent
       end
     end
   end
