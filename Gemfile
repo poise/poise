@@ -33,3 +33,6 @@ end
 dev_gem 'halite'
 dev_gem 'poise-boiler'
 dev_gem 'yard-classmethods'
+
+# Pending https://github.com/sethvargo/chefspec/pull/572
+gem 'chefspec', github: 'coderanger/chefspec'
