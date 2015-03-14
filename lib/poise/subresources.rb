@@ -86,7 +86,7 @@ module Poise
         # It will end up added later, indirected via @subresources to ensure ordering.
         subcontext_block do
           sub_name = if name && !name.empty?
-            "#{self.name}::#{name}"
+            name
           else
             # If you pass in nil or '', you just get the parent name
             self.name
