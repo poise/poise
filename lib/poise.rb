@@ -34,22 +34,29 @@ module Poise
     include ResourceName
     include TemplateContent
 
-    def self.included(klass)
-      super
-      def klass.poise_subresource_container
+    # @!classmethods
+    module ClassMethods
+      def poise_subresource_container(namespace=nil)
         include Poise::Resource::SubResourceContainer
       end
 
-      def klass.poise_subresource(parent_type=nil, parent_optional=nil)
+      def poise_subresource(parent_type=nil, parent_optional=nil)
         include Poise::Resource::SubResource
         parent_type(parent_type) if parent_type
         parent_optional(parent_optional) if parent_optional
       end
 
-      def klass.poise_fused
+      def poise_fused
         include Poise::Resource::Fused
       end
+
+      def included(klass)
+        super
+        klass.extend ClassMethods
+      end
     end
+
+    extend ClassMethods
   end
 
   module Provider
