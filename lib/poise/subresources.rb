@@ -89,6 +89,8 @@ module Poise
           namespace = if self.class.container_namespace == true
             # If the value is true, use the name of the container resource.
             self.name
+          elsif self.class.container_namespace.is_a?(Proc)
+            instance_eval(&self.class.container_namespace)
           else
             self.class.container_namespace
           end
