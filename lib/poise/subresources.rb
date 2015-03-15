@@ -134,7 +134,12 @@ module Poise
       module ClassMethods
         def container_namespace(val=nil)
           @container_namespace = val unless val.nil?
-          @container_namespace || (superclass.respond_to?(:container_namespace) ? superclass.container_namespace : true)
+          if @container_namespace.nil?
+            # Not set here, look at the superclass of true by default for backwards compat.
+            superclass.respond_to?(:container_namespace) ? superclass.container_namespace : true
+          else
+            @container_namespace
+          end
         end
 
         def included(klass)
