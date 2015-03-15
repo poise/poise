@@ -15,8 +15,7 @@
 #
 
 require 'spec_helper'
-require 'poise/fused'
-require 'poise/lwrp_polyfill'
+
 
 describe Poise::Resource::Fused do
   resource(:poise_test) do
