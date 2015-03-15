@@ -88,6 +88,39 @@ describe Poise do
         it { is_expected.to include(Poise::Resource::SubResourceContainer) }
       end # /context with a container
 
+      context 'with a container namespace' do
+        resource(:poise_test) do
+          include Poise(container: true, container_namespace: true)
+        end
+
+        it { is_expected.to include(Poise) }
+        it { is_expected.to include(Poise::Resource) }
+        it { is_expected.to include(Poise::Resource::SubResourceContainer) }
+        its(:container_namespace) { is_expected.to eq true }
+      end # /context with a container namespace
+
+      context 'with a container namespace as a string' do
+        resource(:poise_test) do
+          include Poise(container: true, container_namespace: 'example')
+        end
+
+        it { is_expected.to include(Poise) }
+        it { is_expected.to include(Poise::Resource) }
+        it { is_expected.to include(Poise::Resource::SubResourceContainer) }
+        its(:container_namespace) { is_expected.to eq 'example' }
+      end # /context with a container namespaceas a string
+
+      context 'with a container namespace as a proc' do
+        resource(:poise_test) do
+          include Poise(container: true, container_namespace: Proc.new { name })
+        end
+
+        it { is_expected.to include(Poise) }
+        it { is_expected.to include(Poise::Resource) }
+        it { is_expected.to include(Poise::Resource::SubResourceContainer) }
+        its(:container_namespace) { is_expected.to be_a Proc }
+      end # /context with a container namespaceas a proc
+
       context 'with both a parent and a container' do
         resource(:poise_test) do
           include Poise(parent: Chef::Resource::RubyBlock, container: true)

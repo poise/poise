@@ -38,6 +38,7 @@ module Poise
     module ClassMethods
       def poise_subresource_container(namespace=nil)
         include Poise::Resource::SubResourceContainer
+        container_namespace(namespace) if namespace
       end
 
       def poise_subresource(parent_type=nil, parent_optional=nil)
@@ -100,7 +101,7 @@ def Poise(options={})
     # Resource-specific options
     if klass < Chef::Resource
       klass.poise_subresource(options[:parent], options[:parent_optional]) if options[:parent]
-      klass.poise_subresource_container if options[:container]
+      klass.poise_subresource_container(options[:container_namespace]) if options[:container]
       klass.poise_fused if options[:fused]
     end
     # Add Provider-specific options here when needed

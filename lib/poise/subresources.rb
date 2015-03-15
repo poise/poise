@@ -81,15 +81,26 @@ module Poise
         return super unless name # Generally some kind of error
         Chef::Log.debug("#{self}: Creating subresource from #{method_symbol}(#{name})")
         self_ = self
-        resource = [] # Used to break block context, non-local return
+        # Used to break block context, non-local return from subcontext_block.
+        resource = []
         # Run this inside a subcontext to avoid adding to the current resource collection.
         # It will end up added later, indirected via @subresources to ensure ordering.
         subcontext_block do
-          sub_name = if name && !name.empty?
-            name
-          else
-            # If you pass in nil or '', you just get the parent name
+          namespace = if self.class.container_namespace == true
+            # If the value is true, use the name of the container resource.
             self.name
+          else
+            self.class.container_namespace
+          end
+          sub_name = if name && !name.empty?
+            if namespace
+              "#{namespace}::#{name}"
+            else
+              name
+            end
+          else
+            # If you pass in nil or '', you just get the namespace or parent name
+            namespace || self.name
           end
           resource << super(method_symbol, sub_name) do
             # Apply the correct parent before anything else so it is available
@@ -119,6 +130,20 @@ module Poise
         nil
       end
 
+      # @!classmethods
+      module ClassMethods
+        def container_namespace(val=nil)
+          @container_namespace = val unless val.nil?
+          @container_namespace || (superclass.respond_to?(:container_namespace) ? superclass.container_namespace : true)
+        end
+
+        def included(klass)
+          super
+          klass.extend ClassMethods
+        end
+      end
+
+      extend ClassMethods
     end
 
     module SubResource
