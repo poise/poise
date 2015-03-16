@@ -3,8 +3,8 @@
 [![Build Status](https://img.shields.io/travis/poise/poise.svg)](https://travis-ci.org/poise/poise)
 [![Gem Version](https://img.shields.io/gem/v/poise.svg)](https://rubygems.org/gems/poise)
 [![Cookbook Version](https://img.shields.io/cookbook/v/poise.svg)](https://supermarket.chef.io/cookbooks/poise)
-[![Code Climate](https://img.shields.io/codeclimate/github/poise/poise.svg)](https://codeclimate.com/github/poise/poise)
-[![Coverage](https://img.shields.io/codeclimate/coverage/github/poise/poise.svg)](https://codeclimate.com/github/poise/poise)
+[![Coverage](https://img.shields.io/codecov/c/github/poise/poise.svg)](https://codecov.io/github/poise/poise)
+[![Gemnasium](https://img.shields.io/gemnasium/poise/poise.svg)](https://gemnasium.com/poise/poise)
 [![License](https://img.shields.io/badge/license-Apache_2-blue.svg)](https://www.apache.org/licenses/LICENSE-2.0)
 
 ## What is Poise?
