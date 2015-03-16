@@ -38,7 +38,7 @@ module Poise
     module ClassMethods
       def poise_subresource_container(namespace=nil)
         include Poise::Resource::SubResourceContainer
-        container_namespace(namespace) if namespace
+        container_namespace(namespace) unless namespace.nil?
       end
 
       def poise_subresource(parent_type=nil, parent_optional=nil)
