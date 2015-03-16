@@ -77,6 +77,9 @@ module Poise
         self_ = self
         # Used to break block context, non-local return from subcontext_block.
         resource = []
+        # Grab the caller so we can make the subresource look like it comes from
+        # correct place.
+        created_at = caller[0]
         # Run this inside a subcontext to avoid adding to the current resource collection.
         # It will end up added later, indirected via @subresources to ensure ordering.
         subcontext_block do
@@ -102,6 +105,9 @@ module Poise
             # Apply the correct parent before anything else so it is available
             # in after_created for the subresource.
             parent(self_) if respond_to?(:parent)
+            # Correct the source_line.
+            self.source_line = created_at
+            # Run the resource block.
             instance_exec(&block) if block
           end
         end
