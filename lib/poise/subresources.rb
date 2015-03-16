@@ -50,24 +50,21 @@ module Poise
           noop.action(:nothing)
           order_fixer = Chef::Resource::RubyBlock.new('subresource_order_fixer', @run_context)
           order_fixer.block do
-            col = self_.run_context.resource_collection
-            # Overwrite the current location of the container with a NOOP.
-            # I'm unthrilled about needing this extra resource, but I can't find
-            # a way around it right now.
-            col.each_index do |i|
-              if col[i] === self_
-                col[i] = noop
-                break
-              end
+            collection = self_.run_context.resource_collection
+            def collection.debug
+              "#{iterator.position} :: #{all_resources.map(&:to_s).join(',')}"
             end
-            # Replace this resource with the container and step the iterator back.
-            col.each_index do |i|
-              if col[i] === order_fixer
-                col[i] = self_
-                col.iterator.skip_back
-                break
-              end
-            end
+            Chef::Log.debug("Starting #{collection.debug}")
+            # Delete the current container resource.
+            collection.all_resources.delete(self_)
+            Chef::Log.debug("1 #{collection.debug}")
+            #collection.iterator.skip_back
+            # Replace the order fixer with the container so it runs before all
+            # subresources. Skip back on the iterator so it runs the container.
+            collection.all_resources[collection.iterator.position] = self_
+            collection.iterator.skip_back
+            Chef::Log.debug("2 #{collection.debug}")
+            require 'pry'; binding.pry;
           end
           @run_context.resource_collection.insert(order_fixer)
           @subresources.each do |r|
