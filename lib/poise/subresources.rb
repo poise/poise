@@ -46,25 +46,15 @@ module Poise
           # Because after_create is run before adding the container to the resource collection
           # we need to jump through some hoops to get it swapped into place.
           self_ = self
-          noop = Chef::Resource::RubyBlock.new('subresource_noop', @run_context)
-          noop.action(:nothing)
           order_fixer = Chef::Resource::RubyBlock.new('subresource_order_fixer', @run_context)
           order_fixer.block do
             collection = self_.run_context.resource_collection
-            def collection.debug
-              "#{iterator.position} :: #{all_resources.map(&:to_s).join(',')}"
-            end
-            Chef::Log.debug("Starting #{collection.debug}")
             # Delete the current container resource.
             collection.all_resources.delete(self_)
-            Chef::Log.debug("1 #{collection.debug}")
-            #collection.iterator.skip_back
             # Replace the order fixer with the container so it runs before all
             # subresources. Skip back on the iterator so it runs the container.
             collection.all_resources[collection.iterator.position] = self_
             collection.iterator.skip_back
-            Chef::Log.debug("2 #{collection.debug}")
-            require 'pry'; binding.pry;
           end
           @run_context.resource_collection.insert(order_fixer)
           @subresources.each do |r|
