@@ -101,7 +101,7 @@ module Poise
               name
             end
           else
-            # If you pass in nil or '', you just get the namespace or parent name
+            # If you pass in nil or '', you just get the namespace or parent name.
             namespace || self.name
           end
           resource << super(method_symbol, sub_name) do
