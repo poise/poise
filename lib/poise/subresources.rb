@@ -54,6 +54,11 @@ module Poise
             # Replace the order fixer with the container so it runs before all
             # subresources.
             collection.all_resources[collection.iterator.position] = self_
+            # Hack for Chef 11 to reset the resources_by_name position too.
+            # @todo Remove this when I drop support for Chef 11.
+            if resources_by_name = collection.instance_variable_get(:@resources_by_name)
+              resources_by_name[self_.to_s] = collection.iterator.position
+            end
             # Step back so we re-run the "current" resource, which is now the
             # container.
             collection.iterator.skip_back
