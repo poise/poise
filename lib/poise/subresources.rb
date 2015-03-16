@@ -49,11 +49,13 @@ module Poise
           order_fixer = Chef::Resource::RubyBlock.new('subresource_order_fixer', @run_context)
           order_fixer.block do
             collection = self_.run_context.resource_collection
-            # Delete the current container resource.
+            # Delete the current container resource from its current position.
             collection.all_resources.delete(self_)
             # Replace the order fixer with the container so it runs before all
-            # subresources. Skip back on the iterator so it runs the container.
+            # subresources.
             collection.all_resources[collection.iterator.position] = self_
+            # Step back so we re-run the "current" resource, which is now the
+            # container.
             collection.iterator.skip_back
           end
           @run_context.resource_collection.insert(order_fixer)
