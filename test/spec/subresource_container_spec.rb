@@ -36,7 +36,7 @@ describe Poise::Resource::SubResourceContainer do
     end
 
     it { is_expected.to run_poise_test('container') }
-    it { is_expected.to run_inner('container::inner') }
+    it { is_expected.to run_inner('container::inner').with(source_line: start_with("#{__FILE__}:34")) }
   end # /context with a single subresource
 
   context 'with a multiple subresources' do
