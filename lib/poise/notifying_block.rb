@@ -16,6 +16,7 @@
 
 require 'poise/subcontext_block'
 
+
 module Poise
   module Provider
     module NotifyingBlock
