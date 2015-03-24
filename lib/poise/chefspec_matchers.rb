@@ -45,7 +45,7 @@ module Poise
     # Create a matcher for a given resource type and action. This is
     # idempotent so if a matcher already exists, it will not be recreated.
     #
-    # @!visibility private
+    # @api private
     def self.create_matcher(resource, action)
       # Check that we have everything we need.
       return unless defined?(ChefSpec) && defined?(RSpec::Matchers) && resource
@@ -58,7 +58,17 @@ module Poise
 
     # @!classmethods
     module ClassMethods
+      # Create a resource-level matcher for this resource.
+      #
+      # @see Resource::ResourceName.provides
+      def provides(name)
+        ChefSpec.define_matcher(name) if defined?(ChefSpec)
+        super
+      end
+
       # Create matchers for all declared actions.
+      #
+      # @see Resource::LWRPPolyfill.actions
       def actions(*names)
         super.tap do |actions|
           actions.each do |action|
