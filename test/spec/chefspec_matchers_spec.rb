@@ -34,14 +34,6 @@ describe Poise::ChefspecMatchers do
   context 'with an explicit name' do
     resource(:poise_test, auto: false, step_into: false) do
       include Poise::ChefspecMatchers
-      # HAXX because provides() gets cranky on anonymous classes.
-      def self.constantize(name)
-        if name == 'Chef::Resource::PoiseTest'
-          self
-        else
-          super
-        end
-      end
       provides(:poise_other)
       actions(:run)
     end
@@ -50,5 +42,6 @@ describe Poise::ChefspecMatchers do
     end
 
     it { is_expected.to run_poise_other('test') }
+    it { expect(chef_run.poise_other('test')).to be_a Chef::Resource }
   end # /context with an explicit name
 end

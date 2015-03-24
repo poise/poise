@@ -18,7 +18,7 @@ require 'spec_helper'
 
 describe Poise::Provider::NotifyingBlock do
   before { step_into << 'ruby_block' }
-  resource(:poise_test) do
+  resource(:poise_test, unwrap_notifying_block: false) do
     def inner_action(val=nil)
       set_or_return(:inner_action, val, {})
     end
