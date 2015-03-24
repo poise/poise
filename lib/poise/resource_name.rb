@@ -16,9 +16,17 @@
 
 require 'chef/mixin/convert_to_class_name'
 
+
 module Poise
   module Resource
     # Helper module to automatically set @resource_name.
+    #
+    # @since 1.0.0
+    # @example
+    #   class MyResource < Chef::Resource
+    #     include Poise::Resource::ResourceName
+    #     provides(:my_resource)
+    #   end
     module ResourceName
       def initialize(*args)
         super
@@ -27,15 +35,47 @@ module Poise
 
       # @!classmethods
       module ClassMethods
+        # Set the DSL name for the the resource class.
+        #
+        # @param name [Symbol] Name of the resource.
+        # @return [void]
+        # @example
+        #   class MyResource < Chef::Resource
+        #     include Poise::Resource::ResourceName
+        #     provides(:my_resource)
+        #   end
         def provides(name)
+          # Patch self.constantize so this can cope with anonymous classes.
+          # This does require that the anonymous class define self.name though.
+          if self.name
+            old_constantize = self.instance_method(:constantize)
+            define_singleton_method(:constantize) do |name|
+              name == self.name ? self : old_constantize.bind(self).call(name)
+            end
+          end
+          # Store the name for later.
           @provides_name = name
+          # Call the original if present. The defined? is for old Chef.
           super if defined?(super)
         end
 
+        # Retreive the DSL name for the resource class. If not set explicitly
+        # via {provides} this will try to auto-detect based on the class name.
+        #
+        # @return [Symbol]
         def resource_name
-          @provides_name || if name
+          @provides_name || if name && name.start_with?('Chef::Resource')
             Chef::Mixin::ConvertToClassName.convert_to_snake_case(name, 'Chef::Resource').to_sym
+          elsif name
+            Chef::Mixin::ConvertToClassName.convert_to_snake_case(name.split('::').last).to_sym
           end
+        end
+
+        # Used by Resource#to_text to find the human name for the resource.
+        #
+        # @api private
+        def dsl_name
+          resource_name.to_s
         end
 
         def included(klass)
