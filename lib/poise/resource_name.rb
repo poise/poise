@@ -47,8 +47,8 @@ module Poise
         def provides(name)
           # Patch self.constantize so this can cope with anonymous classes.
           # This does require that the anonymous class define self.name though.
-          if self.name
-            old_constantize = self.instance_method(:constantize)
+          if self.name && respond_to?(:constantize)
+            old_constantize = instance_method(:constantize)
             define_singleton_method(:constantize) do |name|
               name == self.name ? self : old_constantize.bind(self).call(name)
             end
