@@ -41,7 +41,7 @@ describe Poise::Resource::TemplateContent do
     allow(@fake_ctx).to receive(:[]=)
     allow(@fake_ctx).to receive(:render_template).and_return('rendered template')
     # Also fake the cookbook lookup since that won't work in our test setup
-    allow(Poise::Resource::TemplateContent).to receive(:_find_cookbook_file_filename).and_return('poise')
+    allow(Poise::Utils).to receive(:find_cookbook_name).and_return('poise')
   end
 
   context 'with no input' do

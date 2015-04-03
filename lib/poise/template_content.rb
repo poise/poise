@@ -20,6 +20,8 @@ require 'chef/mixin/template'
 require 'poise/lazy_default'
 require 'poise/lwrp_polyfill'
 require 'poise/option_collector'
+require 'poise/utils'
+
 
 module Poise
   module Resource
@@ -56,7 +58,7 @@ module Poise
               elsif options[:default_cookbook]
                 maybe_eval(options[:default_cookbook])
               else
-                Poise::Resource::TemplateContent._find_cookbook_file_filename(run_context, parent_filename)
+                Poise::Utils.find_cookbook_name(run_context, parent_filename)
               end
             end)
 
@@ -143,22 +145,6 @@ module Poise
       end
 
       extend ClassMethods
-
-      # Can't get coverage because this won't work under RSpec
-      # :nocov:
-      def self._find_cookbook_file_filename(run_context, filename)
-        run_context.cookbook_collection.each do |name, ver|
-          Chef::CookbookVersion::COOKBOOK_SEGMENTS.each do |seg|
-            ver.segment_filenames(seg).each do |file|
-              if file == filename
-                return name
-              end
-            end
-          end
-        end
-        raise Chef::Exceptions::ValidationFailed, "Unable to find cookbook for file '#{filename}'"
-      end
-      # :nocov:
 
       private
 
