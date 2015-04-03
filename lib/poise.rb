@@ -66,6 +66,9 @@ module Poise
     include NotifyingBlock
   end
 
+  # Include in the correct module for the class type.
+  #
+  # @api private
   def self.included(klass)
     super
     if klass < Chef::Resource
