@@ -63,7 +63,11 @@ module Poise
       #   path this class was defined in.
       # @return [String]
       def poise_defined_in_cookbook(run_context, file=nil)
-        Poise::Utils.find_cookbook_name(run_context, file || poise_defined_in)
+        file ||= poise_defined_in
+        Chef::Log.debug("[#{self.name}] Checking cookbook name for #{file}")
+        Poise::Utils.find_cookbook_name(run_context, file).tap do |cookbook|
+          Chef::Log.debug("[#{self.name}] found cookbook #{cookbook.inspect}")
+        end
       end
 
       # Record that the class/module was defined. Called automatically by Ruby
@@ -72,7 +76,19 @@ module Poise
       # @param caller_array [Array<String>] A strack trace returned by #caller.
       # @return [void]
       def poise_defined!(caller_array)
-        @poise_defined_in = File.expand_path(caller_array.first.split(/:/, 2).first)
+        # Only try to set this once.
+        return if @poise_defined_in
+        # Path to ignore, assumes Halite transformation which I'm not thrilled
+        # about.
+        poise_libraries = File.expand_path('..', __FILE__)
+        # Parse out just the filenames.
+        caller_array = caller_array.map {|line| line.split(/:/, 2).first }
+        # Find the first non-poise line.
+        caller_path = caller_array.find do |line|
+          !line.start_with?(poise_libraries)
+        end
+        Chef::Log.debug("[#{self.name}] Recording poise_defined_in as #{caller_path}")
+        @poise_defined_in = caller_path
       end
 
       # @api private
