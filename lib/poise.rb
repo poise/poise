@@ -15,6 +15,7 @@
 #
 
 require 'poise/chefspec_matchers'
+require 'poise/defined_in'
 require 'poise/fused'
 require 'poise/include_recipe'
 require 'poise/lazy_default'
