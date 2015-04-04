@@ -55,10 +55,10 @@ module Poise
       #
       # @api private
       def after_created
-        node.run_state[:poise_inversion] ||= {}
-        node.run_state[:poise_inversion][resource] ||= {}
-        node.run_state[:poise_inversion][resource][for_provider] ||= {}
-        node.run_state[:poise_inversion][resource][for_provider].update(_options)
+        node.run_state['poise_inversion'] ||= {}
+        node.run_state['poise_inversion'][resource] ||= {}
+        node.run_state['poise_inversion'][resource][for_provider] ||= {}
+        node.run_state['poise_inversion'][resource][for_provider].update(_options)
       end
     end
 

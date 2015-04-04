@@ -218,9 +218,9 @@ module Poise
           Mash.new.tap do |opts|
             attrs = resolve_inversion_attribute(node)
             # Cast the run state to a Mash because string vs. symbol keys. I can
-            # at least promise :poise_inversion will be a sym so cut down on the
+            # at least promise poise_inversion will be a str so cut down on the
             # amount of data to convert.
-            run_state = Mash.new(node.run_state.fetch(:poise_inversion, {}))[resource.name] || {}
+            run_state = Mash.new(node.run_state.fetch('poise_inversion', {}))[resource.name] || {}
             opts.update(resource.options)
             opts.update(provider: attrs['provider']) if attrs['provider']
             opts.update(attrs['options']) if attrs['options']
