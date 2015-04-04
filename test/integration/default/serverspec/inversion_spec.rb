@@ -30,3 +30,14 @@ describe file('/inversion/c') do
   it { is_expected.to be_a_file }
   its(:content) { is_expected.to eq 'two' }
 end
+
+describe file('/inversion/d') do
+  it { is_expected.to be_a_file }
+  its(:content) { is_expected.to eq 'd-three' }
+end
+
+describe file('/inversion/e') do
+  it { is_expected.to be_a_file }
+  its(:content) { is_expected.to eq 'e-three' }
+end
+

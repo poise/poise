@@ -25,3 +25,18 @@ end
 poise_test_inversion 'c' do
   path '/inversion/c'
 end
+
+poise_test_inversion 'd' do
+  path '/inversion/d'
+  provider :three
+  options :three, msg: 'd-three'
+end
+
+poise_test_inversion 'e' do
+  path '/inversion/e'
+  provider :three
+end
+
+poise_test_inversion_options 'e' do
+  msg 'e-three'
+end

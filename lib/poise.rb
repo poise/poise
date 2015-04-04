@@ -54,8 +54,9 @@ module Poise
         include Poise::Resource::Fused
       end
 
-      def poise_inversion
+      def poise_inversion(options_resource=nil)
         include Poise::Inversion
+        inversion_options_resource(true) unless options_resource == false
       end
 
       def included(klass)
@@ -132,7 +133,7 @@ def Poise(options={})
       klass.poise_subresource(options[:parent], options[:parent_optional]) if options[:parent]
       klass.poise_subresource_container(options[:container_namespace]) if options[:container]
       klass.poise_fused if options[:fused]
-      klass.poise_inversion if options[:inversion]
+      klass.poise_inversion(options[:inversion_options_resource]) if options[:inversion]
     end
     # Provider-specific options.
     if klass < Chef::Provider

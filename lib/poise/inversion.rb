@@ -16,9 +16,12 @@
 
 require 'chef/node'
 require 'chef/node_map'
+require 'chef/provider'
+require 'chef/resource'
 
 require 'poise/defined_in'
 require 'poise/error'
+require 'poise/inversion/options_resource'
 
 
 module Poise
@@ -28,6 +31,7 @@ module Poise
   # @example
   #   TODO
   module Inversion
+    # (see Inversion)
     module Resource
       # @overload options(val=nil)
       #   Set or return provider options for all providers.
@@ -73,18 +77,93 @@ module Poise
         end
         super
       end
+
+      # @!classmethods
+      module ClassMethods
+        attr_reader :inversion_options_resource_class
+        attr_reader :inversion_options_provider_class
+
+        # @overload inversion_options_resource()
+        #   Return the options resource mode for this class.
+        #   @return [Boolean]
+        # @overload inversion_options_resource(val)
+        #   Set the options resource mode for this class. Set to true to
+        #   automatically create an options resource. Defaults to true.
+        #   @param val [Boolean] Enable/disable setting.
+        #   @return [Boolean]
+        def inversion_options_resource(val=nil)
+          @poise_inversion_options_resource = val unless val.nil?
+          @poise_inversion_options_resource
+        end
+
+        def create_inversion_options_resource!(name)
+          enclosing_class = self
+          options_resource_name = :"#{name}_options"
+          # Create the resource class.
+          @inversion_options_resource_class = Class.new(Chef::Resource) do
+            include Poise::Inversion::OptionsResource
+            define_singleton_method(:name) do
+              "#{enclosing_class}::OptionsResource"
+            end
+            provides(options_resource_name)
+          end
+          # Create the provider class.
+          @inversion_options_provider_class = Class.new(Chef::Provider) do
+            include Poise::Inversion::OptionsProvider
+            define_singleton_method(:name) do
+              "#{enclosing_class}::OptionsProvider"
+            end
+            provides(options_resource_name)
+          end
+        end
+
+        # Wrap #provides() to create an options resource if desired.
+        #
+        # @param name [Symbol] Resource name
+        # return [void]
+        def provides(name)
+          create_inversion_options_resource!(name) if inversion_options_resource
+          super if defined?(super)
+        end
+
+        def included(klass)
+          super
+          klass.extend(ClassMethods)
+        end
+      end
+
+      extend ClassMethods
     end
 
+    # (see Inversion)
     module Provider
       include Poise::DefinedIn
 
-      # (see .inversion_options)
+      # Compile all the different levels of inversion options together.
+      #
+      # @return [Hash]
+      # @example
+      #   def action_run
+      #     if options['depends']
+      #       # ...
+      #     end
+      #   end
       def options
         @options ||= self.class.inversion_options(node, new_resource)
       end
 
       # @!classmethods
       module ClassMethods
+        # @overload inversion_resource()
+        #   Return the inversion resource name for this class.
+        #   @return [Symbol]
+        # @overload inversion_resource(val)
+        #   Set the inversion resource name for this class. You can pass either
+        #   a symbol in DSL format or a resource class that uses Poise. This
+        #   name is used to determine which resources the inversion provider is
+        #   a candidate for.
+        #   @param val [Symbol, Class] Name to set.
+        #   @return [Symbol]
         def inversion_resource(val=nil)
           if val
             val = val.resource_name if val.is_a?(Class)
@@ -94,6 +173,16 @@ module Poise
           @poise_inversion_resource
         end
 
+        # @overload inversion_attribute()
+        #   Return the inversion attribute name(s) for this class.
+        #   @return [Array<String>]
+        # @overload inversion_attribute(val)
+        #   Set the inversion attribute name(s) for this class. This is
+        #   used by {.resolve_inversion_attribute} to load configuration data
+        #   from node attributes. To specify a nested attribute pass an array
+        #   of strings corresponding to the keys.
+        #   @param val [String, Array<String>] Attribute path.
+        #   @return [Array<String>]
         def inversion_attribute(val=nil)
           if val
             # Coerce to an array of strings.
@@ -103,6 +192,13 @@ module Poise
           @poise_inversion_attribute
         end
 
+        # Resolve the node attribute used as the base for inversion options
+        # for this class. This can be set explicitly with {.inversion_attribute}
+        # or the default is to use the name of the cookbook the provider is
+        # defined in.
+        #
+        # @param node [Chef::Node] Node to load from.
+        # @return [Chef::Node::Attribute]
         def resolve_inversion_attribute(node)
           # Default to using just the name of the cookbook.
           attribute_names = inversion_attribute || [poise_defined_in_cookbook(node.run_context)]
@@ -135,6 +231,11 @@ module Poise
           end
         end
 
+        # Resolve which provider name should be used for a resource.
+        #
+        # @param node [Chef::Node] Node to load from.
+        # @param resource [Chef::Resource] Resource to query.
+        # @return [String]
         def resolve_inversion_provider(node, resource)
           inversion_options(node, resource)['provider'] || 'auto'
         end

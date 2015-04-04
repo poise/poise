@@ -49,5 +49,16 @@ module PoiseTest
         end
       end
     end
+
+    class ProviderThree < Chef::Provider
+      include Poise(inversion: Resource)
+      provides(:three)
+
+      def action_run
+        file new_resource.path do
+          content options['msg'] || 'three'
+        end
+      end
+    end
   end
 end
