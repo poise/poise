@@ -1,4 +1,6 @@
 DEPENDENCIES
+  poise
+    gem: poise
   poise_test
     path: test/cookbooks/poise_test
 
