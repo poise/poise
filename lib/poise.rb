@@ -29,6 +29,7 @@ require 'poise/template_content'
 module Poise
   module Resource
     include ChefspecMatchers
+    include DefinedIn
     include LazyDefault
     include LWRPPolyfill
     include OptionCollector
@@ -62,6 +63,7 @@ module Poise
   end
 
   module Provider
+    include DefinedIn
     include IncludeRecipe
     include LWRPPolyfill
     include NotifyingBlock
