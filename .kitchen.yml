@@ -15,3 +15,4 @@ suites:
 - name: default
   run_list:
   - recipe[poise_test]
+  - recipe[poise_test::inversion]

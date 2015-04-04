@@ -18,6 +18,7 @@ require 'poise/chefspec_matchers'
 require 'poise/defined_in'
 require 'poise/fused'
 require 'poise/include_recipe'
+require 'poise/inversion'
 require 'poise/lazy_default'
 require 'poise/lwrp_polyfill'
 require 'poise/notifying_block'
@@ -53,6 +54,10 @@ module Poise
         include Poise::Resource::Fused
       end
 
+      def poise_inversion
+        include Poise::Inversion
+      end
+
       def included(klass)
         super
         klass.extend ClassMethods
@@ -67,6 +72,22 @@ module Poise
     include IncludeRecipe
     include LWRPPolyfill
     include NotifyingBlock
+
+    # @!classmethods
+    module ClassMethods
+      def poise_inversion(resource, attribute=nil)
+        include Poise::Inversion
+        inversion_resource(resource)
+        inversion_attribute(attribute) if attribute
+      end
+
+      def included(klass)
+        super
+        klass.extend ClassMethods
+      end
+    end
+
+    extend ClassMethods
   end
 
   # Include in the correct module for the class type.
@@ -102,15 +123,21 @@ def Poise(options={})
 
   mod.define_singleton_method(:included) do |klass|
     super(klass)
-    # Pull in the main helper to cover most of the needed logic
+    # Pull in the main helper to cover most of the needed logic.
     klass.class_exec { include Poise }
-    # Resource-specific options
+    # Set the defined_in values as needed.
+    klass.poise_defined!(caller)
+    # Resource-specific options.
     if klass < Chef::Resource
       klass.poise_subresource(options[:parent], options[:parent_optional]) if options[:parent]
       klass.poise_subresource_container(options[:container_namespace]) if options[:container]
       klass.poise_fused if options[:fused]
+      klass.poise_inversion if options[:inversion]
     end
-    # Add Provider-specific options here when needed
+    # Provider-specific options.
+    if klass < Chef::Provider
+      klass.poise_inversion(options[:inversion], options[:inversion_attribute]) if options[:inversion]
+    end
   end
 
   mod
