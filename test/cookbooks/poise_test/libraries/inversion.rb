@@ -14,6 +14,9 @@
 # limitations under the License.
 #
 
+require 'poise'
+
+
 module PoiseTest
   module Inversion
     class Resource < Chef::Resource

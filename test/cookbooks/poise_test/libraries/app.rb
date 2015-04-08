@@ -14,6 +14,9 @@
 # limitations under the License.
 #
 
+require 'poise'
+
+
 class Chef
   class Resource::App < Resource
     include Poise(container: true)
