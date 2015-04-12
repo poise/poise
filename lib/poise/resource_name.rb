@@ -30,7 +30,14 @@ module Poise
     module ResourceName
       def initialize(*args)
         super
-        @resource_name ||= self.class.resource_name
+        # If provides() was explicitly set, unconditionally set @resource_name.
+        # This helps when subclassing core Chef resources which set it
+        # themselves in #initialize.
+        if self.class.resource_name(false)
+          @resource_name = self.class.resource_name
+        else
+          @resource_name ||= self.class.resource_name
+        end
       end
 
       # @!classmethods
@@ -62,8 +69,10 @@ module Poise
         # Retreive the DSL name for the resource class. If not set explicitly
         # via {provides} this will try to auto-detect based on the class name.
         #
+        # @param auto [Boolean] Try to auto-detect based on class name.
         # @return [Symbol]
-        def resource_name
+        def resource_name(auto=true)
+          return @provides_name if @provides_name
           @provides_name || if name && name.start_with?('Chef::Resource')
             Chef::Mixin::ConvertToClassName.convert_to_snake_case(name, 'Chef::Resource').to_sym
           elsif name
