@@ -3,9 +3,9 @@
 <%= PoiseBoiler.kitchen %>
 
 chef_versions:
-- '11.14'
-- '11.16'
-- '11'
+- '12.0'
+- '12.1'
+- '12.2'
 - '12'
 
 platforms:

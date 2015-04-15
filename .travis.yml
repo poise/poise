@@ -29,3 +29,6 @@ script:
 - if [ "$TRAVIS_SECURE_ENV_VARS" = true ]; then ./bin/kitchen test -d always; fi
 gemfile:
 - test/gemfiles/chef-12.gemfile
+- test/gemfiles/chef-12.0.gemfile
+- test/gemfiles/chef-12.1.gemfile
+- test/gemfiles/chef-12.2.gemfile
