@@ -48,7 +48,7 @@ module Poise
         # @overload parent(val)
         #   Set the parent resource. The parent can be set as  resource
         #   object, a string (either a bare resource name or a type[name]
-        #   string), or a {type: name} hash.
+        #   string), or a type:name hash.
         #   @param val [String, Hash, Chef::Resource] Parent resource to set.
         #   @return [Chef::Resource, nil]
         def parent(val=nil)
