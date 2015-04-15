@@ -45,7 +45,7 @@ def Poise(options={})
 
   # Fake the name.
   mod.define_singleton_method(:name) do
-    super || 'Poise'
+    super() || 'Poise'
   end
 
   mod.define_singleton_method(:included) do |klass|
