@@ -76,7 +76,7 @@ module Poise
           # Grab the ivar for local use.
           parent = instance_variable_get(:"@#{name}")
           if val
-            if val.is_a?(String) && !val.includes?('[')
+            if val.is_a?(String) && !val.include?('[')
               raise Poise::Error.new('Cannot use a string parent without defining a parent type') if parent_type == Chef::Resource
               val = "#{parent_type.resource_name}[#{val}]"
             end
