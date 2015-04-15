@@ -86,8 +86,9 @@ module Poise
             end
             if val.is_a?(String) || val.is_a?(Hash)
               val = @run_context.resource_collection.find(val)
-            elsif !val.is_a?(parent_type)
-              raise Poise::Error.new("Unknown parent resource: #{val}")
+            end
+            if !val.is_a?(parent_type)
+              raise Poise::Error.new("Parent resource is not an instance of #{parent_type.name}: #{val.inspect}")
             end
             parent = ParentRef.new(val)
           elsif !parent
