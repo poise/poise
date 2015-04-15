@@ -73,6 +73,10 @@ module Poise
         # @since 2.0.0
         # @see #parent
         def _parent(name, parent_type, parent_optional, val=nil)
+          # Allow using a DSL symbol as the parent type.
+          if parent_type.is_a?(Symbol)
+            parent_type = Chef::Resource.resource_for_node(parent_type, node)
+          end
           # Grab the ivar for local use.
           parent = instance_variable_get(:"@#{name}")
           if val
@@ -107,14 +111,14 @@ module Poise
         module ClassMethods
           # @overload parent_type()
           #   Get the class of the default parent link on this resource.
-          #   @return [Class]
+          #   @return [Class, Symbol]
           # @overload parent_type(type)
           #   Set the class of the default parent link on this resource.
-          #   @param type [Class] Class to set.
-          #   @return [Class]
+          #   @param type [Class, Symbol] Class to set.
+          #   @return [Class, Symbol]
           def parent_type(type=nil)
             if type
-              raise "Parent type must be a class" unless type.is_a?(Class)
+              raise Poise::Error.new("Parent type must be a class or symbol, got #{type.inspect}") unless type.is_a?(Class) || type.is_a?(Symbol)
               @parent_type = type
             end
             @parent_type || (superclass.respond_to?(:parent_type) ? superclass.parent_type : Chef::Resource)
