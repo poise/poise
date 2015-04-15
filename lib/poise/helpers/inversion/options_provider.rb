@@ -1,5 +1,5 @@
 #
-# Copyright 2013-2015, Noah Kantrowitz
+# Copyright 2015, Noah Kantrowitz
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -16,5 +16,26 @@
 
 
 module Poise
-  VERSION = '2.0.0'
+  module Helpers
+    module Inversion
+      # A mixin for inversion options providers.
+      #
+      # @api private
+      # @since 2.0.0
+      # @see Poise::Helper::Inversion
+      module OptionsProvider
+        # @api private
+        def self.included(klass)
+          klass.class_exec { include Poise }
+        end
+
+        # A blank run action.
+        #
+        # @return [void]
+        def action_run
+          # This space left intentionally blank.
+        end
+      end
+    end
+  end
 end

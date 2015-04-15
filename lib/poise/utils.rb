@@ -19,6 +19,8 @@ require 'poise/error'
 
 module Poise
   module Utils
+    autoload :ResourceProviderMixin, 'poise/utils/resource_provider_mixin'
+
     extend self
 
     # Find the cookbook name for a given filename. The can used to find the

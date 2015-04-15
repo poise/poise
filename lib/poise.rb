@@ -14,94 +14,20 @@
 # limitations under the License.
 #
 
-require 'poise/chefspec_matchers'
-require 'poise/defined_in'
-require 'poise/fused'
-require 'poise/include_recipe'
-require 'poise/inversion'
-require 'poise/lazy_default'
-require 'poise/lwrp_polyfill'
-require 'poise/notifying_block'
-require 'poise/option_collector'
-require 'poise/resource_name'
-require 'poise/subresources'
-require 'poise/template_content'
+require 'chef/provider'
+require 'chef/resource'
+
+require 'poise/utils/resource_provider_mixin'
+
 
 module Poise
-  module Resource
-    include ChefspecMatchers
-    include DefinedIn
-    include LazyDefault
-    include LWRPPolyfill
-    include OptionCollector
-    include ResourceName
-    include TemplateContent
-
-    # @!classmethods
-    module ClassMethods
-      def poise_subresource_container(namespace=nil)
-        include Poise::Resource::SubResourceContainer
-        container_namespace(namespace) unless namespace.nil?
-      end
-
-      def poise_subresource(parent_type=nil, parent_optional=nil)
-        include Poise::Resource::SubResource
-        parent_type(parent_type) if parent_type
-        parent_optional(parent_optional) if parent_optional
-      end
-
-      def poise_fused
-        include Poise::Resource::Fused
-      end
-
-      def poise_inversion(options_resource=nil)
-        include Poise::Inversion
-        inversion_options_resource(true) unless options_resource == false
-      end
-
-      def included(klass)
-        super
-        klass.extend ClassMethods
-      end
-    end
-
-    extend ClassMethods
-  end
-
-  module Provider
-    include DefinedIn
-    include IncludeRecipe
-    include LWRPPolyfill
-    include NotifyingBlock
-
-    # @!classmethods
-    module ClassMethods
-      def poise_inversion(resource, attribute=nil)
-        include Poise::Inversion
-        inversion_resource(resource)
-        inversion_attribute(attribute) if attribute
-      end
-
-      def included(klass)
-        super
-        klass.extend ClassMethods
-      end
-    end
-
-    extend ClassMethods
-  end
-
-  # Include in the correct module for the class type.
-  #
-  # @api private
-  def self.included(klass)
-    super
-    if klass < Chef::Resource
-      klass.class_exec { include Poise::Resource }
-    elsif klass < Chef::Provider
-      klass.class_exec { include Poise::Provider }
-    end
-  end
+  include Poise::Utils::ResourceProviderMixin
+  autoload :Helpers, 'poise/helpers'
+  autoload :Provider, 'poise/provider'
+  autoload :Resource, 'poise/resource'
+  autoload :Subcontext, 'poise/subcontext'
+  autoload :Utils, 'poise/utils'
+  autoload :VERSION, 'poise/version'
 end
 
 # Callable form to allow passing in options:
@@ -122,6 +48,7 @@ def Poise(options={})
     super || 'Poise'
   end
 
+  # Can't use def mod.included because Ruby scoping.
   mod.define_singleton_method(:included) do |klass|
     super(klass)
     # Pull in the main helper to cover most of the needed logic.

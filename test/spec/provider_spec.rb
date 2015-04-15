@@ -1,5 +1,5 @@
 #
-# Copyright 2013-2015, Noah Kantrowitz
+# Copyright 2015, Noah Kantrowitz
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,7 +14,15 @@
 # limitations under the License.
 #
 
+require 'spec_helper'
 
-module Poise
-  VERSION = '2.0.0'
+describe Poise::Provider do
+  provider(:poise_test) do
+    include described_class
+  end
+  subject { provider(:poise_test) }
+
+  it { is_expected.to include(Poise::Helpers::IncludeRecipe) }
+  it { is_expected.to include(Poise::Helpers::LWRPPolyfill) }
+  it { is_expected.to include(Poise::Helpers::NotifyingBlock) }
 end

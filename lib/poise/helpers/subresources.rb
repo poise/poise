@@ -1,5 +1,5 @@
 #
-# Copyright 2013-2015, Noah Kantrowitz
+# Copyright 2015, Noah Kantrowitz
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -16,5 +16,10 @@
 
 
 module Poise
-  VERSION = '2.0.0'
+  module Helpers
+    module Subresources
+      autoload :Child, 'poise/helpers/subresources/child'
+      autoload :Container, 'poise/helpers/subresources/container'
+    end
+  end
 end

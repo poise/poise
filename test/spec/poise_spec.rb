@@ -21,16 +21,16 @@ describe Poise do
     resource(:poise_test) do
       include Poise
     end
+    subject { resource(:poise_test) }
 
-    subject { Chef::Resource::PoiseTest }
-
-    it { is_expected.to include(Poise::Resource) }
-    it { is_expected.to include(Poise::Resource::LazyDefault) }
-    it { is_expected.to include(Poise::Resource::LWRPPolyfill) }
-    it { is_expected.to include(Poise::Resource::OptionCollector) }
-    it { is_expected.to include(Poise::Resource::ResourceName) }
-    it { is_expected.to include(Poise::Resource::TemplateContent) }
-    it { is_expected.to include(Poise::ChefspecMatchers) }
+    it { is_expected.to include Poise::Resource }
+    it { is_expected.to include Poise::Helpers::LazyDefault }
+    it { is_expected.to include Poise::Helpers::LWRPPolyfill }
+    it { is_expected.to include Poise::Helpers::LWRPPolyfill::Resource }
+    it { is_expected.to include Poise::Helpers::OptionCollector }
+    it { is_expected.to include Poise::Helpers::ResourceName }
+    it { is_expected.to include Poise::Helpers::TemplateContent }
+    it { is_expected.to include Poise::Helpers::ChefspecMatchers }
 
     context 'as a function call' do
       context 'with no arguments' do
@@ -38,8 +38,8 @@ describe Poise do
           include Poise()
         end
 
-        it { is_expected.to include(Poise) }
-        it { is_expected.to include(Poise::Resource) }
+        it { is_expected.to include Poise }
+        it { is_expected.to include Poise::Resource }
       end # /context with no arguments
 
       context 'with a parent class' do
@@ -47,9 +47,9 @@ describe Poise do
           include Poise(parent: Chef::Resource::RubyBlock)
         end
 
-        it { is_expected.to include(Poise) }
-        it { is_expected.to include(Poise::Resource) }
-        it { is_expected.to include(Poise::Resource::SubResource) }
+        it { is_expected.to include Poise }
+        it { is_expected.to include Poise::Resource }
+        it { is_expected.to include Poise::Helpers::Subresources::Child }
         its(:parent_type) { is_expected.to eq Chef::Resource::RubyBlock }
         its(:parent_optional) { is_expected.to be_falsey }
       end # /context with a parent class
@@ -59,9 +59,9 @@ describe Poise do
           include Poise(Chef::Resource::RubyBlock)
         end
 
-        it { is_expected.to include(Poise) }
-        it { is_expected.to include(Poise::Resource) }
-        it { is_expected.to include(Poise::Resource::SubResource) }
+        it { is_expected.to include Poise }
+        it { is_expected.to include Poise::Resource }
+        it { is_expected.to include Poise::Helpers::Subresources::Child }
         its(:parent_type) { is_expected.to eq Chef::Resource::RubyBlock }
         its(:parent_optional) { is_expected.to be_falsey }
       end # /context with a parent class shortcut
@@ -71,9 +71,9 @@ describe Poise do
           include Poise(parent: Chef::Resource::RubyBlock, parent_optional: true)
         end
 
-        it { is_expected.to include(Poise) }
-        it { is_expected.to include(Poise::Resource) }
-        it { is_expected.to include(Poise::Resource::SubResource) }
+        it { is_expected.to include Poise }
+        it { is_expected.to include Poise::Resource }
+        it { is_expected.to include Poise::Helpers::Subresources::Child }
         its(:parent_type) { is_expected.to eq Chef::Resource::RubyBlock }
         its(:parent_optional) { is_expected.to be_truthy }
       end # /context with an optional parent
@@ -83,9 +83,9 @@ describe Poise do
           include Poise(container: true)
         end
 
-        it { is_expected.to include(Poise) }
-        it { is_expected.to include(Poise::Resource) }
-        it { is_expected.to include(Poise::Resource::SubResourceContainer) }
+        it { is_expected.to include Poise }
+        it { is_expected.to include Poise::Resource }
+        it { is_expected.to include Poise::Helpers::Subresources::Container }
       end # /context with a container
 
       context 'with a container namespace' do
@@ -93,9 +93,9 @@ describe Poise do
           include Poise(container: true, container_namespace: true)
         end
 
-        it { is_expected.to include(Poise) }
-        it { is_expected.to include(Poise::Resource) }
-        it { is_expected.to include(Poise::Resource::SubResourceContainer) }
+        it { is_expected.to include Poise }
+        it { is_expected.to include Poise::Resource }
+        it { is_expected.to include Poise::Helpers::Subresources::Container }
         its(:container_namespace) { is_expected.to eq true }
       end # /context with a container namespace
 
@@ -104,9 +104,9 @@ describe Poise do
           include Poise(container: true, container_namespace: 'example')
         end
 
-        it { is_expected.to include(Poise) }
-        it { is_expected.to include(Poise::Resource) }
-        it { is_expected.to include(Poise::Resource::SubResourceContainer) }
+        it { is_expected.to include Poise }
+        it { is_expected.to include Poise::Resource }
+        it { is_expected.to include Poise::Helpers::Subresources::Container }
         its(:container_namespace) { is_expected.to eq 'example' }
       end # /context with a container namespaceas a string
 
@@ -115,9 +115,9 @@ describe Poise do
           include Poise(container: true, container_namespace: Proc.new { name })
         end
 
-        it { is_expected.to include(Poise) }
-        it { is_expected.to include(Poise::Resource) }
-        it { is_expected.to include(Poise::Resource::SubResourceContainer) }
+        it { is_expected.to include Poise }
+        it { is_expected.to include Poise::Resource }
+        it { is_expected.to include Poise::Helpers::Subresources::Container }
         its(:container_namespace) { is_expected.to be_a Proc }
       end # /context with a container namespaceas a proc
 
@@ -126,9 +126,9 @@ describe Poise do
           include Poise(container: true, container_namespace: false)
         end
 
-        it { is_expected.to include(Poise) }
-        it { is_expected.to include(Poise::Resource) }
-        it { is_expected.to include(Poise::Resource::SubResourceContainer) }
+        it { is_expected.to include Poise }
+        it { is_expected.to include Poise::Resource }
+        it { is_expected.to include Poise::Helpers::Subresources::Container }
         its(:container_namespace) { is_expected.to eq false }
       end # /context with no container namespace
 
@@ -137,10 +137,10 @@ describe Poise do
           include Poise(parent: Chef::Resource::RubyBlock, container: true)
         end
 
-        it { is_expected.to include(Poise) }
-        it { is_expected.to include(Poise::Resource) }
-        it { is_expected.to include(Poise::Resource::SubResource) }
-        it { is_expected.to include(Poise::Resource::SubResourceContainer) }
+        it { is_expected.to include Poise }
+        it { is_expected.to include Poise::Resource }
+        it { is_expected.to include Poise::Helpers::Subresources::Child }
+        it { is_expected.to include Poise::Helpers::Subresources::Container }
         its(:parent_type) { is_expected.to eq Chef::Resource::RubyBlock }
         its(:parent_optional) { is_expected.to be_falsey }
       end # /context with both a parent and a container
@@ -150,9 +150,9 @@ describe Poise do
           include Poise(fused: true)
         end
 
-        it { is_expected.to include(Poise) }
-        it { is_expected.to include(Poise::Resource) }
-        it { is_expected.to include(Poise::Resource::Fused) }
+        it { is_expected.to include Poise }
+        it { is_expected.to include Poise::Resource }
+        it { is_expected.to include Poise::Helpers::Fused }
       end # /context with fused
     end # /context as a function call
   end # /context for a Resource
@@ -161,106 +161,25 @@ describe Poise do
     provider(:poise_test) do
       include Poise
     end
+    subject { provider(:poise_test) }
 
-    subject { Chef::Provider::PoiseTest }
-
-    it { is_expected.to include(Poise::Provider) }
-    it { is_expected.to include(Poise::Provider::IncludeRecipe) }
-    it { is_expected.to include(Poise::Provider::LWRPPolyfill) }
-    it { is_expected.to include(Poise::Provider::NotifyingBlock) }
+    it { is_expected.to include Poise::Provider }
+    it { is_expected.to include Poise::Helpers::IncludeRecipe }
+    it { is_expected.to include Poise::Helpers::LWRPPolyfill }
+    it { is_expected.to include Poise::Helpers::LWRPPolyfill::Provider }
+    it { is_expected.to include Poise::Helpers::NotifyingBlock }
 
     context 'as a function call' do
       provider(:poise_test) do
         include Poise()
       end
 
-      it { is_expected.to include(Poise) }
-      it { is_expected.to include(Poise::Provider) }
+      it { is_expected.to include Poise }
+      it { is_expected.to include Poise::Provider }
     end # /context as a function call
   end # /context for a Provider
 
   it 'has a fake name when used a function' do
     expect(Poise().name).to eq 'Poise'
-  end
-end # /describe Poise
-
-describe Poise::Resource do
-  resource(:poise_test) do
-    include Poise::Resource
-  end
-
-  subject { Chef::Resource::PoiseTest }
-
-  it { is_expected.to include(Poise::Resource::LazyDefault) }
-  it { is_expected.to include(Poise::Resource::LWRPPolyfill) }
-  it { is_expected.to include(Poise::Resource::OptionCollector) }
-  it { is_expected.to include(Poise::Resource::ResourceName) }
-  it { is_expected.to include(Poise::Resource::TemplateContent) }
-  it { is_expected.to include(Poise::ChefspecMatchers) }
-
-  describe '#poise_subresource_container' do
-    resource(:poise_test) do
-      include Poise::Resource
-      poise_subresource_container
-    end
-
-    it { is_expected.to include(Poise::Resource::SubResourceContainer) }
-  end # /describe #poise_subresource_container
-
-  describe '#poise_subresource' do
-    context 'with no arguments' do
-      resource(:poise_test) do
-        include Poise::Resource
-        poise_subresource
-      end
-
-      it { is_expected.to include(Poise::Resource::SubResource) }
-      its(:parent_type) { is_expected.to eq Chef::Resource }
-      its(:parent_optional) { is_expected.to be_falsey }
-    end # /context with no arguments
-
-    context 'with a parent class' do
-      resource(:poise_test) do
-        include Poise::Resource
-        poise_subresource(Chef::Resource::RubyBlock)
-      end
-
-      it { is_expected.to include(Poise::Resource::SubResource) }
-      its(:parent_type) { is_expected.to eq Chef::Resource::RubyBlock }
-      its(:parent_optional) { is_expected.to be_falsey }
-    end # /context with a parent class
-
-    context 'with an optional parent' do
-      resource(:poise_test) do
-        include Poise::Resource
-        poise_subresource(Chef::Resource::RubyBlock, true)
-      end
-
-      it { is_expected.to include(Poise::Resource::SubResource) }
-      its(:parent_type) { is_expected.to eq Chef::Resource::RubyBlock }
-      its(:parent_optional) { is_expected.to be_truthy }
-    end # /context with an optional parent
-  end # /describe #poise_subresource
-
-  context 'with fused' do
-    resource(:poise_test) do
-      include Poise::Resource
-      poise_fused
-    end
-
-    it { is_expected.to include(Poise::Resource) }
-    it { is_expected.to include(Poise::Resource::Fused) }
-  end # /context with fused
-end # /describe Poise::Resource
-
-describe Poise::Provider do
-  provider(:poise_test) do
-    include Poise
-  end
-
-  subject { Chef::Provider::PoiseTest }
-
-  it { is_expected.to include(Poise::Provider::IncludeRecipe) }
-  it { is_expected.to include(Poise::Provider::LWRPPolyfill) }
-  it { is_expected.to include(Poise::Provider::NotifyingBlock) }
-end # /describe Poise::Provider
+  end # /it has a fake name when used a function
+end

@@ -14,11 +14,26 @@
 # limitations under the License.
 #
 
+require 'spec_helper'
 
-module Poise
-  # Base exception class for Poise errors.
-  #
-  # @since 2.0.0
-  class Error < Exception
+class ResourceNameHelper < Chef::Resource
+  include Poise::Helpers::ResourceName
+  provides(:provides_test)
+end
+
+describe Poise::Helpers::ResourceName do
+  context 'via class.name' do
+    resource(:poise_test, auto: false) do
+      include described_class
+    end
+    subject { resource(:poise_test).new(nil, nil).resource_name }
+
+    it { is_expected.to eq :poise_test }
+  end
+
+  context 'via provides' do
+    subject { ResourceNameHelper.new(nil, nil).resource_name }
+
+    it { is_expected.to eq :provides_test }
   end
 end
