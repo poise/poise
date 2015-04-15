@@ -43,12 +43,11 @@ def Poise(options={})
   # Create a new anonymous module
   mod = Module.new
 
-  # Fake the name
-  def mod.name
+  # Fake the name.
+  mod.define_singleton_method(:name) do
     super || 'Poise'
   end
 
-  # Can't use def mod.included because Ruby scoping.
   mod.define_singleton_method(:included) do |klass|
     super(klass)
     # Pull in the main helper to cover most of the needed logic.
