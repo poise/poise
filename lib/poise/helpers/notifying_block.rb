@@ -47,6 +47,7 @@ module Poise
       # the updated_by_last_action flag will be set if any of the inner
       # resources are updated.
       #
+      # @api public
       # @param block [Proc] Block to run in the subcontext.
       # @return [void]
       # @example
