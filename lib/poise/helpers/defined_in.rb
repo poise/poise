@@ -81,7 +81,7 @@ module Poise
           return if @poise_defined_in
           # Path to ignore, assumes Halite transformation which I'm not thrilled
           # about.
-          poise_libraries = File.expand_path('..', __FILE__)
+          poise_libraries = File.expand_path('../..', __FILE__)
           # Parse out just the filenames.
           caller_array = caller_array.map {|line| line.split(/:/, 2).first }
           # Find the first non-poise line.
