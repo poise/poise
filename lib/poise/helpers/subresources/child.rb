@@ -132,7 +132,7 @@ module Poise
               @parent_optional = val
             end
             if @parent_optional.nil?
-              superclass.respond_to?(:parent_type) ? superclass.parent_type : false
+              superclass.respond_to?(:parent_optional) ? superclass.parent_optional : false
             else
               @parent_optional
             end
