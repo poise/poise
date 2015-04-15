@@ -31,6 +31,9 @@ module Poise
     #
     # @since 2.0.0
     module Inversion
+      autoload :OptionsResource, 'poise/helpers/inversion/options_resource'
+      autoload :OptionsProvider, 'poise/helpers/inversion/options_provider'
+
       include Poise::Utils::ResourceProviderMixin
 
       # Resource implementation for {Poise::Helpers::Inversion}.
