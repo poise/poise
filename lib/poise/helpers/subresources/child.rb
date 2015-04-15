@@ -14,7 +14,7 @@
 # limitations under the License.
 #
 
-require 'chef/mixin/convert_to_class_name'
+require 'chef/resource'
 
 require 'poise/error'
 
@@ -52,39 +52,66 @@ module Poise
         #   @param val [String, Hash, Chef::Resource] Parent resource to set.
         #   @return [Chef::Resource, nil]
         def parent(val=nil)
-          if val
-            if val.is_a?(String) && !val.includes?('[')
-              raise Poise::Error.new('Cannot use a string parent without defining a parent type') if self.class.parent_type == Chef::Resource
-              val = "#{self.class.parent_type.resource_name}[#{val}]"
-            end
-            if val.is_a?(String) || val.is_a?(Hash)
-              val = @run_context.resource_collection.find(val)
-            elsif !val.is_a?(self.class.parent_type)
-              raise Poise::Error.new("Unknown parent resource: #{val}")
-            end
-            @parent = ParentRef.new(val)
-          elsif !@parent
-            # Find the last instance of the parent class as the default parent
-            @run_context.resource_collection.each do |r|
-              if r.is_a?(self.class.parent_type)
-                @parent = ParentRef.new(r)
-              end
-            end
-            raise Poise::Error.new("No parent found for #{self}") unless @parent || self.class.parent_optional
-          end
-          @parent && @parent.resource
+          _parent(:parent, self.class.parent_type, self.class.parent_optional, val)
         end
 
-        # Register ourself with the parent in case this is not a nested resource.
+        # Register ourself with parents in case this is not a nested resource.
         #
         # @api private
         def after_created
           super
-          parent.register_subresource(self) if parent
+          self.class.parent_attributes.each do |name|
+            parent = self.send(name)
+            parent.register_subresource(self) if parent
+          end
         end
 
-        # @!classmethods
+        private
+
+        # Generic form of the parent getter/setter.
+        #
+        # @since 2.0.0
+        # @see #parent
+        def _parent(name, parent_type, parent_optional, val=nil)
+          # Grab the ivar for local use.
+          parent = instance_variable_get(:"@#{name}")
+          if val
+            if val.is_a?(String) && !val.includes?('[')
+              raise Poise::Error.new('Cannot use a string parent without defining a parent type') if parent_type == Chef::Resource
+              val = "#{parent_type.resource_name}[#{val}]"
+            end
+            if val.is_a?(String) || val.is_a?(Hash)
+              val = @run_context.resource_collection.find(val)
+            elsif !val.is_a?(parent_type)
+              raise Poise::Error.new("Unknown parent resource: #{val}")
+            end
+            parent = ParentRef.new(val)
+          elsif !parent
+            # Automatic sibling lookup for sequential composition.
+            # Find the last instance of the parent class as the default parent.
+            # This is super flaky and should only be a last resort.
+            @run_context.resource_collection.each do |r|
+              if r.is_a?(parent_type)
+                parent = ParentRef.new(r)
+              end
+            end
+            # Can't find a valid parent, if it wasn't optional raise an error.
+            raise Poise::Error.new("No parent found for #{self}") unless parent || parent_optional
+          end
+          # Store the ivar back.
+          instance_variable_set(:"@#{name}", parent)
+          # Return the actual resource.
+          parent && parent.resource
+        end
+
         module ClassMethods
+          # @overload parent_type()
+          #   Get the class of the default parent link on this resource.
+          #   @return [Class]
+          # @overload parent_type(type)
+          #   Set the class of the default parent link on this resource.
+          #   @param type [Class] Class to set.
+          #   @return [Class]
           def parent_type(type=nil)
             if type
               raise "Parent type must be a class" unless type.is_a?(Class)
@@ -93,9 +120,16 @@ module Poise
             @parent_type || (superclass.respond_to?(:parent_type) ? superclass.parent_type : Chef::Resource)
           end
 
-          def parent_optional(value=nil)
-            unless value.nil?
-              @parent_optional = value
+          # @overload parent_optional()
+          #   Get the optional mode for the default parent link on this resource.
+          #   @return [Boolean]
+          # @overload parent_optional(val)
+          #   Set the optional mode for the default parent link on this resource.
+          #   @param val [Boolean] Mode to set.
+          #   @return [Boolean]
+          def parent_optional(val=nil)
+            unless val.nil?
+              @parent_optional = val
             end
             if @parent_optional.nil?
               superclass.respond_to?(:parent_type) ? superclass.parent_type : false
@@ -104,6 +138,35 @@ module Poise
             end
           end
 
+          # Create a new kind of parent link.
+          #
+          # @since 2.0.0
+          # @param name [Symbol] Name of the relationship. This becomes a method
+          #   name on the resource instance.
+          # @param parent_type [Class] Class of the parent.
+          # @param parent_optional [Boolean] If the parent is optional.
+          # @return [void]
+          def parent_attribute(name, parent_type=Chef::Resource, parent_optional=false)
+            name = :"parent_#{name}"
+            (@parent_attributes ||= []) << name
+            define_method(name) do |val=nil|
+              _parent(name, parent_type, parent_optional, val)
+            end
+          end
+
+          # Return the name of all parent relationships on this class.
+          #
+          # @since 2.0.0
+          # @return [Array<Symbol>]
+          def parent_attributes
+            [:parent].tap do |attrs| # Always
+              attrs += Array(@parent_attributes) # Local
+              attrs += superclass.parent_attributes if superclass.respond_to?(:parent_attributes) # Superclass?
+              attrs.uniq! # De-dup
+            end
+          end
+
+          # @api private
           def included(klass)
             super
             klass.extend(ClassMethods)
