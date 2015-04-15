@@ -3,6 +3,10 @@ cache: bundler
 language: ruby
 rvm:
 - 2.1.4
+addons:
+  apt:
+    packages:
+    - libgecode-dev
 env:
   global:
   - USE_SYSTEM_GECODE=true
@@ -10,13 +14,6 @@ env:
   - secure: ax5czUwK8PVHXu/B3qbRZ8AACqXW4scIElQbn4sBuLp+VyTeutGax1uO6yTi7yv3xJUbEL3Z6gdZD/sOZpSKm8SL0YhkijoSs68HJCsau8cl7fvPJ0+JIlKqWazKEA1PaCmJHQv5J9TEyPyeSxZaIyacqOwOcUTyOkRDGyC+im8=
   - secure: jEiZqcy6E5WC1nBmfJBSLPpYOUBFdpoo7DsLrvIpKVRpOw7slb+VgIru5AzbONvVD/8CYstgqiVVoGaCP/ywWWqakOQ2thp0BqWN/OVlsuPiemAdLRMMsmekkaFUdAa5l8QUUI0YiTSpSLUXQFWZrXbiARCALGAvDBbsqF1JhgA=
   - secure: e3TH/N8tcx54wShV7s96OXDXuDbo9YnekLK3L3WrYrCK12gHVcW7xlMxPctGy14h6VaP1PBXJfUjd7cdzmHgudTo8HlR4Ui0kpjp85XrohPsLmVaFDxjAstLFm4VKMpsoKUZoPZY5J8bO9b606p872M5yO4rwKy3bVK/CP6mTBY=
-before_install:
-- curl -o ~/gecode.tar.gz https://poise-gecode.s3.amazonaws.com/gecode-3.7.3-ubuntu12.04-x86_64.tar.gz
-- tar xzf ~/gecode.tar.gz -C ~
-- rm ~/gecode.tar.gz
-- bundle config build.dep_selector "--with-cflags=\"-I$HOME/gecode-3.7.3/include\"
-  --with-cppflags=\"-I$HOME/gecode-3.7.3/include\" --with-ldflags=\"-L$HOME/gecode-3.7.3/lib
-  -Wl,-rpath=$HOME/gecode-3.7.3/lib\""
 bundler_args: "--binstubs=$PWD/bin --jobs 3 --retry 3"
 script:
 - "./bin/rake spec"
