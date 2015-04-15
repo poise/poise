@@ -16,7 +16,6 @@
 
 require 'spec_helper'
 
-
 describe Poise::Helpers::Subresources::Container do
   let(:chefspec_options) { {log_level: :error} } # deprecation spam
   provider(:poise_test)
@@ -36,7 +35,7 @@ describe Poise::Helpers::Subresources::Container do
     end
 
     it { is_expected.to run_poise_test('container') }
-    it { is_expected.to run_inner('container::inner').with(source_line: start_with("#{__FILE__}:34")) }
+    it { is_expected.to run_inner('container::inner').with(source_line: start_with("#{__FILE__}:33")) }
   end # /context with a single subresource
 
   context 'with a multiple subresources' do
