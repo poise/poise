@@ -17,6 +17,7 @@
 require 'chef/resource'
 
 require 'poise/error'
+require 'poise/helpers/subresources/default_containers'
 
 
 module Poise
@@ -78,35 +79,36 @@ module Poise
             parent_type = Chef::Resource.resource_for_node(parent_type, node)
           end
           # Grab the ivar for local use.
-          parent = instance_variable_get(:"@#{name}")
+          parent_ref = instance_variable_get(:"@#{name}")
           if val
             if val.is_a?(String) && !val.include?('[')
               raise Poise::Error.new('Cannot use a string parent without defining a parent type') if parent_type == Chef::Resource
               val = "#{parent_type.resource_name}[#{val}]"
             end
             if val.is_a?(String) || val.is_a?(Hash)
-              val = @run_context.resource_collection.find(val)
+              parent = @run_context.resource_collection.find(val)
+            else
+              parent = val
             end
-            if !val.is_a?(parent_type)
+            if !parent.is_a?(parent_type)
               raise Poise::Error.new("Parent resource is not an instance of #{parent_type.name}: #{val.inspect}")
             end
-            parent = ParentRef.new(val)
-          elsif !parent
+            parent_ref = ParentRef.new(parent)
+          elsif !parent_ref
             # Automatic sibling lookup for sequential composition.
             # Find the last instance of the parent class as the default parent.
             # This is super flaky and should only be a last resort.
-            @run_context.resource_collection.each do |r|
-              if r.is_a?(parent_type)
-                parent = ParentRef.new(r)
-              end
-            end
+            parent = Poise::Helpers::Subresources::DefaultContainers.find(parent_type, run_context)
             # Can't find a valid parent, if it wasn't optional raise an error.
             raise Poise::Error.new("No parent found for #{self}") unless parent || parent_optional
+            parent_ref = ParentRef.new(parent)
+          else
+            parent = parent_ref.resource
           end
           # Store the ivar back.
-          instance_variable_set(:"@#{name}", parent)
+          instance_variable_set(:"@#{name}", parent_ref)
           # Return the actual resource.
-          parent && parent.resource
+          parent
         end
 
         module ClassMethods

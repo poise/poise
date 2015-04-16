@@ -114,6 +114,31 @@ describe Poise::Helpers::Subresources::Child do
       end
 
       it { is_expected.to run_poise_test('test').with(parent: nil) }
+    end # /context with an optional parent
+
+    context 'with a default parent in a nested scope' do
+      resource(:poise_wrapper, unwrap_notifying_block: false) do
+        include Poise::Helpers::ResourceName
+        include Poise::Helpers::Subresources::Container
+      end
+      provider(:poise_wrapper) do
+        include Poise::Helpers::LWRPPolyfill
+        include Poise::Helpers::NotifyingBlock
+        def action_run
+          notifying_block do
+            poise_container new_resource.name
+          end
+        end
+      end
+      recipe do
+        poise_wrapper 'wrapper' do
+          action :nothing
+        end.run_action(:run)
+        poise_test 'test'
+      end
+
+      it { is_expected.to run_poise_test('test').with(parent: be_truthy) }
+      it { expect(chef_run.poise_container('wrapper')).to be_nil }
     end
   end # /describe #parent
 

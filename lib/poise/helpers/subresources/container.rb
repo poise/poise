@@ -17,6 +17,7 @@
 require 'chef/dsl/recipe'
 
 require 'poise/helpers/subcontext_block'
+require 'poise/helpers/subresources/default_containers'
 
 
 module Poise
@@ -47,6 +48,8 @@ module Poise
 
         def after_created
           super
+          # Register
+          Poise::Helpers::Subresources::DefaultContainers.register!(self, run_context)
           unless @subresources.empty?
             Chef::Log.debug("[#{self}] Adding subresources to collection:")
             # Because after_create is run before adding the container to the resource collection
