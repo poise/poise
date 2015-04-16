@@ -17,6 +17,10 @@
 
 module Poise
   module Helpers
+    # Mixins and helpers for managing subresources, resources with a
+    # parent/child relationship.
+    #
+    # @since 2.0.0
     module Subresources
       autoload :Child, 'poise/helpers/subresources/child'
       autoload :Container, 'poise/helpers/subresources/container'
