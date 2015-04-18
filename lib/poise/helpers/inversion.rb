@@ -78,7 +78,7 @@ module Poise
         def provider(val=nil)
           if val && !val.is_a?(Class)
             provider_class = Poise::Helpers::Inversion.provider_for(resource_name, node, val)
-            Chef::Log.debug("#{self} Checking for an inversion provider for #{val}: #{provider_class && provider_class.name}")
+            Chef::Log.debug("[#{self}] Checking for an inversion provider for #{val}: #{provider_class && provider_class.name}")
             val = provider_class if provider_class
           end
           super
