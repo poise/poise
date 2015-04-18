@@ -61,7 +61,7 @@ module Poise
         # @api private
         def after_created
           super
-          self.class.parent_attributes.each do |name|
+          self.class.parent_attributes.each_key do |name|
             parent = self.send(name)
             parent.register_subresource(self) if parent
           end
@@ -121,7 +121,7 @@ module Poise
           #   @return [Class, Symbol]
           def parent_type(type=nil)
             if type
-              raise Poise::Error.new("Parent type must be a class or symbol, got #{type.inspect}") unless type.is_a?(Class) || type.is_a?(Symbol)
+              raise Poise::Error.new("Parent type must be a class, symbol, or true, got #{type.inspect}") unless type.is_a?(Class) || type.is_a?(Symbol) || type == true
               @parent_type = type
             end
             @parent_type || (superclass.respond_to?(:parent_type) ? superclass.parent_type : Chef::Resource)
@@ -153,23 +153,28 @@ module Poise
           # @param parent_type [Class] Class of the parent.
           # @param parent_optional [Boolean] If the parent is optional.
           # @return [void]
-          def parent_attribute(name, parent_type=Chef::Resource, parent_optional=false)
+          def parent_attribute(name, type: Chef::Resource, optional: false)
             name = :"parent_#{name}"
-            (@parent_attributes ||= []) << name
+            (@parent_attributes ||= {})[name] = type
             define_method(name) do |val=nil|
-              _parent(name, parent_type, parent_optional, val)
+              _parent(name, type, optional, val)
             end
           end
 
           # Return the name of all parent relationships on this class.
           #
           # @since 2.0.0
-          # @return [Array<Symbol>]
+          # @return [Hash<Symbol, Class>]
           def parent_attributes
-            [:parent].tap do |attrs| # Always
-              attrs += Array(@parent_attributes) # Local
-              attrs += superclass.parent_attributes if superclass.respond_to?(:parent_attributes) # Superclass?
-              attrs.uniq! # De-dup
+            {}.tap do |attrs|
+              # Grab superclass's attributes if possible.
+              attrs.update(superclass.parent_attributes) if superclass.respond_to?(:parent_attributes)
+              # Local default parent.
+              attrs[:parent] = parent_type
+              # Extra locally defined parents.
+              attrs.update(@parent_attributes) if @parent_attributes
+              # Remove anything with the type set to true.
+              attrs.reject! {|name, type| type == true }
             end
           end
 
