@@ -227,7 +227,7 @@ describe Poise::Helpers::Subresources::Child do
     resource(:poise_test) do
       include described_class
       parent_type :poise_container
-      parent_attribute :other, :poise_container
+      parent_attribute :other, type: :poise_container
     end
     recipe do
       poise_container 'one'
