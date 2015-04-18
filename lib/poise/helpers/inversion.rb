@@ -183,7 +183,7 @@ module Poise
               Chef::Log.debug("[#{self.name}] Setting inversion resource to #{val}")
               @poise_inversion_resource = val.to_sym
             end
-            @poise_inversion_resource
+            @poise_inversion_resource || (superclass.respond_to?(:inversion_resource) ? superclass.inversion_resource : nil)
           end
 
           # @overload inversion_attribute()
@@ -202,7 +202,7 @@ module Poise
               val = Array(val).map {|name| name.to_s }
               @poise_inversion_attribute = val
             end
-            @poise_inversion_attribute
+            @poise_inversion_attribute || (superclass.respond_to?(:inversion_attribute) ? superclass.inversion_attribute : nil)
           end
 
           # Resolve the node attribute used as the base for inversion options
