@@ -234,6 +234,7 @@ module Poise
               # at least promise poise_inversion will be a str so cut down on the
               # amount of data to convert.
               run_state = Mash.new(node.run_state.fetch('poise_inversion', {}))[resource.name] || {}
+              opts.update(default_inversion_options(node, resource))
               opts.update(resource.options)
               opts.update(provider: attrs['provider']) if attrs['provider']
               opts.update(attrs['options']) if attrs['options']
@@ -242,6 +243,15 @@ module Poise
               opts.update(run_state['*']) if run_state['*']
               opts.update(run_state[provides]) if run_state[provides]
             end
+          end
+
+          # Default options data for this provider class.
+          #
+          # @param node [Chef::Node] Node to load from.
+          # @param resource [Chef::Resource] Resource to load from.
+          # @return [Hash]
+          def default_inversion_options(node, resource)
+            {}
           end
 
           # Resolve which provider name should be used for a resource.
