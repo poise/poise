@@ -205,6 +205,25 @@ module Poise
             @poise_inversion_attribute || (superclass.respond_to?(:inversion_attribute) ? superclass.inversion_attribute : nil)
           end
 
+          # Default attribute paths to check for inversion options. Based on
+          # the cookbook this class and its superclasses are defined in.
+          #
+          # @param node [Chef::Node] Node to load from.
+          # @return [Array<Array<String>>]
+          def default_inversion_attributes(node)
+            klass = self
+            tried = []
+            while klass.respond_to?(:poise_defined_in_cookbook)
+              cookbook = klass.poise_defined_in_cookbook(node.run_context)
+              if node[cookbook]
+                return [cookbook]
+              end
+              tried << cookbook
+              klass = klass.superclass
+            end
+            raise Poise::Error.new("Unable to find inversion attributes, tried: #{tried.join(', ')}")
+          end
+
           # Resolve the node attribute used as the base for inversion options
           # for this class. This can be set explicitly with {.inversion_attribute}
           # or the default is to use the name of the cookbook the provider is
@@ -214,7 +233,7 @@ module Poise
           # @return [Chef::Node::Attribute]
           def resolve_inversion_attribute(node)
             # Default to using just the name of the cookbook.
-            attribute_names = inversion_attribute || [poise_defined_in_cookbook(node.run_context)]
+            attribute_names = inversion_attribute || default_inversion_attributes(node)
             attribute_names.inject(node) do |memo, key|
               memo[key] || begin
                 raise Poise::Error.new("Attribute #{key} not set when expanding inversion attribute for #{self.name}: #{memo}")
