@@ -139,7 +139,36 @@ describe Poise::Helpers::Subresources::Child do
 
       it { is_expected.to run_poise_test('test').with(parent: be_truthy) }
       it { expect(chef_run.poise_container('wrapper')).to be_nil }
-    end
+    end # /context with a default parent in a nested scope
+
+    context 'with no automatic parent' do
+      resource(:poise_test) do
+        include described_class
+        parent_type :poise_container
+        parent_auto false
+      end
+      recipe do
+        poise_container 'test'
+        poise_test 'test'
+      end
+
+      it { expect { run_chef }.to raise_error(Poise::Error) }
+    end # /context with no automatic parent
+
+    context 'with no automatic parent but optional' do
+      resource(:poise_test) do
+        include described_class
+        parent_type :poise_container
+        parent_optional true
+        parent_auto false
+      end
+      recipe do
+        poise_container 'test'
+        poise_test 'test'
+      end
+
+      it { is_expected.to run_poise_test('test').with(parent: be_nil) }
+    end # /context with no automatic parent but optional
   end # /describe #parent
 
   describe '.parent_type' do
@@ -222,6 +251,37 @@ describe Poise::Helpers::Subresources::Child do
       it { is_expected.to eq false }
     end # /context not set
   end # /describe .parent_optional
+
+  describe '.parent_auto' do
+    subject { resource(:poise_test).parent_auto }
+
+    context 'set directly' do
+      resource(:poise_test) do
+        include described_class
+        parent_auto true
+      end
+
+      it { is_expected.to eq true }
+    end # /context set directly
+
+    context 'set on a parent class' do
+      resource(:poise_parent) do
+        include described_class
+        parent_auto true
+      end
+      resource(:poise_test, parent: :poise_parent)
+
+      it { is_expected.to eq true }
+    end # /context set on a parent class
+
+    context 'not set' do
+      resource(:poise_test) do
+        include described_class
+      end
+
+      it { is_expected.to eq true }
+    end # /context not set
+  end
 
   describe '.parent_attribute' do
     resource(:poise_test) do

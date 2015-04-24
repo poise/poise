@@ -57,7 +57,7 @@ module Poise
         #   @param val [String, Hash, Chef::Resource] Parent resource to set.
         #   @return [Chef::Resource, nil]
         def parent(val=nil)
-          _parent(:parent, self.class.parent_type, self.class.parent_optional, val)
+          _parent(:parent, self.class.parent_type, self.class.parent_optional, self.class.parent_auto, val)
         end
 
         # Register ourself with parents in case this is not a nested resource.
@@ -77,7 +77,7 @@ module Poise
         #
         # @since 2.0.0
         # @see #parent
-        def _parent(name, parent_type, parent_optional, val=nil)
+        def _parent(name, parent_type, parent_optional, parent_auto, val=nil)
           # Allow using a DSL symbol as the parent type.
           if parent_type.is_a?(Symbol)
             parent_type = Chef::Resource.resource_for_node(parent_type, node)
@@ -99,10 +99,12 @@ module Poise
             end
             parent_ref = ParentRef.new(parent)
           elsif !parent_ref
-            # Automatic sibling lookup for sequential composition.
-            # Find the last instance of the parent class as the default parent.
-            # This is super flaky and should only be a last resort.
-            parent = Poise::Helpers::Subresources::DefaultContainers.find(parent_type, run_context)
+            if parent_auto
+              # Automatic sibling lookup for sequential composition.
+              # Find the last instance of the parent class as the default parent.
+              # This is super flaky and should only be a last resort.
+              parent = Poise::Helpers::Subresources::DefaultContainers.find(parent_type, run_context)
+            end
             # Can't find a valid parent, if it wasn't optional raise an error.
             raise Poise::Error.new("No parent found for #{self}") unless parent || parent_optional
             parent_ref = ParentRef.new(parent)
@@ -149,19 +151,38 @@ module Poise
             end
           end
 
+          # @overload parent_auto()
+          #   Get the auto-detect mode for the default parent link on this resource.
+          #   @return [Boolean]
+          # @overload parent_auto(val)
+          #   Set the auto-detect mode for the default parent link on this resource.
+          #   @param val [Boolean] Mode to set.
+          #   @return [Boolean]
+          def parent_auto(val=nil)
+            unless val.nil?
+              @parent_auto = val
+            end
+            if @parent_auto.nil?
+              superclass.respond_to?(:parent_auto) ? superclass.parent_auto : true
+            else
+              @parent_auto
+            end
+          end
+
           # Create a new kind of parent link.
           #
           # @since 2.0.0
           # @param name [Symbol] Name of the relationship. This becomes a method
           #   name on the resource instance.
-          # @param parent_type [Class] Class of the parent.
-          # @param parent_optional [Boolean] If the parent is optional.
+          # @param type [Class] Class of the parent.
+          # @param optional [Boolean] If the parent is optional.
+          # @param auto [Boolean] If the parent is auto-detected.
           # @return [void]
-          def parent_attribute(name, type: Chef::Resource, optional: false)
+          def parent_attribute(name, type: Chef::Resource, optional: false, auto: true)
             name = :"parent_#{name}"
             (@parent_attributes ||= {})[name] = type
             define_method(name) do |val=nil|
-              _parent(name, type, optional, val)
+              _parent(name, type, optional, auto, val)
             end
           end
 
