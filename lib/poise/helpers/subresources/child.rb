@@ -38,7 +38,11 @@ module Poise
           end
 
           def to_text
-            @resource.to_s
+            if @resource.nil?
+              'nil'
+            else
+              @resource.to_s
+            end
           end
         end
 

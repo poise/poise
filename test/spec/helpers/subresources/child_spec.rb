@@ -246,18 +246,34 @@ describe Poise::Helpers::Subresources::Child do
   end # /describe .parent_attribute
 
   describe 'ParentRef' do
-    resource(:poise_test) do
-      include described_class
-      parent_type :poise_container
-    end
-    recipe do
-      poise_container 'one'
-      poise_test 'two'
-    end
     subject { chef_run.poise_test('two').to_text }
 
-    it { is_expected.to include 'parent poise_container[one]' }
-    # Negative test for the Resource#to_text format.
-    it { is_expected.to_not include 'poise_container("one")' }
+    context 'with a parent' do
+      resource(:poise_test) do
+        include described_class
+        parent_type :poise_container
+      end
+      recipe(subject: false) do
+        poise_container 'one'
+        poise_test 'two'
+      end
+
+      it { is_expected.to include 'parent poise_container[one]' }
+      # Negative test for the Resource#to_text format.
+      it { is_expected.to_not include 'poise_container("one")' }
+    end # /context with a parent
+
+    context 'without a parent' do
+      resource(:poise_test) do
+        include described_class
+        parent_type :poise_container
+        parent_optional true
+      end
+      recipe(subject: false) do
+        poise_test 'two'
+      end
+
+      it { is_expected.to include 'parent nil' }
+    end # /context without a parent
   end # /describe ParentRef
 end
