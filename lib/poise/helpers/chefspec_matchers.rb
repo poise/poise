@@ -42,7 +42,7 @@ module Poise
     # @example Use a matcher
     #   expect(chef_run).to run_my_resource('...')
     module ChefspecMatchers
-      include Poise::Helpers::LWRPPolyfill
+      include Poise::Helpers::LWRPPolyfill::Resource
       include Poise::Helpers::ResourceName
 
       # Create a matcher for a given resource type and action. This is
