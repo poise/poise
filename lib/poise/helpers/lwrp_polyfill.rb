@@ -42,11 +42,11 @@ module Poise
               @default_action = name
               actions(name)
             end
-            @default_action || ( superclass.respond_to?(:default_action) && superclass.default_action ) || actions.first || :nothing
+            @default_action || ( respond_to?(:superclass) && superclass.respond_to?(:default_action) && superclass.default_action ) || actions.first || :nothing
           end
 
           def actions(*names)
-            @actions ||= ( superclass.respond_to?(:actions) ? superclass.actions.dup : [] )
+            @actions ||= ( respond_to?(:superclass) && superclass.respond_to?(:actions) ? superclass.actions.dup : [] )
             (@actions << names).flatten!.uniq!
             @actions
           end
