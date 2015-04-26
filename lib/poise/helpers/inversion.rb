@@ -118,6 +118,7 @@ module Poise
                 "#{enclosing_class}::OptionsResource"
               end
               provides(options_resource_name)
+              inversion_resource(name)
             end
             # Create the provider class.
             @inversion_options_provider_class = Class.new(Chef::Provider) do
@@ -252,7 +253,7 @@ module Poise
               # Cast the run state to a Mash because string vs. symbol keys. I can
               # at least promise poise_inversion will be a str so cut down on the
               # amount of data to convert.
-              run_state = Mash.new(node.run_state.fetch('poise_inversion', {}))[resource.name] || {}
+              run_state = Mash.new(node.run_state.fetch('poise_inversion', {}).fetch(inversion_resource, {}))[resource.name] || {}
               # Class-level defaults.
               opts.update(default_inversion_options(node, resource))
               # Resource options for all providers.

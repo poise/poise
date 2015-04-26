@@ -167,7 +167,7 @@ describe Poise::Helpers::Inversion do
     describe '.inversion_options' do
       let(:attributes) { Hash.new }
       let(:run_state) { Hash.new }
-      let(:node) { double('node', run_state: {'poise_inversion' => run_state}) }
+      let(:node) { double('node', run_state: {'poise_inversion' => {poise_test_inversion: run_state}}) }
       let(:new_resource) { double('new_resource', name: 'test', options: {}) }
       subject { subject_provider.inversion_options(node, new_resource) }
       before do

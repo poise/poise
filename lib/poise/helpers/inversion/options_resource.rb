@@ -16,6 +16,8 @@
 
 require 'chef/mash'
 
+require 'poise/error'
+
 
 module Poise
   module Helpers
@@ -24,18 +26,9 @@ module Poise
       #
       # @api private
       # @since 2.0.0
-      # @see Poise::Helper::Inversion
+      # @see Poise::Helpers::Inversion
       module OptionsResource
-        # @api private
-        def self.included(klass)
-          klass.class_exec do
-            include Poise
-            actions(:run)
-            attribute(:resource, kind_of: String, name_attribute: true)
-            attribute(:for_provider, kind_of: [String, Symbol], default: '*')
-            attribute(:_options, kind_of: Hash, default: lazy { Mash.new })
-          end
-        end
+        include Poise
 
         # Method missing delegation to allow DSL-style options.
         #
@@ -44,25 +37,64 @@ module Poise
         #     key1 'value1'
         #     key2 'value2'
         #   end
-        def method_missing(*args, &block)
-          super(*args, &block)
+        def method_missing(method_sym, *args, &block)
+          super(method_sym, *args, &block)
         rescue NoMethodError
-          key, val = args
-          val ||= block
-          raise unless val
-          _options[key] = val
+          # First time we've seen this key and using it as an rvalue, NOPE.GIF.
+          raise unless !args.empty? || block || _options[method_sym]
+          if !args.empty? || block
+            _options[method_sym] = block || args.first
+          end
+          _options[method_sym]
         end
 
         # Insert the options data in to the run state. This has to match the
-        # layout used in {Inversion::Provider.inversion_options}.
+        # layout used in {Poise::Helpers::Inversion::Provider.inversion_options}.
         #
         # @api private
         def after_created
+          raise Poise::Error.new("Inversion resource name not set for #{self.class.name}") unless self.class.inversion_resource
           node.run_state['poise_inversion'] ||= {}
-          node.run_state['poise_inversion'][resource] ||= {}
-          node.run_state['poise_inversion'][resource][for_provider] ||= {}
-          node.run_state['poise_inversion'][resource][for_provider].update(_options)
+          node.run_state['poise_inversion'][self.class.inversion_resource] ||= {}
+          node.run_state['poise_inversion'][self.class.inversion_resource][resource] ||= {}
+          node.run_state['poise_inversion'][self.class.inversion_resource][resource][for_provider] ||= {}
+          node.run_state['poise_inversion'][self.class.inversion_resource][resource][for_provider].update(_options)
         end
+
+        module ClassMethods
+          # @overload inversion_resource()
+          #   Return the inversion resource name for this class.
+          #   @return [Symbol]
+          # @overload inversion_resource(val)
+          #   Set the inversion resource name for this class. You can pass either
+          #   a symbol in DSL format or a resource class that uses Poise. This
+          #   name is used to determine which resources the inversion provider is
+          #   a candidate for.
+          #   @param val [Symbol, Class] Name to set.
+          #   @return [Symbol]
+          def inversion_resource(val=nil)
+            if val
+              val = val.resource_name if val.is_a?(Class)
+              Chef::Log.debug("[#{self.name}] Setting inversion resource to #{val}")
+              @poise_inversion_resource = val.to_sym
+            end
+            @poise_inversion_resource || (superclass.respond_to?(:inversion_resource) ? superclass.inversion_resource : nil)
+          end
+
+          # @api private
+          def included(klass)
+            super
+            klass.extend(ClassMethods)
+            klass.class_exec do
+              actions(:run)
+              attribute(:resource, kind_of: String, name_attribute: true)
+              attribute(:for_provider, kind_of: [String, Symbol], default: '*')
+              attribute(:_options, kind_of: Hash, default: lazy { Mash.new })
+            end
+          end
+        end
+
+        extend ClassMethods
       end
     end
   end
