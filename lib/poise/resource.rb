@@ -48,10 +48,11 @@ module Poise
         container_namespace(namespace) unless namespace.nil?
       end
 
-      def poise_subresource(parent_type=nil, parent_optional=nil)
+      def poise_subresource(parent_type=nil, parent_optional=nil, parent_auto=nil)
         include Poise::Helpers::Subresources::Child
         parent_type(parent_type) if parent_type
-        parent_optional(parent_optional) if parent_optional
+        parent_optional(parent_optional) unless parent_optional.nil?
+        parent_auto(parent_auto) unless parent_auto.nil?
       end
 
       def poise_fused

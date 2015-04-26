@@ -56,7 +56,7 @@ def Poise(options={})
     klass.poise_defined!(caller)
     # Resource-specific options.
     if klass < Chef::Resource
-      klass.poise_subresource(options[:parent], options[:parent_optional]) if options[:parent]
+      klass.poise_subresource(options[:parent], options[:parent_optional], options[:parent_auto]) if options[:parent]
       klass.poise_subresource_container(options[:container_namespace]) if options[:container]
       klass.poise_fused if options[:fused]
       klass.poise_inversion(options[:inversion_options_resource]) if options[:inversion]
