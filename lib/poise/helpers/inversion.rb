@@ -253,13 +253,21 @@ module Poise
               # at least promise poise_inversion will be a str so cut down on the
               # amount of data to convert.
               run_state = Mash.new(node.run_state.fetch('poise_inversion', {}))[resource.name] || {}
+              # Class-level defaults.
               opts.update(default_inversion_options(node, resource))
+              # Resource options for all providers.
               opts.update(resource.options)
+              # Global provider from node attributes.
               opts.update(provider: attrs['provider']) if attrs['provider']
+              # Attribute options for all providers.
               opts.update(attrs['options']) if attrs['options']
+              # Resource options for this provider.
               opts.update(resource.options(provides))
+              # Attribute options for this resource name.
               opts.update(attrs[resource.name]) if attrs[resource.name]
+              # Options resource options for all providers.
               opts.update(run_state['*']) if run_state['*']
+              # Options resource options for this provider.
               opts.update(run_state[provides]) if run_state[provides]
             end
           end
