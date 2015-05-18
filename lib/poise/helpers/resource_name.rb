@@ -57,7 +57,7 @@ module Poise
           if self.name && respond_to?(:constantize)
             old_constantize = instance_method(:constantize)
             define_singleton_method(:constantize) do |const_name|
-              const_name == self.name ? self : old_constantize.bind(self).call(const_name)
+              ( const_name == self.name ) ? self : old_constantize.bind(self).call(const_name)
             end
           end
           # Store the name for later.
