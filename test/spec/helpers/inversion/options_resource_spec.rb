@@ -99,11 +99,14 @@ describe Poise::Helpers::Inversion::OptionsResource do
     resource(:poise_test_inversion) do
       include Poise::Helpers::Inversion::Resource
     end
-    provider(:poise_test_inversion) do
+    provider(:poise_test_inversion_one) do
       include Poise::Helpers::Inversion::Provider
       inversion_resource(:poise_test_inversion)
       inversion_attribute('poise-test')
       provides(:poise_test_inversion)
+      def self.provides_auto?(node, resource)
+        true
+      end
     end
     subject do
       chef_run.poise_test_inversion('test').provider_for_action(:nothing).options

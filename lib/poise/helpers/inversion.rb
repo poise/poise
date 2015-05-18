@@ -309,6 +309,8 @@ module Poise
               @poise_inversion_provider = name
               Chef::Log.debug("[#{self.name}] Setting inversion provider name to #{name}")
               Poise::Helpers::Inversion.provider_map(inversion_resource).set(name.to_sym, self, opts, &block)
+              # Set the actual Chef-level provides name for DSL dispatch.
+              super(inversion_resource)
             end
             @poise_inversion_provider
           end

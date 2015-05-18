@@ -80,15 +80,14 @@ module Poise
           end
         end
 
-        def method_missing(method_symbol, name=nil, &block)
-          return super unless name # Generally some kind of error
-          Chef::Log.debug("[#{self}] Creating subresource from #{method_symbol}(#{name})")
+        def declare_resource(type, name, created_at=nil, &block)
+          Chef::Log.debug("[#{self}] Creating subresource from #{type}(#{name})")
           self_ = self
           # Used to break block context, non-local return from subcontext_block.
           resource = []
           # Grab the caller so we can make the subresource look like it comes from
           # correct place.
-          created_at = caller[0]
+          created_at ||= caller[0]
           # Run this inside a subcontext to avoid adding to the current resource collection.
           # It will end up added later, indirected via @subresources to ensure ordering.
           subcontext_block do
@@ -110,12 +109,10 @@ module Poise
               # If you pass in nil or '', you just get the namespace or parent name.
               namespace || self.name
             end
-            resource << super(method_symbol, sub_name) do
+            resource << super(type, sub_name, created_at) do
               # Apply the correct parent before anything else so it is available
               # in after_created for the subresource.
               parent(self_) if respond_to?(:parent)
-              # Correct the source_line.
-              self.source_line = created_at
               # Run the resource block.
               instance_exec(&block) if block
             end
