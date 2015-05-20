@@ -48,7 +48,7 @@ module Poise
         Poise::Subcontext::Runner.new(new_resource, subcontext).converge
         collection = global_resource_collection
         subcontext.resource_collection.each do |r|
-          Chef::Log.debug("Poise::IncludeRecipe: Adding #{r.to_s} to global collection #{collection.object_id}")
+          Chef::Log.debug("Poise::IncludeRecipe: Adding #{r} to global collection #{collection.object_id}")
           # Insert the local resource into the global context
           collection.insert(r)
           # Skip the iterator forward so we don't double-execute the inserted resource
