@@ -1,12 +1,12 @@
 sudo: false
 cache: bundler
 language: ruby
-rvm:
-- '2.2'
 addons:
   apt:
     packages:
     - libgecode-dev
+rvm:
+- '2.2'
 env:
   global:
   - USE_SYSTEM_GECODE=true
