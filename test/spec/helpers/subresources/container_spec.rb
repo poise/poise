@@ -116,7 +116,7 @@ describe Poise::Helpers::Subresources::Container do
     it { is_expected.to run_inner('inner') }
   end # /context with a no namespace
 
-  context 'with a no namespace and no inner name' do
+  context 'with a no namespace and an empty inner name' do
     resource(:poise_test) do
       include described_class
       container_namespace(false)
@@ -124,6 +124,21 @@ describe Poise::Helpers::Subresources::Container do
     recipe do
       poise_test 'container' do
         inner ''
+      end
+    end
+
+    it { is_expected.to run_poise_test('container') }
+    it { is_expected.to run_inner('container') }
+  end # /context with a no namespace and an empty inner name
+
+  context 'with a no namespace and no inner name' do
+    resource(:poise_test) do
+      include described_class
+      container_namespace(false)
+    end
+    recipe do
+      poise_test 'container' do
+        inner
       end
     end
 
