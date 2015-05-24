@@ -37,6 +37,28 @@ module ResourceProviderMixinTest
   class Provider < Chef::Provider
     include Test
   end
+
+  module Test2
+    include Poise::Utils::ResourceProviderMixin
+
+    module Resource
+      include Test
+    end
+
+    module Provider
+      include Test
+    end
+  end
+
+  class Resource2 < Chef::Resource
+    include Test
+    include Test2
+  end
+
+  class Provider2 < Chef::Provider
+    include Test
+    include Test2
+  end
 end
 
 describe Poise::Utils::ResourceProviderMixin do
@@ -49,4 +71,18 @@ describe Poise::Utils::ResourceProviderMixin do
     subject { ResourceProviderMixinTest::Provider }
     it { is_expected.to be < ResourceProviderMixinTest::Test::Provider }
   end
+
+  context 'with nested usage' do
+    context 'in a resource' do
+      subject { ResourceProviderMixinTest::Resource2 }
+      it { is_expected.to be < ResourceProviderMixinTest::Test::Resource }
+      it { is_expected.to be < ResourceProviderMixinTest::Test2::Resource }
+    end
+
+    context 'in a provider' do
+      subject { ResourceProviderMixinTest::Provider2 }
+      it { is_expected.to be < ResourceProviderMixinTest::Test::Provider }
+      it { is_expected.to be < ResourceProviderMixinTest::Test2::Provider }
+    end
+  end # /context with nested usage
 end

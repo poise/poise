@@ -34,20 +34,32 @@ module Poise
     #     end
     #   end
     module ResourceProviderMixin
-      # @!classmethods
-      module ClassMethods
-        def included(klass)
-          super
-          klass.extend(ClassMethods)
-          if klass < Chef::Resource
-            klass.class_exec { include self::Resource }
-          elsif klass < Chef::Provider
-            klass.class_exec { include self::Provider }
+      def self.included(klass)
+        # Warning here be dragons.
+        # Create a new anonymous module, klass will be the module that
+        # actually included ResourceProviderMixin. We want to keep a reference
+        # to that locked down so that we can close over it and use it in the
+        # "real" .included defined below to find the original relative consts.
+        mod = Module.new do
+          # Use define_method instead of def so we can close over klass and mod.
+          define_method(:included) do |inner_klass|
+            # Has to be explicit because super inside define_method.
+            super(inner_klass)
+            # Cargo this .included to things which include us.
+            inner_klass.extend(mod)
+            # Dispatch to submodules, inner_klass is the most recent includer.
+            if inner_klass < Chef::Resource
+              # Use klass::Resource to look up relative to the original module.
+              inner_klass.class_exec { include klass::Resource }
+            elsif inner_klass < Chef::Provider
+              # As above, klass::Provider.
+              inner_klass.class_exec { include klass::Provider }
+            end
           end
         end
+        # Add our .included to the original includer.
+        klass.extend(mod)
       end
-
-      extend ClassMethods
     end
   end
 end
