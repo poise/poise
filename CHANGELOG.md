@@ -1,5 +1,20 @@
 # Changelog
 
+## Unreleased
+
+* New flag for the OptionCollector helper, `parser`:
+
+```ruby
+class Resource < Chef::Resource
+  include Poise
+  attribute(:options, option_collector: true, parser: proc {|val| parse(val) })
+
+  def parse(val)
+    {name: val}
+  end
+end
+```
+
 ## v2.0.0
 
 Major overhaul! Poise is now a Halite gem/cookbook. New helpers:

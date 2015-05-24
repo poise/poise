@@ -78,5 +78,49 @@ describe Poise::Helpers::OptionCollector do
     it { is_expected.to run_poise_test('test').with(options: {'one' => '1'}, value: 2) }
   end # /context with a normal attribute too
 
+  context 'with a parser Proc' do
+    resource(:poise_test) do
+      include Poise::Helpers::LWRPPolyfill
+      include described_class
+      attribute(:options, option_collector: true, parser: proc {|val| parse(val) })
+      def parse(val)
+        {name: val}
+      end
+    end
+    recipe do
+      poise_test 'test' do
+        options '1'
+      end
+    end
+
+    it { is_expected.to run_poise_test('test').with(options: {'name' => '1'}) }
+  end # /context with a parser Proc
+
+  context 'with a parser Symbol' do
+    resource(:poise_test) do
+      include Poise::Helpers::LWRPPolyfill
+      include described_class
+      attribute(:options, option_collector: true, parser: :parse)
+      def parse(val)
+        {name: val}
+      end
+    end
+    recipe do
+      poise_test 'test' do
+        options '1'
+      end
+    end
+
+    it { is_expected.to run_poise_test('test').with(options: {'name' => '1'}) }
+  end # /context with a parser Symbol
+
+  context 'with an invalid parse' do
+    it do
+      expect do
+        resource(:poise_test).send(:attribute, :options, option_collector: true, parser: 'invalid')
+      end.to raise_error(Poise::Error)
+    end
+  end # /context with an invalid parser
+
   # TODO: Write tests for mixed symbol/string data
 end

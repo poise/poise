@@ -16,6 +16,8 @@
 
 require 'chef/mash'
 
+require 'poise/error'
+
 
 module Poise
   module Helpers
@@ -80,8 +82,12 @@ module Poise
         # Define an option collector attribute. Normally used via {.attribute}.
         #
         # @param name [String, Symbol] Name of the attribute to define.
-        # @param default [Object] Default value for the options.
-        def option_collector_attribute(name, default: {})
+        # @param default [Hash] Default value for the options.
+        # @param parser [Proc, Symbol] Optional parser method. If a symbol it is
+        #   called as a method on self. Takes a non-hash value and returns a
+        #   hash of its parsed representation.
+        def option_collector_attribute(name, default: {}, parser: nil)
+          raise Poise::Error.new("Parser must be a Proc or Symbol: #{parser.inspect}") if parser && !(parser.is_a?(Proc) || parser.is_a?(Symbol))
           # Unlike LWRPBase.attribute, I don't care about Ruby 1.8. Worlds tiniest violin.
           define_method(name.to_sym) do |arg=nil, &block|
             iv_sym = :"@#{name}"
@@ -91,7 +97,15 @@ module Poise
               Mash.new(default) # Wrap in a mash because fuck str vs sym.
             end
             if arg
-              raise Exceptions::ValidationFailed, "Option #{name} must be a Hash" if arg && !arg.is_a?(Hash)
+              if !arg.is_a?(Hash) && parser
+                arg = case parser
+                      when Proc
+                        instance_exec(arg, &parser)
+                      when Symbol
+                        send(parser, arg)
+                      end
+              end
+              raise Exceptions::ValidationFailed, "Option #{name} must be a Hash" if !arg.is_a?(Hash)
               # Should this and the update below be a deep merge?
               value.update(arg)
             end
