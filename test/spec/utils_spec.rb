@@ -106,5 +106,29 @@ describe Poise::Utils do
       end
       it { is_expected.to eq 'halite_cookbook_other' }
     end # /context with a Halite cookbook on a shared prefix
+
+    context 'with a Halite cookbook on a nested prefix' do
+      let(:filename) { '/source/halite_cookbook/vendor/other/lib/something.rb' }
+      before do
+        cookbooks << Chef::CookbookVersion.new('other_cookbook', '/test/other_cookbook').tap do |ver|
+          ver.library_filenames << '/test/other_cookbook/libraries/default.rb'
+          ver.recipe_filenames << '/test/other_cookbook/recipe/default.rb'
+        end
+        cookbooks << Chef::CookbookVersion.new('halite_cookbook', '/test/halite_cookbook').tap do |ver|
+          def ver.halite_root
+            '/source/halite_cookbook'
+          end
+        end
+        cookbooks << Chef::CookbookVersion.new('halite_cookbook_other', '/test/halite_cookbook/vendor/other').tap do |ver|
+          def ver.halite_root
+            '/source/halite_cookbook/vendor/other'
+          end
+        end
+        cookbooks << Chef::CookbookVersion.new('my_cookbook', '/test/my_cookbook').tap do |ver|
+          ver.recipe_filenames << '/test/my_cookbook/recipe/default.rb'
+        end
+      end
+      it { is_expected.to eq 'halite_cookbook_other' }
+    end # /context with a Halite cookbook on a nested prefix
   end # /describe .find_cookbook_name
 end

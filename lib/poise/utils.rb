@@ -36,25 +36,28 @@ module Poise
     #     # ...
     #   end
     def find_cookbook_name(run_context, filename)
+      possibles = {}
       run_context.cookbook_collection.each do |name, ver|
         # This special method is added by Halite::Gem#as_cookbook_version.
         if ver.respond_to?(:halite_root)
           # The join is there because ../poise-ruby/lib starts with ../poise so
           # we want a trailing /.
           if filename.start_with?(File.join(ver.halite_root, ''))
-            return name
+            possibles[ver.halite_root] = name
           end
         else
           Chef::CookbookVersion::COOKBOOK_SEGMENTS.each do |seg|
             ver.segment_filenames(seg).each do |file|
               if file == filename
-                return name
+                possibles[file] = name
               end
             end
           end
         end
       end
-      raise Poise::Error.new("Unable to find cookbook for file #{filename.inspect}")
+      raise Poise::Error.new("Unable to find cookbook for file #{filename.inspect}") if possibles.empty?
+      # Sort the items by matching path length, pick the name attached to the longest.
+      possibles.sort_by{|key, value| key.length }.last[1]
     end
   end
 end
