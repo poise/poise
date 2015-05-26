@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+* Fix for finding the correct cookbook for a file when using vendored gems.
 * New flag for the OptionCollector helper, `parser`:
 
 ```ruby
@@ -14,6 +15,9 @@ class Resource < Chef::Resource
   end
 end
 ```
+
+* Fix for a possible infinite loop when using `ResourceProviderMixin` in a nested
+  module structure.
 
 ## v2.0.0
 
