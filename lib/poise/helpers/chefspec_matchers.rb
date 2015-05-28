@@ -14,12 +14,8 @@
 # limitations under the License.
 #
 
-begin
-  require 'chefspec'
-  require 'rspec/expectations'
-rescue LoadError
-  # Don't panic! We will no-op later on if these aren't available.
-end
+# Not requiring chefspec or rspec/expectations since this code should only
+# activate if they are already loaded.
 
 require 'poise/helpers/lwrp_polyfill'
 require 'poise/helpers/resource_name'
