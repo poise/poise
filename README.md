@@ -21,35 +21,51 @@ the resource, which is in turn based on the class name. This means that the file
 An example of a simple shell to start from:
 
 ```ruby
-class Chef
-  class Resource::MyApp < Resource
-    include Poise
+require 'poise'
+require 'chef/resource'
+require 'chef/provider'
 
+module MyApp
+  class Resource < Chef::Resource
+    include Poise
+    provides(:my_app)
     actions(:enable)
 
     attribute(:path, kind_of: String)
-    ... # Other attribute definitions
+    # Other attribute definitions.
   end
 
-  class Provider::MyApp < Provider
+  class Provider < Chef::Provider
     include Poise
+    provides(:my_app)
 
     def action_enable
-      converge_by("enable resource #{new_resource.name}") do
-        notifying_block do
-          ... # Normal Chef recipe code goes here
-        end
+      notifying_block do
+        ... # Normal Chef recipe code goes here
       end
     end
   end
 end
 ```
 
-Starting from the top, first we declare the resource class, which inherits from
-`Chef::Resource`. This is similar to the `resources/` file in an LWRP, and a similar DSL can be used. In order to load the helpers into the class, we
-include the `Poise` mixin. Then we use the familiar DSL, though with a few additions we'll cover later.
+Starting from the top, first we require the libraries we will be using. Then we
+create a module to hold our resource and provider. If your cookbook declares
+multiple resources and/or providers, you might want additional nesting here.
+Then we declare the resource class, which inherits from `Chef::Resource`. This
+is similar to the `resources/` file in an LWRP, and a similar DSL can be used.
+We then include the `Poise` mixin to load our helpers, and then call
+`provides(:my_app)` to tell Chef this class will implement the `my_app`
+resource. Then we use the familiar DSL, though with a few additions we'll cover
+later.
 
-Then we declare the provider class, again similar to the `providers/` file in an LWRP. We include the `Poise` mixin again to get access to all the helpers. Rather than use the `action :enable do ... end` DSL from LWRPs, we just define the action method directly, and use the `converge_by` method to provide a description of what the action does. The implementation of action comes from a block of recipe code wrapped with `notifying_block` to capture changes in much the same way as `use_inline_resources`, see below for more information about all the features of `notifying_block`.
+Then we declare the provider class, again similar to the `providers/` file in an
+LWRP. We include the `Poise` mixin again to get access to all the helpers and
+call `provides()` to tell Chef what provider this is. Rather than use the
+`action :enable do ... end` DSL from LWRPs, we just define the action method
+directly. The implementation of action comes from a block of recipe code
+wrapped with `notifying_block` to capture changes in much the same way as
+`use_inline_resources`, see below for more information about all the features of
+`notifying_block`.
 
 We can then use this resource like any other Chef resource:
 
@@ -176,6 +192,16 @@ end
 ```
 
 This will be converted to `{key1: 'value1', key2: 'value2'}`. You can also pass a Hash to an option collector attribute just as you would with a normal attribute.
+
+## Upgrading from Poise 1.x
+
+The biggest change when upgrading from Poise 1.0 is that the mixin is no longer
+loaded automatically. You must add `require 'poise'` to your code is you want to
+load it, as you would with normal Ruby code outside of Chef. It is also highly
+recommended to add `provides(:name)` calls to your resources and providers, this
+will be required in Chef 13 and will display a deprecation warning if you do
+not. This also means you can move your code out of the `Chef` module namespace
+and instead declare it in your own namespace. An example of this is shown above.
 
 ## Sponsors
 
