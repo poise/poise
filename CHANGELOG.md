@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+* Make the ChefspecHelpers helper a no-op if chefspec is not already loaded.
 * Fix for finding the correct cookbook for a file when using vendored gems.
 * New flag for the OptionCollector helper, `parser`:
 
