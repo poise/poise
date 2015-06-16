@@ -14,6 +14,8 @@
 # limitations under the License.
 #
 
+require 'chef/resource'
+
 require 'poise/utils/resource_provider_mixin'
 
 
@@ -42,11 +44,11 @@ module Poise
               @default_action = name
               actions(name)
             end
-            @default_action || ( respond_to?(:superclass) && superclass.respond_to?(:default_action) && superclass.default_action ) || actions.first || :nothing
+            @default_action || ( respond_to?(:superclass) && superclass != Chef::Resource && superclass.respond_to?(:default_action) && superclass.default_action ) || actions.first || :nothing
           end
 
           def actions(*names)
-            @actions ||= ( respond_to?(:superclass) && superclass.respond_to?(:actions) ? superclass.actions.dup : [] )
+            @actions ||= ( respond_to?(:superclass) && superclass.respond_to?(:actions) && superclass.actions.dup ) || ( respond_to?(:superclass) && superclass != Chef::Resource && superclass.respond_to?(:allowed_actions) && superclass.allowed_actions.dup ) || []
             (@actions << names).flatten!.uniq!
             @actions
           end

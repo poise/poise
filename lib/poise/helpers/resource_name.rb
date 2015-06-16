@@ -72,7 +72,9 @@ module Poise
         # @param auto [Boolean] Try to auto-detect based on class name.
         # @return [Symbol]
         def resource_name(auto=true)
-          return @provides_name if @provides_name
+          # In 12.4+ we need to proxy through the super class for setting.
+          return super(auto) if defined?(super) && (auto.is_a?(Symbol) || auto.is_a?(String))
+          return @provides_name unless auto
           @provides_name || if name && name.start_with?('Chef::Resource')
             Chef::Mixin::ConvertToClassName.convert_to_snake_case(name, 'Chef::Resource').to_sym
           elsif name

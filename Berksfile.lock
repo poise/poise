@@ -5,6 +5,6 @@ DEPENDENCIES
     path: test/cookbooks/poise_test
 
 GRAPH
-  poise (2.0.0)
+  poise (2.0.2)
   poise_test (0.0.0)
     poise (>= 0.0.0)
