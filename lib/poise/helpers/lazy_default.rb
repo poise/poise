@@ -14,6 +14,8 @@
 # limitations under the License.
 #
 
+require 'chef/version'
+
 
 module Poise
   module Helpers
@@ -29,11 +31,21 @@ module Poise
     #     attribute(:path, default: lazy { name + '_temp' })
     #   end
     module LazyDefault
+      # Check if this version of Chef already supports lazy defaults. This is
+      # true for Chef 12.5+.
+      #
+      # @since 2.0.3
+      # @api private
+      # @return [Boolean]
+      def self.needs_polyfill?
+        @needs_polyfill ||= Gem::Requirement.new('< 12.5.pre').satisfied_by?(Gem::Version.new(Chef::VERSION))
+      end
+
       # Override the default set_or_return to support lazy evaluation of the
       # default value. This only actually matters when it is called from a class
       # level context via #attributes.
       def set_or_return(symbol, arg, validation)
-        if validation && validation[:default].is_a?(Chef::DelayedEvaluator)
+        if LazyDefault.needs_polyfill? && validation && validation[:default].is_a?(Chef::DelayedEvaluator)
           validation = validation.dup
           validation[:default] = instance_eval(&validation[:default])
         end

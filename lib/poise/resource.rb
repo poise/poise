@@ -34,7 +34,7 @@ module Poise
   module Resource
     include Poise::Helpers::ChefspecMatchers
     include Poise::Helpers::DefinedIn
-    include Poise::Helpers::LazyDefault
+    include Poise::Helpers::LazyDefault if Poise::Helpers::LazyDefault.needs_polyfill?
     include Poise::Helpers::LWRPPolyfill
     include Poise::Helpers::OptionCollector
     include Poise::Helpers::ResourceName

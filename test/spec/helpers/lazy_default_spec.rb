@@ -71,4 +71,20 @@ describe Poise::Helpers::LazyDefault do
       is_expected.to run_poise_test('test').with(value: 0)
     end
   end
+
+  context 'with a mutable value' do
+    resource(:poise_test) do
+      include Poise::Helpers::LWRPPolyfill
+      include described_class
+      attribute(:value, default: lazy { [] })
+    end
+    recipe do
+      poise_test 'test' do
+        value << 1
+        value << 2
+      end
+    end
+
+    it { is_expected.to run_poise_test('test').with(value: [1, 2]) }
+  end # /context with a mutable value
 end
