@@ -46,8 +46,15 @@ module Poise
           # @overload default_action(name)
           #   Set the default action for this resource class. If this action is
           #   not already allowed, it will be added.
+          #   @note It is idiomatic to use {#actions} instead, with the first
+          #     action specified being the default.
           #   @param name [Symbol] Name of the action.
           #   @return [Symbol]
+          #   @example
+          #     class MyApp < Chef::Resource
+          #       include Poise
+          #       default_action(:install)
+          #     end
           def default_action(name=nil)
             if name
               @default_action = name
@@ -65,6 +72,11 @@ module Poise
           #   correspond with action methods in the provider class(es).
           #   @param names [Array<Symbol>] One or more actions to set.
           #   @return [Array<Symbol>]
+          #   @example
+          #     class MyApp < Chef::Resource
+          #       include Poise
+          #       actions(:install, :uninstall)
+          #     end
           def actions(*names)
             @actions ||= ( respond_to?(:superclass) && superclass.respond_to?(:actions) && superclass.actions.dup ) || ( respond_to?(:superclass) && superclass != Chef::Resource && superclass.respond_to?(:allowed_actions) && superclass.allowed_actions.dup ) || []
             (@actions << names).flatten!.uniq!
