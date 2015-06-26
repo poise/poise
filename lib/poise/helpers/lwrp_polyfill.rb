@@ -53,7 +53,7 @@ module Poise
             @actions
           end
 
-          def attribute(name, opts)
+          def attribute(name, opts={})
             # Freeze the default value. This is done upstream too in Chef 12.5+.
             opts[:default].freeze if opts && opts[:default]
             # Ruby 1.8 can go to hell.
