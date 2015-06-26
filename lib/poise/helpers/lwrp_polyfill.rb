@@ -32,13 +32,22 @@ module Poise
       module Resource
         def initialize(*args)
           super
-          # Try to not stomp on stuff if already set in a parent
+          # Try to not stomp on stuff if already set in a parent.
           @action = self.class.default_action if @action == :nothing
           (@allowed_actions << self.class.actions).flatten!.uniq!
         end
 
-        # @!classmethods
         module ClassMethods
+          # @overload default_action()
+          #   Get the default action for this resource class. If no explicit
+          #   default is set, the first action in the list will be used.
+          #   @see #actions
+          #   @return [Symbol]
+          # @overload default_action(name)
+          #   Set the default action for this resource class. If this action is
+          #   not already allowed, it will be added.
+          #   @param name [Symbol] Name of the action.
+          #   @return [Symbol]
           def default_action(name=nil)
             if name
               @default_action = name
@@ -47,18 +56,40 @@ module Poise
             @default_action || ( respond_to?(:superclass) && superclass != Chef::Resource && superclass.respond_to?(:default_action) && superclass.default_action ) || actions.first || :nothing
           end
 
+          # @overload actions()
+          #   Get all actions allowed for this resource class. This includes
+          #   any actions allowed on parent classes.
+          #   @return [Array<Symbol>]
+          # @overload actions(*names)
+          #   Set actions as allowed for this resource class. These must
+          #   correspond with action methods in the provider class(es).
+          #   @param names [Array<Symbol>] One or more actions to set.
+          #   @return [Array<Symbol>]
           def actions(*names)
             @actions ||= ( respond_to?(:superclass) && superclass.respond_to?(:actions) && superclass.actions.dup ) || ( respond_to?(:superclass) && superclass != Chef::Resource && superclass.respond_to?(:allowed_actions) && superclass.allowed_actions.dup ) || []
             (@actions << names).flatten!.uniq!
             @actions
           end
 
+          # Create a resource property (née attribute) on this resource class.
+          # This follows the same usage as the helper of the same name in Chef
+          # LWRPs.
+          #
+          # @param name [Symbol] Name of the property.
+          # @param opts [Hash<Symbol, Object>] Validation options and flags.
+          # @return [void]
+          # @example
+          #   class MyApp < Chef::Resource
+          #     include Poise
+          #     attribute(:path, name_attribute: true)
+          #     attribute(:port, kind_of: Integer, default: 8080)
+          #   end
           def attribute(name, opts={})
             # Freeze the default value. This is done upstream too in Chef 12.5+.
             opts[:default].freeze if opts && opts[:default]
             # Ruby 1.8 can go to hell.
             define_method(name) do |arg=nil, &block|
-              arg = block if arg.nil? # Try to allow passing either
+              arg = block if arg.nil? # Try to allow passing either.
               set_or_return(name, arg, opts)
             end
           end
