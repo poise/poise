@@ -39,7 +39,7 @@ describe Poise::Helpers::LazyDefault do
     end
 
     it { is_expected.to run_poise_test('test').with(value: 'value') }
-  end
+  end # /context with an explicit value
 
   context 'in a subclass' do
     resource(:poise_sub, parent: :poise_test)
@@ -49,7 +49,7 @@ describe Poise::Helpers::LazyDefault do
     end
 
     it { is_expected.to run_poise_test('test').with(value: 'test_lazy') }
-  end
+  end # /context in a subclass
 
   context 'with an external global' do
     resource(:poise_test) do
@@ -70,7 +70,7 @@ describe Poise::Helpers::LazyDefault do
       LAZY_DEFAULT_GLOBAL[0] = 42
       is_expected.to run_poise_test('test').with(value: 0)
     end
-  end
+  end # /context with an external global
 
   context 'with a mutable value' do
     resource(:poise_test) do
