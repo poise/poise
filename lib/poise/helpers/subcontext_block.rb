@@ -30,9 +30,7 @@ module Poise
         # Setup a sub-run-context.
         parent_context ||= @run_context
         sub_run_context = parent_context.dup
-        # Broken by https://github.com/chef/chef/issues/3585
-        #sub_run_context.resource_collection = Poise::Subcontext::ResourceCollection.new(parent_context.resource_collection)
-        sub_run_context.instance_variable_set(:@resource_collection, Poise::Subcontext::ResourceCollection.new(parent_context.resource_collection))
+        sub_run_context.resource_collection = Poise::Subcontext::ResourceCollection.new(parent_context.resource_collection)
 
         # Declare sub-resources within the sub-run-context. Since they
         # are declared here, they do not pollute the parent run-context.
