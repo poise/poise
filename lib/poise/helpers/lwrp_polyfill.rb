@@ -63,6 +63,9 @@ module Poise
             end
           end
 
+          # For forward compat with Chef 12.5+.
+          alias_method :property, :attribute
+
           def included(klass)
             super
             klass.extend(ClassMethods)
