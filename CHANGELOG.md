@@ -1,5 +1,14 @@
 # Changelog
 
+## v2.1.0
+
+* Compatibility with Chef 12.4.
+* Add `#property` as an alias for `#attribute` in resources. This provides
+  forward compatibility with future versions of Chef.
+* Freeze default resource attribute values. **This may break your code**,
+  however this is not a major release because any code broken by this change
+  was itself already a bug.
+
 ## v2.0.1
 
 * Make the ChefspecHelpers helper a no-op if chefspec is not already loaded.
