@@ -65,6 +65,8 @@ module Poise
         # @param run_context [Chef::RunContext] Context of the current run.
         # @return [Array<Chef::Resource>]
         def self.containers(run_context)
+          # For test cases where nil gets used sometimes.
+          return [] unless run_context && run_context.node && run_context.node.run_state
           run_context.node.run_state[:poise_default_containers] ||= []
         end
       end
