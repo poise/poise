@@ -54,7 +54,9 @@ module Poise
           end
 
           def attribute(name, opts)
-            # Ruby 1.8 can go to hell
+            # Freeze the default value. This is done upstream too in Chef 12.5+.
+            opts[:default].freeze if opts && opts[:default]
+            # Ruby 1.8 can go to hell.
             define_method(name) do |arg=nil, &block|
               arg = block if arg.nil? # Try to allow passing either
               set_or_return(name, arg, opts)

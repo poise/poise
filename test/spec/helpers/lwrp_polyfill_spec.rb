@@ -23,38 +23,36 @@ describe Poise::Helpers::LWRPPolyfill do
         include described_class
         attribute(:boolean, equal_to: [true, false])
       end
-
       provider(:poise_test)
-
-      context 'with default value' do
-        recipe do
-          poise_test 'nil'
-        end
-
-        it { is_expected.to run_poise_test('nil').with(boolean: nil) }
+      recipe do
+        poise_test 'test'
       end
 
-      context 'with true value' do
+      context 'with no value' do
+        it { is_expected.to run_poise_test('test').with(boolean: nil) }
+      end # /context with no value
+
+      context 'with a true value' do
         recipe do
-          poise_test 'true' do
+          poise_test 'test' do
             boolean true
           end
         end
 
-        it { is_expected.to run_poise_test('true').with(boolean: true) }
-      end
+        it { is_expected.to run_poise_test('test').with(boolean: true) }
+      end # /context with a true value
 
-      context 'with false value' do
+      context 'with a false value' do
         recipe do
-          poise_test 'false' do
+          poise_test 'test' do
             boolean false
           end
         end
 
-        it { is_expected.to run_poise_test('false').with(boolean: false) }
-      end
+        it { is_expected.to run_poise_test('test').with(boolean: false) }
+      end # /context with a false value
 
-      context 'with string value' do
+      context 'with a string value' do
         recipe do
           poise_test 'true' do
             boolean 'boom'
@@ -62,7 +60,36 @@ describe Poise::Helpers::LWRPPolyfill do
         end
 
         it { expect { subject }.to raise_error Chef::Exceptions::ValidationFailed }
-      end
+      end # /context with a string value
+
+      context 'with a default value' do
+        resource(:poise_test) do
+          include described_class
+          attribute(:value, default: 'default value')
+        end
+
+        it { is_expected.to run_poise_test('test').with(value: 'default value') }
+      end # /context with a default value
+
+      context 'with a mutable default value' do
+        resource(:poise_test) do
+          include described_class
+          attribute(:value, default: [])
+        end
+
+        it { is_expected.to run_poise_test('test').with(value: []) }
+        it { expect(chef_run.poise_test('test').value).to be_frozen }
+
+        context 'and trying to change it' do
+          recipe do
+            poise_test 'test' do
+              value << 1
+            end
+          end
+
+          it { expect { chef_run }.to raise_error RuntimeError }
+        end # /context and trying to change it
+      end # /context with a mutable default value
     end # /describe #attribute
 
     describe '#default_action' do
