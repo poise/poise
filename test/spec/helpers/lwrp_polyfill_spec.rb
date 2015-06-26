@@ -120,7 +120,7 @@ describe Poise::Helpers::LWRPPolyfill do
         end
 
         it { is_expected.to be_nil }
-      end
+      end # /context with a direct Provider subclass
 
       context 'with an intermediary class' do
         provider(:poise_parent, auto: false) do
@@ -133,8 +133,8 @@ describe Poise::Helpers::LWRPPolyfill do
         end
 
         it { is_expected.to eq 'helper' }
-      end
-    end
+      end # /context with an intermediary class
+    end # /describe load_current_resource override
 
     describe 'Chef::DSL::Recipe include' do
       resource(:poise_test)
@@ -150,6 +150,6 @@ describe Poise::Helpers::LWRPPolyfill do
       end
 
       it { is_expected.to run_ruby_block('test') }
-    end
+    end # /describe Chef::DSL::Recipe include
   end # /describe Poise::Helpers::LWRPPolyfill::Provider
 end
