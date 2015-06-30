@@ -107,6 +107,7 @@ describe Poise::Helpers::LWRPPolyfill do
       end
 
       it { is_expected.to one_poise_test('test') }
+      it { expect(resource(:poise_test).default_action).to eq [:one] }
     end # /describe #default_action
   end # /describe Poise::Helpers::LWRPPolyfill::Resource
 

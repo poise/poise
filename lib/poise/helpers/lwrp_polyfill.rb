@@ -32,8 +32,9 @@ module Poise
       module Resource
         def initialize(*args)
           super
-          # Try to not stomp on stuff if already set in a parent.
-          @action = self.class.default_action if @action == :nothing
+          # Try to not stomp on stuff if already set in a parent. Coerce @action
+          # to an array because this behavior may change in the future in Chef.
+          @action = self.class.default_action if Array(@action) == [:nothing]
           (@allowed_actions << self.class.actions).flatten!.uniq!
         end
 
@@ -42,14 +43,14 @@ module Poise
           #   Get the default action for this resource class. If no explicit
           #   default is set, the first action in the list will be used.
           #   @see #actions
-          #   @return [Symbol]
+          #   @return [Array<Symbol>]
           # @overload default_action(name)
           #   Set the default action for this resource class. If this action is
           #   not already allowed, it will be added.
           #   @note It is idiomatic to use {#actions} instead, with the first
           #     action specified being the default.
-          #   @param name [Symbol] Name of the action.
-          #   @return [Symbol]
+          #   @param name [Symbol, Array<Symbol>] Name of the action(s).
+          #   @return [Array<Symbol>]
           #   @example
           #     class MyApp < Chef::Resource
           #       include Poise
@@ -57,10 +58,11 @@ module Poise
           #     end
           def default_action(name=nil)
             if name
+              name = Array(name).flatten.map(&:to_sym)
               @default_action = name
-              actions(name)
+              actions(*name)
             end
-            @default_action || ( respond_to?(:superclass) && superclass != Chef::Resource && superclass.respond_to?(:default_action) && superclass.default_action ) || actions.first || :nothing
+            @default_action || ( respond_to?(:superclass) && superclass != Chef::Resource && superclass.respond_to?(:default_action) && superclass.default_action ) || (actions.first && [actions.first]) || [:nothing]
           end
 
           # @overload actions()
@@ -79,8 +81,7 @@ module Poise
           #     end
           def actions(*names)
             @actions ||= ( respond_to?(:superclass) && superclass.respond_to?(:actions) && superclass.actions.dup ) || ( respond_to?(:superclass) && superclass != Chef::Resource && superclass.respond_to?(:allowed_actions) && superclass.allowed_actions.dup ) || []
-            (@actions << names).flatten!.uniq!
-            @actions
+            (@actions << names).tap {|actions| actions.flatten!; actions.uniq! }
           end
 
           # Create a resource property (née attribute) on this resource class.
