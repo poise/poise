@@ -75,10 +75,16 @@ module Poise
           # In 12.4+ we need to proxy through the super class for setting.
           return super(auto) if defined?(super) && (auto.is_a?(Symbol) || auto.is_a?(String))
           return @provides_name unless auto
-          @provides_name || if name && name.start_with?('Chef::Resource')
-            Chef::Mixin::ConvertToClassName.convert_to_snake_case(name, 'Chef::Resource').to_sym
-          elsif name
-            Chef::Mixin::ConvertToClassName.convert_to_snake_case(name.split('::').last).to_sym
+          @provides_name || if name
+            mode = if name.start_with?('Chef::Resource')
+              [name, 'Chef::Resource']
+            else
+              [name.split('::').last]
+            end
+            Chef::Mixin::ConvertToClassName.convert_to_snake_case(*mode).to_sym
+          elsif defined?(super)
+            # No name on 12.4+ probably means this is an LWRP, use super().
+            super()
           end
         end
 
