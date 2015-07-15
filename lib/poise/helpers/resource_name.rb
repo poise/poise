@@ -51,7 +51,7 @@ module Poise
         #     include Poise::Resource::ResourceName
         #     provides(:my_resource)
         #   end
-        def provides(name)
+        def provides(name, *args, &block)
           # Patch self.constantize so this can cope with anonymous classes.
           # This does require that the anonymous class define self.name though.
           if self.name && respond_to?(:constantize)
@@ -63,7 +63,7 @@ module Poise
           # Store the name for later.
           @provides_name = name
           # Call the original if present. The defined? is for old Chef.
-          super if defined?(super)
+          super(name, *args, &block) if defined?(super)
         end
 
         # Retreive the DSL name for the resource class. If not set explicitly

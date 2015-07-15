@@ -134,9 +134,9 @@ module Poise
           #
           # @param name [Symbol] Resource name
           # return [void]
-          def provides(name)
+          def provides(name, *args, &block)
             create_inversion_options_resource!(name) if inversion_options_resource
-            super if defined?(super)
+            super(name, *args, &block) if defined?(super)
           end
 
           def included(klass)

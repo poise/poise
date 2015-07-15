@@ -60,9 +60,9 @@ module Poise
         # Create a resource-level matcher for this resource.
         #
         # @see Resource::ResourceName.provides
-        def provides(name)
+        def provides(name, *args, &block)
           ChefSpec.define_matcher(name) if defined?(ChefSpec)
-          super
+          super(name, *args, &block)
         end
 
         # Create matchers for all declared actions.
