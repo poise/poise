@@ -131,6 +131,12 @@ module Poise
             if klass.is_a?(Class) && klass.superclass == Chef::Provider
               klass.class_exec do
                 def load_current_resource
+                  @current_resource = if new_resource
+                    new_resource.class.new(new_resource.name, run_context)
+                  else
+                    # Better than nothing, subclass can overwrite anyway.
+                    Chef::Resource.new(nil, run_context)
+                  end
                 end
               end
             end

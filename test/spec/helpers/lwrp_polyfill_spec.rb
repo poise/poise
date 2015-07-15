@@ -113,20 +113,23 @@ describe Poise::Helpers::LWRPPolyfill do
 
   describe Poise::Helpers::LWRPPolyfill::Provider do
     describe 'load_current_resource override' do
-      subject { provider(:poise_test).new(nil, nil).load_current_resource }
+      resource(:poise_test)
+      let(:test_resource) { resource(:poise_test).new('test', nil) }
+      subject { provider(:poise_test).new(test_resource, nil).load_current_resource }
 
       context 'with a direct Provider subclass' do
         provider(:poise_test, auto: false) do
           include described_class
         end
 
-        it { is_expected.to be_nil }
+        it { is_expected.to be_a resource(:poise_test) }
+        its(:name) { is_expected.to eq 'test' }
       end # /context with a direct Provider subclass
 
       context 'with an intermediary class' do
         provider(:poise_parent, auto: false) do
           def load_current_resource
-            'helper'
+            @current_resource = 'helper'
           end
         end
         provider(:poise_test, auto: false, parent: :poise_parent) do
