@@ -169,6 +169,37 @@ describe Poise::Helpers::Subresources::Child do
 
       it { is_expected.to run_poise_test('test').with(parent: be_nil) }
     end # /context with no automatic parent but optional
+
+    context 'with a parent but then unset' do
+      recipe do
+        poise_container 'test2'
+        poise_container 'test'
+        poise_test 'test' do
+          parent 'test2'
+          parent nil
+        end
+      end
+
+      it { is_expected.to run_poise_test('test').with(parent: container) }
+    end # context with a parent but then unset
+
+    context 'with an optional parent but then unset' do
+      resource(:poise_test) do
+        include described_class
+        parent_type :poise_container
+        parent_optional true
+        parent_auto false
+      end
+      recipe do
+        poise_container 'test'
+        poise_test 'test' do
+          parent 'test'
+          parent nil
+        end
+      end
+
+      it { is_expected.to run_poise_test('test').with(parent: nil) }
+    end # context with an optional parent but then unset
   end # /describe #parent
 
   describe '.parent_type' do

@@ -56,8 +56,8 @@ module Poise
         #   string), or a type:name hash.
         #   @param val [String, Hash, Chef::Resource] Parent resource to set.
         #   @return [Chef::Resource, nil]
-        def parent(val=nil)
-          _parent(:parent, self.class.parent_type, self.class.parent_optional, self.class.parent_auto, val)
+        def parent(*args)
+          _parent(:parent, self.class.parent_type, self.class.parent_optional, self.class.parent_auto, *args)
         end
 
         # Register ourself with parents in case this is not a nested resource.
@@ -77,28 +77,34 @@ module Poise
         #
         # @since 2.0.0
         # @see #parent
-        def _parent(name, parent_type, parent_optional, parent_auto, val=nil)
+        def _parent(name, parent_type, parent_optional, parent_auto, *args)
           # Allow using a DSL symbol as the parent type.
           if parent_type.is_a?(Symbol)
             parent_type = Chef::Resource.resource_for_node(parent_type, node)
           end
           # Grab the ivar for local use.
           parent_ref = instance_variable_get(:"@#{name}")
-          if val
-            if val.is_a?(String) && !val.include?('[')
-              raise Poise::Error.new('Cannot use a string parent without defining a parent type') if parent_type == Chef::Resource
-              val = "#{parent_type.resource_name}[#{val}]"
-            end
-            if val.is_a?(String) || val.is_a?(Hash)
-              parent = @run_context.resource_collection.find(val)
+          if !args.empty?
+            val = args.first
+            if val.nil?
+              # Unsetting the parent.
+              parent = nil
             else
-              parent = val
-            end
-            if !parent.is_a?(parent_type)
-              raise Poise::Error.new("Parent resource is not an instance of #{parent_type.name}: #{val.inspect}")
+              if val.is_a?(String) && !val.include?('[')
+                raise Poise::Error.new('Cannot use a string parent without defining a parent type') if parent_type == Chef::Resource
+                val = "#{parent_type.resource_name}[#{val}]"
+              end
+              if val.is_a?(String) || val.is_a?(Hash)
+                parent = @run_context.resource_collection.find(val)
+              else
+                parent = val
+              end
+              if !parent.is_a?(parent_type)
+                raise Poise::Error.new("Parent resource is not an instance of #{parent_type.name}: #{val.inspect}")
+              end
             end
             parent_ref = ParentRef.new(parent)
-          elsif !parent_ref
+          elsif !parent_ref || !parent_ref.resource
             if parent_auto
               # Automatic sibling lookup for sequential composition.
               # Find the last instance of the parent class as the default parent.
@@ -181,8 +187,8 @@ module Poise
           def parent_attribute(name, type: Chef::Resource, optional: false, auto: true)
             name = :"parent_#{name}"
             (@parent_attributes ||= {})[name] = type
-            define_method(name) do |val=nil|
-              _parent(name, type, optional, auto, val)
+            define_method(name) do |*args|
+              _parent(name, type, optional, auto, *args)
             end
           end
 
