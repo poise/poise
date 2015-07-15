@@ -26,6 +26,7 @@ module Poise
     autoload :LWRPPolyfill, 'poise/helpers/lwrp_polyfill'
     autoload :NotifyingBlock, 'poise/helpers/notifying_block'
     autoload :OptionCollector, 'poise/helpers/option_collector'
+    autoload :ResourceCloning, 'poise/helpers/resource_cloning'
     autoload :ResourceName, 'poise/helpers/resource_name'
     autoload :Subresources, 'poise/helpers/subresources'
     autoload :TemplateContent, 'poise/helpers/template_content'

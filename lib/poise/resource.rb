@@ -37,6 +37,7 @@ module Poise
     include Poise::Helpers::LazyDefault if Poise::Helpers::LazyDefault.needs_polyfill?
     include Poise::Helpers::LWRPPolyfill
     include Poise::Helpers::OptionCollector
+    include Poise::Helpers::ResourceCloning
     include Poise::Helpers::ResourceName
     include Poise::Helpers::TemplateContent
 
