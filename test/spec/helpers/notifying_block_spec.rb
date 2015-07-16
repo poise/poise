@@ -84,4 +84,43 @@ describe Poise::Helpers::NotifyingBlock do
 
     it { expect { subject }.to raise_error(RuntimeError) }
   end # /context with an exception raised inside the block
+
+  describe 'regression test for picking up sibling notifications outside the subcontext for resources with matching name' do
+    resource(:poise_inner) do
+      include Poise::Helpers::ResourceCloning
+      attr_accessor :mark_updated
+    end
+    provider(:poise_inner) do
+      def action_run
+        new_resource.updated_by_last_action(new_resource.mark_updated)
+      end
+    end
+    provider(:poise_test) do
+      include Poise::Helpers::LWRPPolyfill
+      include described_class
+
+      def action_run
+        notifying_block do
+          poise_inner 'test' do
+            self.mark_updated = true
+          end
+        end
+      end
+    end
+    recipe do
+      ruby_block 'test' do
+        block { }
+        action :nothing
+      end
+
+      poise_inner 'test' do
+        self.mark_updated = false
+        notifies :run, 'ruby_block[test]', :immediately
+      end
+
+      poise_test 'test'
+    end
+
+    it { is_expected.to_not run_ruby_block('test') }
+  end # /describe regression test for picking up sibling notifications outside the subcontext for resources with matching name
 end

@@ -27,9 +27,20 @@ module Poise
       private
 
       def subcontext_block(parent_context=nil, &block)
-        # Setup a sub-run-context.
+        # Setup a subcontext.
         parent_context ||= @run_context
         sub_run_context = parent_context.dup
+        # Reset state for the subcontext. In 12.4+ this uses the built-in
+        # support, otherwise do it manually.
+        if defined?(sub_run_context.initialize_child_state)
+          sub_run_context.initialize_child_state
+        else
+          sub_run_context.audits = {}
+          # Dup and clear to preserve the default behavior without copy-pasta.
+          sub_run_context.immediate_notification_collection = parent_context.immediate_notification_collection.dup.clear
+          sub_run_context.delayed_notification_collection = parent_context.delayed_notification_collection.dup.clear
+        end
+        # Create the subcollection.
         sub_run_context.resource_collection = Poise::Subcontext::ResourceCollection.new(parent_context.resource_collection)
 
         # Declare sub-resources within the sub-run-context. Since they
