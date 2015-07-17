@@ -57,6 +57,7 @@ module Poise
             self_ = self
             order_fixer = Chef::Resource::RubyBlock.new('subresource_order_fixer', @run_context)
             order_fixer.block do
+              Chef::Log.debug("[#{self_}] Running order fixer")
               collection = self_.run_context.resource_collection
               # Delete the current container resource from its current position.
               collection.all_resources.delete(self_)
