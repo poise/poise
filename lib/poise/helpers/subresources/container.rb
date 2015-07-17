@@ -56,6 +56,7 @@ module Poise
             # we need to jump through some hoops to get it swapped into place.
             self_ = self
             order_fixer = Chef::Resource::RubyBlock.new('subresource_order_fixer', @run_context)
+            order_fixer.declared_type = 'ruby_block'
             order_fixer.block do
               Chef::Log.debug("[#{self_}] Running order fixer")
               collection = self_.run_context.resource_collection
