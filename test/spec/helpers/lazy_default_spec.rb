@@ -48,7 +48,7 @@ describe Poise::Helpers::LazyDefault do
       poise_sub 'test'
     end
 
-    it { is_expected.to run_poise_test('test').with(value: 'test_lazy') }
+    it { is_expected.to run_poise_sub('test').with(value: 'test_lazy') }
   end # /context in a subclass
 
   context 'with an external global' do
