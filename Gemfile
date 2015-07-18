@@ -29,3 +29,5 @@ end
 
 dev_gem 'halite'
 dev_gem 'poise-boiler'
+
+gem 'kitchen-docker', github: 'portertech/kitchen-docker'
