@@ -64,7 +64,7 @@ module Poise
             end
             if @default_action
               @default_action
-            elsif respond_to?(:superclass) && superclass != Chef::Resource && superclass.respond_to?(:default_action) && Array(superclass.default_action) != %i{nothing}
+            elsif respond_to?(:superclass) && superclass != Chef::Resource && superclass.respond_to?(:default_action) && superclass.default_action && Array(superclass.default_action) != %i{nothing}
               superclass.default_action
             elsif first_non_nothing = actions.find {|action| action != :nothing }
               [first_non_nothing]
