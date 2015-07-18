@@ -124,7 +124,7 @@ describe Poise::Helpers::NotifyingBlock do
     it { is_expected.to_not run_ruby_block('test') }
   end # /describe regression test for picking up sibling notifications outside the subcontext for resources with matching name
 
-  describe 'delayed notifications', :focus do
+  describe 'delayed notifications' do
     provider(:poise_test) do
       include Poise::Helpers::LWRPPolyfill
       include described_class
