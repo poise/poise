@@ -15,6 +15,8 @@
 #
 
 require 'spec_helper'
+require 'chef/provider/lwrp_base'
+require 'chef/resource/lwrp_base'
 
 describe Poise::Helpers::LWRPPolyfill do
   describe Poise::Helpers::LWRPPolyfill::Resource do
@@ -156,4 +158,20 @@ describe Poise::Helpers::LWRPPolyfill do
       it { is_expected.to run_ruby_block('test') }
     end # /describe Chef::DSL::Recipe include
   end # /describe Poise::Helpers::LWRPPolyfill::Provider
+
+  context 'inside LWRPBase' do
+    resource(:poise_test, parent: Chef::Resource::LWRPBase, auto: false) do
+      include described_class
+      actions(:run)
+    end
+    provider(:poise_test, parent: Chef::Provider::LWRPBase, auto: false) do
+      include described_class
+      action(:run) { }
+    end
+
+    describe '#default_action' do
+      subject { resource(:poise_test).default_action }
+      it { is_expected.to eq %i{run} }
+    end # /describe #default_action
+  end # /context inside LWRPBase
 end

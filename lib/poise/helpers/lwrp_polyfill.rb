@@ -62,7 +62,15 @@ module Poise
               @default_action = name
               actions(*name)
             end
-            @default_action || ( respond_to?(:superclass) && superclass != Chef::Resource && superclass.respond_to?(:default_action) && superclass.default_action ) || (actions.first && [actions.first]) || [:nothing]
+            if @default_action
+              @default_action
+            elsif respond_to?(:superclass) && superclass != Chef::Resource && superclass.respond_to?(:default_action) && Array(superclass.default_action) != %i{nothing}
+              superclass.default_action
+            elsif first_non_nothing = actions.find {|action| action != :nothing }
+              [first_non_nothing]
+            else
+              %i{nothing}
+            end
           end
 
           # @overload actions()
