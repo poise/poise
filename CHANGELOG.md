@@ -1,5 +1,12 @@
 # Changelog
 
+## v2.2.0
+
+* Compatibility with Chef 12.4.1 and Chefspec 4.3.0.
+* New helper `ResourceCloning`: Disables resource cloning between Poise-based
+  resources. This is enabled by default.
+* Subresource parent references can be set to nil.
+
 ## v2.1.0
 
 * Compatibility with Chef 12.4.
