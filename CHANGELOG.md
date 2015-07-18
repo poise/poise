@@ -1,5 +1,9 @@
 # Changelog
 
+## v2.2.2
+
+* Fix 2.2.1 for older versions of Chef.
+
 ## v2.2.1
 
 * Fixed delayed notifications inside `notifying_block`.
