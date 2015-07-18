@@ -43,6 +43,8 @@ module Poise
         end
         # Create the subcollection.
         sub_run_context.resource_collection = Poise::Subcontext::ResourceCollection.new(parent_context.resource_collection)
+        # Create an accessor for the parent run context.
+        sub_run_context.define_singleton_method(:parent_run_context) { parent_context }
 
         # Declare sub-resources within the sub-run-context. Since they
         # are declared here, they do not pollute the parent run-context.

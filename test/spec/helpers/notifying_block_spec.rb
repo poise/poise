@@ -123,4 +123,35 @@ describe Poise::Helpers::NotifyingBlock do
 
     it { is_expected.to_not run_ruby_block('test') }
   end # /describe regression test for picking up sibling notifications outside the subcontext for resources with matching name
+
+  describe 'delayed notifications', :focus do
+    provider(:poise_test) do
+      include Poise::Helpers::LWRPPolyfill
+      include described_class
+
+      def action_run
+        notifying_block do
+          ruby_block 'one' do
+            action :nothing
+            block { node.run_state[:things] << 'one' }
+          end
+
+          ruby_block 'two' do
+            block { node.run_state[:things] << 'two' }
+            notifies :run, 'ruby_block[one]'
+          end
+        end
+      end
+    end
+    recipe(subject: false) do
+      node.run_state[:things] = []
+      poise_test 'test'
+    end
+    subject { chef_run.node.run_state[:things] }
+
+    # The important test.
+    it { is_expected.to include 'one' }
+    # Sanity check for my harness.
+    it { is_expected.to include 'two' }
+  end # /describe delayed notifications
 end
