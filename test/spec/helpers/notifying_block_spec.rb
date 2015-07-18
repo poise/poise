@@ -146,12 +146,16 @@ describe Poise::Helpers::NotifyingBlock do
     recipe(subject: false) do
       node.run_state[:things] = []
       poise_test 'test'
+      ruby_block 'copy' do
+        block do
+          node.run_state[:things_copy] = node.run_state[:things].dup
+        end
+      end
     end
-    subject { chef_run.node.run_state[:things] }
+    subject { chef_run.node.run_state }
 
-    # The important test.
-    it { is_expected.to include 'one' }
-    # Sanity check for my harness.
-    it { is_expected.to include 'two' }
+    its([:things]) { is_expected.to eq %w{two one} }
+    its([:things_copy]) { is_expected.to eq %w{two} }
+
   end # /describe delayed notifications
 end
