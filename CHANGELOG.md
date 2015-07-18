@@ -1,5 +1,10 @@
 # Changelog
 
+## v2.2.1
+
+* Fixed delayed notifications inside `notifying_block`.
+* Default actions as expected within LWRPs.
+
 ## v2.2.0
 
 * Compatibility with Chef 12.4.1 and Chefspec 4.3.0.
