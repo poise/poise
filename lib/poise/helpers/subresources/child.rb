@@ -134,7 +134,8 @@ module Poise
           def parent_type(type=nil)
             if type
               raise Poise::Error.new("Parent type must be a class, symbol, or true, got #{type.inspect}") unless type.is_a?(Class) || type.is_a?(Symbol) || type == true
-              @parent_type = type
+              # Setting to true shouldn't actually do anything.
+              @parent_type = type unless type == true
             end
             @parent_type || (superclass.respond_to?(:parent_type) ? superclass.parent_type : Chef::Resource)
           end

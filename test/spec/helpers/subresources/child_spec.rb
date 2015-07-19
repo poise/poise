@@ -250,6 +250,16 @@ describe Poise::Helpers::Subresources::Child do
         expect { resource(:poise_test).parent_type('invalid') }.to raise_error Poise::Error
       end
     end # /context set to an invalid value
+
+    context 'set directly and then set to true' do
+      resource(:poise_test) do
+        include described_class
+        parent_type String
+        parent_type true
+      end
+
+      it { is_expected.to eq String }
+    end # /context set directly and then set to true
   end # /describe .parent_type
 
   describe '.parent_optional' do
