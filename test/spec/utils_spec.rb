@@ -131,4 +131,68 @@ describe Poise::Utils do
       it { is_expected.to eq 'halite_cookbook_other' }
     end # /context with a Halite cookbook on a nested prefix
   end # /describe .find_cookbook_name
+
+  describe '.ancestor_send' do
+    let(:mod_parent) do
+      Module.new do
+        class_methods = Module.new do
+          def poise_test_val(val=nil)
+            if val
+              @poise_test_val = val
+            end
+            @poise_test_val || Poise::Utils.ancestor_send(self, :poise_test_val)
+          end
+
+          define_method(:included) do |klass|
+            super(klass)
+            klass.extend(class_methods)
+          end
+        end
+
+        extend class_methods
+      end
+    end
+
+    context 'using the parent module in class' do
+      subject do
+        mod = mod_parent
+        Class.new do
+          include mod
+          poise_test_val(:test)
+        end
+      end
+
+      its(:poise_test_val) { is_expected.to eq :test }
+    end # /context using the parent module in class
+
+    context 'using the parent module in an intermediary module' do
+      let(:mod_child) do
+        parent = mod_parent
+        Module.new do
+          include parent
+          poise_test_val(:child)
+        end
+      end
+
+      subject do
+        mod = mod_child
+        Class.new do
+          include mod
+        end
+      end
+
+      its(:poise_test_val) { is_expected.to eq :child }
+    end # /context using the parent module in an intermediary module
+
+    context 'with no value set' do
+      subject do
+        mod = mod_parent
+        Class.new do
+          include mod
+        end
+      end
+
+      its(:poise_test_val) { is_expected.to be_nil }
+    end # /context with no value set
+  end # /describe .ancestor_send
 end

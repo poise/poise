@@ -66,5 +66,33 @@ module Poise
       # Sort the items by matching path length, pick the name attached to the longest.
       possibles.sort_by{|key, value| key.length }.last[1]
     end
+
+    # Try to find an ancestor to call a method on.
+    #
+    # @param obj [Object] Self from the caller.
+    # @param msg [Symbol] Method to try to call.
+    # @param args [Array<Object>] Method arguments.
+    # @param default [Object] Default return value if no valid ancestor exists.
+    # @return [Object]
+    # @example
+    #   val = @val || Poise::Utils.ancestor_send(self, :val)
+    def ancestor_send(obj, msg, *args, default: nil)
+      # Class is a subclass of Module, if we get something else use its class.
+      obj = obj.class unless obj.is_a?(Module)
+      ancestors = []
+      if obj.respond_to?(:superclass)
+        # Check the superclass first if present.
+        ancestors << obj.superclass
+      end
+      # Make sure we don't check obj itself.
+      ancestors.concat(obj.ancestors.drop(1))
+      ancestor = ancestors.find {|mod| mod.respond_to?(msg) }
+      if ancestor
+        ancestor.send(msg, *args)
+      else
+        default
+      end
+    end
+
   end
 end
