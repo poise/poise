@@ -200,6 +200,20 @@ describe Poise::Helpers::Subresources::Child do
 
       it { is_expected.to run_poise_test('test').with(parent: nil) }
     end # context with an optional parent but then unset
+
+    context 'with a parent type of true' do
+      resource(:poise_test) do
+        include described_class
+        parent_type true
+      end
+      recipe do
+        poise_test 'test' do
+          parent 'test'
+        end
+      end
+
+      it { expect { subject }.to raise_error NoMethodError }
+    end # /context with a parent type of true
   end # /describe #parent
 
   describe '.parent_type' do
@@ -260,6 +274,20 @@ describe Poise::Helpers::Subresources::Child do
 
       it { is_expected.to eq String }
     end # /context set directly and then set to true
+
+    context 'set via a mixin' do
+      # Various scoping shenanigans.
+      described = described_class
+      test_mod = Module.new do
+        include described
+        parent_type :something
+      end
+      resource(:poise_test) do
+        include test_mod
+      end
+
+      it { is_expected.to eq :something }
+    end
   end # /describe .parent_type
 
   describe '.parent_optional' do

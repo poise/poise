@@ -57,6 +57,10 @@ module Poise
         #   @param val [String, Hash, Chef::Resource] Parent resource to set.
         #   @return [Chef::Resource, nil]
         def parent(*args)
+          # Lie about this method if the parent type is true.
+          if self.class.parent_type == true
+            raise NoMethodError.new("undefined method `parent' for #{self}")
+          end
           _parent(:parent, self.class.parent_type, self.class.parent_optional, self.class.parent_auto, *args)
         end
 
@@ -134,10 +138,10 @@ module Poise
           def parent_type(type=nil)
             if type
               raise Poise::Error.new("Parent type must be a class, symbol, or true, got #{type.inspect}") unless type.is_a?(Class) || type.is_a?(Symbol) || type == true
-              # Setting to true shouldn't actually do anything.
-              @parent_type = type unless type == true
+              # Setting to true shouldn't actually do anything if a type was already set.
+              @parent_type = type unless type == true && !@parent_type.nil?
             end
-            @parent_type || (superclass.respond_to?(:parent_type) ? superclass.parent_type : Chef::Resource)
+            @parent_type || Poise::Utils.ancestor_send(self, :parent_type, default: Chef::Resource)
           end
 
           # @overload parent_optional()
@@ -152,7 +156,7 @@ module Poise
               @parent_optional = val
             end
             if @parent_optional.nil?
-              superclass.respond_to?(:parent_optional) ? superclass.parent_optional : false
+              Poise::Utils.ancestor_send(self, :parent_optional, default: false)
             else
               @parent_optional
             end
@@ -170,7 +174,7 @@ module Poise
               @parent_auto = val
             end
             if @parent_auto.nil?
-              superclass.respond_to?(:parent_auto) ? superclass.parent_auto : true
+              Poise::Utils.ancestor_send(self, :parent_auto, default: true)
             else
               @parent_auto
             end
