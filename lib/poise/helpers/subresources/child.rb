@@ -91,7 +91,7 @@ module Poise
               parent = nil
             else
               if val.is_a?(String) && !val.include?('[')
-                raise Poise::Error.new('Cannot use a string parent without defining a parent type') if parent_type == Chef::Resource
+                raise Poise::Error.new("Cannot use a string #{name} without defining a parent type") if parent_type == Chef::Resource
                 val = "#{parent_type.resource_name}[#{val}]"
               end
               if val.is_a?(String) || val.is_a?(Hash)
@@ -112,7 +112,7 @@ module Poise
               parent = Poise::Helpers::Subresources::DefaultContainers.find(parent_type, run_context)
             end
             # Can't find a valid parent, if it wasn't optional raise an error.
-            raise Poise::Error.new("No parent found for #{self}") unless parent || parent_optional
+            raise Poise::Error.new("No #{name} found for #{self}") unless parent || parent_optional
             parent_ref = ParentRef.new(parent)
           else
             parent = parent_ref.resource
