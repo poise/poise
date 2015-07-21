@@ -69,6 +69,7 @@ module Poise
 
     # Try to find an ancestor to call a method on.
     #
+    # @since 2.2.3
     # @param obj [Object] Self from the caller.
     # @param msg [Symbol] Method to try to call.
     # @param args [Array<Object>] Method arguments.
