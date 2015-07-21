@@ -1,5 +1,10 @@
 # Changelog
 
+## v2.2.3
+
+* Add `ancestor_send` utility method for use in other helpers.
+* Improve subresource support for use in mixins.
+
 ## v2.2.2
 
 * Fix 2.2.1 for older versions of Chef.
