@@ -43,7 +43,6 @@ module Poise
         if ver.respond_to?(:halite_root)
           # The join is there because ../poise-ruby/lib starts with ../poise so
           # we want a trailing /.
-          Chef::Log.debug("")
           if filename.start_with?(File.join(ver.halite_root, ''))
             Chef::Log.debug("[Poise] Found matching halite_root in #{name}: #{ver.halite_root.inspect}")
             possibles[ver.halite_root] = name
