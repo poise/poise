@@ -52,7 +52,7 @@ module Poise
             ver.segment_filenames(seg).each do |file|
               # Put this behind an environment variable because it is verbose
               # even for normal debugging-level output.
-              Chef::Log.debug("[Poise] Checking #{seg} in #{name}: #{file.inspect}") if ENV['POISE_DEBUG']
+              Chef::Log.debug("[Poise] Checking #{seg} in #{name}: #{file.inspect}") if ENV['POISE_DEBUG'] || run_context.node['POISE_DEBUG']
               if file == filename
                 Chef::Log.debug("[Poise] Found matching #{seg} in #{name}: #{file.inspect}")
                 possibles[file] = name
