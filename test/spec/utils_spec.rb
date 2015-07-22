@@ -20,7 +20,7 @@ require 'chef/cookbook_version'
 describe Poise::Utils do
   describe '.find_cookbook_name' do
     let(:cookbooks) { [] }
-    let(:run_context) { instance_double('Chef::RunContext', cookbook_collection: cookbooks.inject({}) {|memo, ver| memo[ver.name] = ver; memo })}
+    let(:run_context) { instance_double('Chef::RunContext', cookbook_collection: cookbooks.inject({}) {|memo, ver| memo[ver.name] = ver; memo }, node: {})}
     let(:filename) { '/test/my_cookbook/libraries/default.rb' }
     subject { described_class.find_cookbook_name(run_context, filename) }
 
