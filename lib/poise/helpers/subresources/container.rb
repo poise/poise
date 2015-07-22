@@ -113,8 +113,13 @@ module Poise
             end
             resource << super(type, sub_name, created_at) do
               # Apply the correct parent before anything else so it is available
-              # in after_created for the subresource.
-              parent(self_) if respond_to?(:parent)
+              # in after_created for the subresource. It might raise
+              # NoMethodError is there isn't a real parent.
+              begin
+                parent(self_) if respond_to?(:parent)
+              rescue NoMethodError
+                # This space left intentionally blank.
+              end
               # Run the resource block.
               instance_exec(&block) if block
             end
