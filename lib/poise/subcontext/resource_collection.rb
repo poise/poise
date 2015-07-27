@@ -40,7 +40,10 @@ module Poise
         @parent.lookup(resource)
       end
 
-      # Iterate and expand all nested contexts
+      # Iterate over all resources, expanding parent context in order.
+      #
+      # @param block [Proc] Iteration block
+      # @return [void]
       def recursive_each(&block)
         if @parent
           if @parent.respond_to?(:recursive_each)
@@ -50,6 +53,22 @@ module Poise
           end
         end
         each(&block)
+      end
+
+      # Iterate over all resources in reverse order.
+      #
+      # @since 2.2.4
+      # @param block [Proc] Iteration block
+      # @return [void]
+      def reverse_recursive_each(&block)
+        reverse_each(&block)
+        if @parent
+          if @parent.respond_to?(:recursive_each)
+            @parent.reverse_recursive_each(&block)
+          else
+            @parent.reverse_each(&block)
+          end
+        end
       end
     end
   end
