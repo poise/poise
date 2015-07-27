@@ -152,8 +152,8 @@ module Poise
           def container_namespace(val=nil)
             @container_namespace = val unless val.nil?
             if @container_namespace.nil?
-              # Not set here, look at the superclass of true by default for backwards compat.
-              superclass.respond_to?(:container_namespace) ? superclass.container_namespace : true
+              # Not set here, look at the superclass or true by default for backwards compat.
+              Poise::Utils.ancestor_send(self, :container_namespace, default: true)
             else
               @container_namespace
             end
