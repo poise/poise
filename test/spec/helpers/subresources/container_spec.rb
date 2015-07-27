@@ -146,6 +146,27 @@ describe Poise::Helpers::Subresources::Container do
     it { is_expected.to run_inner('container') }
   end # /context with a no namespace and no inner name
 
+  describe '#container_default' do
+    resource(:poise_test) do
+      include described_class
+    end
+    resource(:poise_sub, parent: :poise_test) do
+      container_default(false)
+    end
+    provider(:poise_sub, parent: :poise_test)
+    resource(:inner) do
+      include Poise(parent: :poise_test)
+    end
+    recipe do
+      poise_test 'one'
+      poise_test 'two'
+      poise_sub 'three'
+      inner 'inner'
+    end
+
+    it { is_expected.to run_inner('inner').with(parent: chef_run.poise_test('two')) }
+  end # /describe #container_default
+
   describe 'resource order' do
     resource(:poise_test) do
       include described_class
@@ -187,4 +208,20 @@ describe Poise::Helpers::Subresources::Container do
       is_expected.to run_inner('container::two')
     end
   end # /describe resource order
+
+  describe 'subclassing a container' do
+    resource(:poise_test) do
+      include described_class
+    end
+    resource(:poise_sub, parent: :poise_test)
+    provider(:poise_sub, parent: :poise_test)
+    recipe do
+      poise_sub 'test' do
+        inner 'one'
+      end
+    end
+
+    it { is_expected.to run_poise_sub('test') }
+    it { is_expected.to run_inner('test::one') }
+  end # /describe subclassing a container
 end

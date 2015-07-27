@@ -48,8 +48,9 @@ module Poise
 
         def after_created
           super
-          # Register
-          Poise::Helpers::Subresources::DefaultContainers.register!(self, run_context)
+          # Register as a default container if needed.
+          Poise::Helpers::Subresources::DefaultContainers.register!(self, run_context) if self.class.container_default
+          # Add all internal subresources to the resource collection.
           unless @subresources.empty?
             Chef::Log.debug("[#{self}] Adding subresources to collection:")
             # Because after_create is run before adding the container to the resource collection
@@ -156,6 +157,16 @@ module Poise
               Poise::Utils.ancestor_send(self, :container_namespace, default: true)
             else
               @container_namespace
+            end
+          end
+
+          def container_default(val=nil)
+            @container_default = val unless val.nil?
+            if @container_default.nil?
+              # Not set here, look at the superclass or true by default for backwards compat.
+              Poise::Utils.ancestor_send(self, :container_default, default: true)
+            else
+              @container_default
             end
           end
 
