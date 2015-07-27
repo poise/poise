@@ -96,7 +96,18 @@ module Poise
             else
               if val.is_a?(String) && !val.include?('[')
                 raise Poise::Error.new("Cannot use a string #{name} without defining a parent type") if parent_type == Chef::Resource
-                val = "#{parent_type.resource_name}[#{val}]"
+                # Try to find the most recent instance of parent_type with a
+                # matching name. This takes subclassing parent_type into account.
+                found_val = nil
+                iterator = run_context.resource_collection.respond_to?(:recursive_each) ? :recursive_each : :each
+                # This will find the last matching value due to overwriting
+                # found_val as it goes. Will be the nearest match.
+                run_context.resource_collection.public_send(iterator) do |res|
+                  found_val = res if res.is_a?(parent_type) && res.name == val
+                end
+                # If found_val is nil, fall back to using lookup even though
+                # it won't work with subclassing, better than nothing?
+                val = found_val || "#{parent_type.resource_name}[#{val}]"
               end
               if val.is_a?(String) || val.is_a?(Hash)
                 parent = @run_context.resource_collection.find(val)

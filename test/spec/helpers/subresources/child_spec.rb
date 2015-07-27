@@ -31,6 +31,15 @@ describe Poise::Helpers::Subresources::Child do
       parent_type :poise_container
     end
 
+    context 'with an automatic parent' do
+      recipe do
+        poise_container 'test'
+        poise_test 'test'
+      end
+
+      it { is_expected.to run_poise_test('test').with(parent: container) }
+    end # /context with an automatic parent
+
     context 'with a resource parent' do
       recipe do
         c = poise_container 'test'
@@ -214,6 +223,65 @@ describe Poise::Helpers::Subresources::Child do
 
       it { expect { subject }.to raise_error NoMethodError }
     end # /context with a parent type of true
+
+    context 'with a subclassed parent type' do
+      resource(:poise_sub, parent: :poise_container)
+      provider(:poise_sub, parent: :poise_container)
+      let(:sub) { chef_run.poise_sub('test') }
+
+      context 'with an automatic parent' do
+        recipe do
+          poise_sub 'test'
+          poise_test 'test'
+        end
+
+        it { is_expected.to run_poise_test('test').with(parent: sub) }
+      end # /context with an automatic parent
+
+      context 'with a resource parent' do
+        recipe do
+          c = poise_sub 'test'
+          poise_test 'test' do
+            parent c
+          end
+        end
+
+        it { is_expected.to run_poise_test('test').with(parent: sub) }
+      end # /context with a resource parent
+
+      context 'with a string name parent' do
+        recipe do
+          poise_sub 'test'
+          poise_test 'test' do
+            parent 'test'
+          end
+        end
+
+        it { is_expected.to run_poise_test('test').with(parent: sub) }
+      end # /context with a string name parent
+
+      context 'with an explicit string parent' do
+        recipe do
+          poise_sub 'test'
+          poise_test 'test' do
+            parent 'poise_sub[test]'
+          end
+        end
+
+        it { is_expected.to run_poise_test('test').with(parent: sub) }
+      end # /context with an explicit string parent
+
+      context 'with a hash parent' do
+        recipe do
+          poise_sub 'test'
+          poise_test 'test' do
+            parent poise_sub: 'test'
+          end
+        end
+
+        it { is_expected.to run_poise_test('test').with(parent: sub) }
+      end # /context with a hash parent
+    end # /context with a subclassed parent type
   end # /describe #parent
 
   describe '.parent_type' do
