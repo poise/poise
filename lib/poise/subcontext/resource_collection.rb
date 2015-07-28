@@ -57,7 +57,7 @@ module Poise
 
       # Iterate over all resources in reverse order.
       #
-      # @since 2.2.4
+      # @since 2.3.0
       # @param block [Proc] Iteration block
       # @return [void]
       def reverse_recursive_each(&block)
