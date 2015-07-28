@@ -28,6 +28,7 @@ module Poise
     autoload :OptionCollector, 'poise/helpers/option_collector'
     autoload :ResourceCloning, 'poise/helpers/resource_cloning'
     autoload :ResourceName, 'poise/helpers/resource_name'
+    autoload :ResourceSubclass, 'poise/helpers/resource_subclass'
     autoload :Subresources, 'poise/helpers/subresources'
     autoload :TemplateContent, 'poise/helpers/template_content'
   end

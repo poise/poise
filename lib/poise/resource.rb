@@ -39,6 +39,7 @@ module Poise
     include Poise::Helpers::OptionCollector
     include Poise::Helpers::ResourceCloning
     include Poise::Helpers::ResourceName
+    include Poise::Helpers::ResourceSubclass
     include Poise::Helpers::TemplateContent
 
     # @!classmethods

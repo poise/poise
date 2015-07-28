@@ -1,0 +1,51 @@
+#
+# Copyright 2015, Noah Kantrowitz
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+require 'poise/helpers/resource_name'
+
+
+module Poise
+  module Helpers
+    # A resource mixin to help subclass existing resources.
+    #
+    # @since 2.3.0
+    module ResourceSubclass
+      include ResourceName
+
+      module ClassMethods
+        def subclass_providers!
+          resource_name = self.resource_name
+          superclass_resource_name = superclass.resource_name
+          node_maps = []
+          node_maps << Chef.provider_handler_map if defined?(Chef.provider_handler_map)
+          node_maps << Chef.provider_priority_map if defined?(Chef.provider_priority_map)
+          node_maps.each do |node_map|
+            map = node_map.respond_to?(:map, true) ? node_map.send(:map) : node_map.instance_variable_get(:@map)
+            map[resource_name] = map[superclass_resource_name].dup if map.include?(superclass_resource_name)
+          end
+        end
+
+        def included(klass)
+          super
+          klass.extend(ClassMethods)
+        end
+      end
+
+      extend ClassMethods
+    end
+
+  end
+end
