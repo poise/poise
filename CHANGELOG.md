@@ -1,5 +1,17 @@
 # Changelog
 
+## v2.3.0
+
+* New helper: `ResourceSubclass`, a helper for subclassing a resource while
+  still using the providers as the base class.
+* New feature: Non-default containers. Use `container_default: false` to mark
+  a container class as ineligible for default lookup.
+* New feature: parent attribute defaults. You can set a `parent_default` to
+  provide a default value for the parent of a resource. This supports the
+  `lazy { }` helper as with normal default values.
+* Can enable verbose logging mode via a node attribute in addition to an
+  environment variable.
+
 ## v2.2.3
 
 * Add `ancestor_send` utility method for use in other helpers.
