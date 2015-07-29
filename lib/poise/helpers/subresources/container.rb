@@ -160,6 +160,17 @@ module Poise
             end
           end
 
+          # @overload container_default()
+          #   Get the default mode for this resource. If false, this resource
+          #   class will not be used for default container lookups. Defaults to
+          #   true.
+          #   @since 2.3.0
+          #   @return [Boolean]
+          # @overload container_default(val)
+          #   Set the default mode for this resource.
+          #   @since 2.3.0
+          #   @param val [Boolean] Default mode to set.
+          #   @return [Boolean]
           def container_default(val=nil)
             @container_default = val unless val.nil?
             if @container_default.nil?
