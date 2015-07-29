@@ -282,6 +282,21 @@ describe Poise::Helpers::Subresources::Child do
         it { is_expected.to run_poise_test('test').with(parent: sub) }
       end # /context with a hash parent
     end # /context with a subclassed parent type
+
+    context 'with a default' do
+      resource(:poise_test) do
+        include described_class
+        parent_type :poise_container
+        parent_default Chef::DelayedEvaluator.new { run_context.resource_collection.find('poise_container[first]') }
+      end
+      recipe do
+        poise_container 'first'
+        poise_container 'second'
+        poise_test 'test'
+      end
+
+      it { is_expected.to run_poise_test('test').with(parent: chef_run.poise_container('first')) }
+    end # /context with a default
   end # /describe #parent
 
   describe '.parent_type' do
@@ -418,7 +433,60 @@ describe Poise::Helpers::Subresources::Child do
 
       it { is_expected.to eq true }
     end # /context not set
-  end
+  end # /describe .parent_auto
+
+  describe '.parent_default' do
+    subject { resource(:poise_test).parent_default }
+
+    context 'set directly' do
+      resource(:poise_test) do
+        include described_class
+        parent_default Chef::Resource.new(nil, nil)
+      end
+
+      it { is_expected.to be_a Chef::Resource }
+    end # /context set directly
+
+    context 'set on a parent class' do
+      resource(:poise_parent) do
+        include described_class
+        parent_default Chef::Resource.new(nil, nil)
+      end
+      resource(:poise_test, parent: :poise_parent)
+
+      it { is_expected.to be_a Chef::Resource }
+    end # /context set on a parent class
+
+    context 'not set' do
+      resource(:poise_test) do
+        include described_class
+      end
+
+      it { is_expected.to be_nil }
+    end # /context not set
+
+    context 'set to nil' do
+      resource(:poise_parent) do
+        include described_class
+        parent_default Chef::Resource.new(nil, nil)
+      end
+      resource(:poise_test, parent: :poise_parent) do
+        parent_default nil
+      end
+
+      it { is_expected.to be_nil }
+    end # /context set to nil
+
+    context 'set to lazy{}' do
+      resource(:poise_test) do
+        include described_class
+        include Poise::Helpers::LazyDefault
+        parent_default lazy { }
+      end
+
+      it { is_expected.to be_a Chef::DelayedEvaluator }
+    end # /context set to lazy{}
+  end # /describe .parent_default
 
   describe '.parent_attribute' do
     resource(:poise_test) do

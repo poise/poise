@@ -61,7 +61,7 @@ module Poise
           if self.class.parent_type == true
             raise NoMethodError.new("undefined method `parent' for #{self}")
           end
-          _parent(:parent, self.class.parent_type, self.class.parent_optional, self.class.parent_auto, *args)
+          _parent(:parent, self.class.parent_type, self.class.parent_optional, self.class.parent_auto, self.class.parent_default, *args)
         end
 
         # Register ourself with parents in case this is not a nested resource.
@@ -81,7 +81,7 @@ module Poise
         #
         # @since 2.0.0
         # @see #parent
-        def _parent(name, parent_type, parent_optional, parent_auto, *args)
+        def _parent(name, parent_type, parent_optional, parent_auto, parent_default, *args)
           # Allow using a DSL symbol as the parent type.
           if parent_type.is_a?(Symbol)
             parent_type = Chef::Resource.resource_for_node(parent_type, node)
@@ -120,7 +120,14 @@ module Poise
             end
             parent_ref = ParentRef.new(parent)
           elsif !parent_ref || !parent_ref.resource
-            if parent_auto
+            if parent_default
+              parent = if parent_default.is_a?(Chef::DelayedEvaluator)
+                instance_eval(&parent_default)
+              else
+                parent_default
+              end
+            end
+            if !parent && parent_auto
               # Automatic sibling lookup for sequential composition.
               # Find the last instance of the parent class as the default parent.
               # This is super flaky and should only be a last resort.
@@ -191,6 +198,26 @@ module Poise
             end
           end
 
+          # @overload parent_default()
+          #   Get the default value for the default parent link on this resource.
+          #   @since 2.3.0
+          #   @return [Object, Chef::DelayedEvaluator]
+          # @overload parent_default(val)
+          #   Set the default value for the default parent link on this resource.
+          #   @since 2.3.0
+          #   @param val [Object, Chef::DelayedEvaluator] Default value to set.
+          #   @return [Object, Chef::DelayedEvaluator]
+          def parent_default(*args)
+            unless args.empty?
+              @parent_default = args.first
+            end
+            if defined?(@parent_default)
+              @parent_default
+            else
+              Poise::Utils.ancestor_send(self, :parent_default)
+            end
+          end
+
           # Create a new kind of parent link.
           #
           # @since 2.0.0
@@ -200,11 +227,11 @@ module Poise
           # @param optional [Boolean] If the parent is optional.
           # @param auto [Boolean] If the parent is auto-detected.
           # @return [void]
-          def parent_attribute(name, type: Chef::Resource, optional: false, auto: true)
+          def parent_attribute(name, type: Chef::Resource, optional: false, auto: true, default: nil)
             name = :"parent_#{name}"
             (@parent_attributes ||= {})[name] = type
             define_method(name) do |*args|
-              _parent(name, type, optional, auto, *args)
+              _parent(name, type, optional, auto, default, *args)
             end
           end
 
