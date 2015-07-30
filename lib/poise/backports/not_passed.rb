@@ -31,14 +31,14 @@ module Poise
     else
       # Copyright 2015, Chef Software Inc.
       # Used under Apache License, Version 2.0.
-      Object.new.tap do |NOT_PASSED|
-        def NOT_PASSED.to_s
+      Object.new.tap do |not_passed|
+        def not_passed.to_s
           "NOT_PASSED"
         end
-        def NOT_PASSED.inspect
+        def not_passed.inspect
           to_s
         end
-        NOT_PASSED.freeze
+        not_passed.freeze
       end
     end
 
