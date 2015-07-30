@@ -42,4 +42,21 @@ describe Poise::Helpers::ChefspecMatchers do
     it { is_expected.to run_poise_other('test') }
     it { expect(chef_run.poise_other('test')).to be_a Chef::Resource }
   end # /context with an explicit name
+
+  context 'with a subclass' do
+    resource(:poise_test, auto: false, step_into: false) do
+      include described_class
+      provides(:poise_other)
+      actions(:run)
+    end
+    resource(:poise_sub, parent: :poise_test, auto: false, step_into: false) do
+      provides(:poise_sub)
+    end
+    recipe do
+      poise_sub 'test'
+    end
+
+    it { is_expected.to run_poise_sub('test') }
+    it { expect(chef_run.poise_sub('test')).to be_a Chef::Resource }
+  end # /context 'with a subclass
 end
