@@ -58,5 +58,5 @@ describe Poise::Helpers::ChefspecMatchers do
 
     it { is_expected.to run_poise_sub('test') }
     it { expect(chef_run.poise_sub('test')).to be_a Chef::Resource }
-  end # /context 'with a subclass
+  end # /context with a subclass
 end
