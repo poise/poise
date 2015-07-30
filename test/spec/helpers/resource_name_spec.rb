@@ -21,6 +21,13 @@ class ResourceNameHelper < Chef::Resource
   provides(:provides_test)
 end
 
+# Helper for testing multiple names.
+class ResourceNameHelperTwo < Chef::Resource
+  include Poise::Helpers::ResourceName
+  provides(:provides_test_two)
+  provides(:provides_test_2)
+end
+
 describe Poise::Helpers::ResourceName do
   context 'via class.name' do
     resource(:poise_test, auto: false) do
@@ -29,11 +36,17 @@ describe Poise::Helpers::ResourceName do
     subject { resource(:poise_test).new(nil, nil).resource_name }
 
     it { is_expected.to eq :poise_test }
-  end
+  end # /context via class.name
 
   context 'via provides' do
     subject { ResourceNameHelper.new(nil, nil).resource_name }
 
     it { is_expected.to eq :provides_test }
-  end
+  end # /context via provides
+
+  context 'with multiple names' do
+    subject { ResourceNameHelperTwo.new(nil, nil).resource_name }
+
+    it { is_expected.to eq :provides_test_two }
+  end # /context with multiple names
 end

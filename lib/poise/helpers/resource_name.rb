@@ -61,7 +61,7 @@ module Poise
             end
           end
           # Store the name for later.
-          @provides_name = name
+          @provides_name ||= name
           # Call the original if present. The defined? is for old Chef.
           super(name, *args, &block) if defined?(super)
         end
