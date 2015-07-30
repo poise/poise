@@ -22,6 +22,7 @@ require 'poise/utils/resource_provider_mixin'
 
 module Poise
   include Poise::Utils::ResourceProviderMixin
+  autoload :Backports, 'poise/backports'
   autoload :Helpers, 'poise/helpers'
   autoload :Provider, 'poise/provider'
   autoload :Resource, 'poise/resource'
