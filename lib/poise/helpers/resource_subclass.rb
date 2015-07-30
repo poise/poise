@@ -30,16 +30,19 @@ module Poise
           resource_name = self.resource_name
           superclass_resource_name = superclass.resource_name
           # Deal with the node maps.
-          node_maps = []
-          node_maps << Chef.provider_handler_map if defined?(Chef.provider_handler_map)
-          node_maps << Chef.provider_priority_map if defined?(Chef.provider_priority_map)
+          node_maps = {}
+          node_maps['handler map'] = Chef.provider_handler_map if defined?(Chef.provider_handler_map)
+          node_maps['priority map'] = Chef.provider_priority_map if defined?(Chef.provider_priority_map)
           # Patch anything in the descendants tracker.
           Chef::Provider.descendants.each do |provider|
-            node_maps << provider.node_map if defined?(provider.node_map)
+            node_maps["#{provider} node map"] = provider.node_map if defined?(provider.node_map)
           end if defined?(Chef::Provider.descendants)
-          node_maps.each do |node_map|
+          node_maps.each do |map_name, node_map|
             map = node_map.respond_to?(:map, true) ? node_map.send(:map) : node_map.instance_variable_get(:@map)
-            map[resource_name] = map[superclass_resource_name].dup if map.include?(superclass_resource_name)
+            if map.include?(superclass_resource_name)
+              Chef::Log.debug("[#{self}] Copying provider mapping in #{map_name} from #{superclass_resource_name} to #{resource_name}")
+              map[resource_name] = map[superclass_resource_name].dup
+            end
           end
         end
 
