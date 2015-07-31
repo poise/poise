@@ -310,7 +310,7 @@ describe Poise::Helpers::Inversion do
         let(:test_resource) { chef_run.find_resource(:poise_not_found, 'test') }
 
         its(:enabled_handlers) { is_expected.to eq [] }
-        it { expect { subject.resolve }.to raise_error Chef::Exceptions::ProviderNotFound }
+        it { expect { subject.resolve }.to raise_error defined?(Chef::Exceptions::ProviderNotFound) ? Chef::Exceptions::ProviderNotFound : ArgumentError }
       end # /context with a resource that has no providers
 
       context 'with a subclassed resource' do
@@ -323,7 +323,7 @@ describe Poise::Helpers::Inversion do
         let(:test_resource) { chef_run.find_resource(:poise_inversion_sub, 'test') }
 
         its(:enabled_handlers) { is_expected.to eq [] }
-        it { expect { subject.resolve }.to raise_error Chef::Exceptions::ProviderNotFound }
+        it { expect { subject.resolve }.to raise_error defined?(Chef::Exceptions::ProviderNotFound) ? Chef::Exceptions::ProviderNotFound : ArgumentError }
       end # /context with a subclassed resource
 
       context 'with a subclassed resource using subclass_providers!' do
