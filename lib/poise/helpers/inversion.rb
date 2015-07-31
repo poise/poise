@@ -333,7 +333,14 @@ module Poise
           # @return [Boolean]
           def provides?(node, resource)
             raise Poise::Error.new("Inversion resource name not set for #{self.name}") unless inversion_resource
-            return false unless resource.resource_name == inversion_resource
+            resource_name_equivalents = {resource.resource_name => true}
+            # If subclass_providers! might be in play, check for those names too.
+            if resource.class.respond_to?(:subclass_resource_equivalents)
+              resource.class.subclass_resource_equivalents.each do |name|
+                resource_name_equivalents[name] = true
+              end
+            end
+            return false unless resource_name_equivalents[inversion_resource]
             provider_name = resolve_inversion_provider(node, resource)
             Chef::Log.debug("[#{resource}] Checking provides? on #{self.name}. Got provider_name #{provider_name.inspect}")
             provider_name == provides.to_s || ( provider_name == 'auto' && provides_auto?(node, resource) )

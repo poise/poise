@@ -269,5 +269,77 @@ describe Poise::Helpers::Inversion do
         end
       end # /context with a provider
     end # /describe .resolve_inversion_provider
+
+    describe 'provider resolution' do
+      before do
+        default_attributes['poise'] ||= {}
+        default_attributes['poise']['provider'] = 'auto'
+      end
+      resource(:poise_test_inversion, step_into: false) do
+        include Poise::Helpers::Inversion::Resource
+        provides(:poise_test_inversion)
+      end
+      provider(:poise_test_inversion) do
+        include described_class
+        inversion_resource(:poise_test_inversion)
+        inversion_attribute([])
+        provides(:inverted)
+        def self.provides_auto?(*args); true; end
+      end
+      provider(:poise_test_inversion_other, parent: :poise_test_inversion) do
+        provides(:other)
+      end
+      let(:test_resource) { nil }
+      subject { Chef::ProviderResolver.new(chef_run.node, test_resource, :run) }
+
+      context 'with an inversion resource' do
+        recipe(subject: false) do
+          poise_test_inversion 'test'
+        end
+        let(:test_resource) { chef_run.poise_test_inversion('test') }
+
+        its(:enabled_handlers) { is_expected.to eq [provider(:poise_test_inversion), provider(:poise_test_inversion_other)] }
+        its(:resolve) { is_expected.to eq provider(:poise_test_inversion) }
+      end # /context with an inversion resource
+
+      context 'with a resource that has no providers' do
+        resource(:poise_not_found, step_into: false)
+        recipe(subject: false) do
+          poise_not_found 'test'
+        end
+        let(:test_resource) { chef_run.find_resource(:poise_not_found, 'test') }
+
+        its(:enabled_handlers) { is_expected.to eq [] }
+        it { expect { subject.resolve }.to raise_error Chef::Exceptions::ProviderNotFound }
+      end # /context with a resource that has no providers
+
+      context 'with a subclassed resource' do
+        resource(:poise_inversion_sub, parent: :poise_test_inversion, step_into: false) do
+          provides(:poise_inversion_sub)
+        end
+        recipe(subject: false) do
+          poise_inversion_sub 'test'
+        end
+        let(:test_resource) { chef_run.find_resource(:poise_inversion_sub, 'test') }
+
+        its(:enabled_handlers) { is_expected.to eq [] }
+        it { expect { subject.resolve }.to raise_error Chef::Exceptions::ProviderNotFound }
+      end # /context with a subclassed resource
+
+      context 'with a subclassed resource using subclass_providers!' do
+        resource(:poise_inversion_subproviders, parent: :poise_test_inversion, step_into: false) do
+          include Poise::Helpers::ResourceSubclass
+          provides(:poise_inversion_subproviders)
+          subclass_providers!
+        end
+        recipe(subject: false) do
+          poise_inversion_subproviders 'test'
+        end
+        let(:test_resource) { chef_run.find_resource(:poise_inversion_subproviders, 'test') }
+
+        its(:enabled_handlers) { is_expected.to eq [provider(:poise_test_inversion), provider(:poise_test_inversion_other)] }
+        its(:resolve) { is_expected.to eq provider(:poise_test_inversion) }
+      end # /context with a subclassed resource using subclass_providers!
+    end # /describe provider resolution
   end # /describe Poise::Helpers::Inversion::Provider
 end
