@@ -19,6 +19,7 @@ require 'chef/node_map'
 require 'chef/provider'
 require 'chef/resource'
 
+require 'poise/backports'
 require 'poise/helpers/defined_in'
 require 'poise/error'
 require 'poise/helpers/inversion/options_resource'
@@ -170,40 +171,48 @@ module Poise
         module ClassMethods
           # @overload inversion_resource()
           #   Return the inversion resource name for this class.
-          #   @return [Symbol]
+          #   @return [Symbo, nill]
           # @overload inversion_resource(val)
           #   Set the inversion resource name for this class. You can pass either
           #   a symbol in DSL format or a resource class that uses Poise. This
           #   name is used to determine which resources the inversion provider is
           #   a candidate for.
           #   @param val [Symbol, Class] Name to set.
-          #   @return [Symbol]
-          def inversion_resource(val=nil)
-            if val
+          #   @return [Symbol, nil]
+          def inversion_resource(val=Poise::NOT_PASSED)
+            if val != Poise::NOT_PASSED
               val = val.resource_name if val.is_a?(Class)
               Chef::Log.debug("[#{self.name}] Setting inversion resource to #{val}")
               @poise_inversion_resource = val.to_sym
             end
-            @poise_inversion_resource || (superclass.respond_to?(:inversion_resource) ? superclass.inversion_resource : nil)
+            if defined?(@poise_inversion_resource)
+              @poise_inversion_resource
+            else
+              Poise::Utils.ancestor_send(self, :inversion_resource, default: nil)
+            end
           end
 
           # @overload inversion_attribute()
           #   Return the inversion attribute name(s) for this class.
-          #   @return [Array<String>]
+          #   @return [Array<String>, nil]
           # @overload inversion_attribute(val)
           #   Set the inversion attribute name(s) for this class. This is
           #   used by {.resolve_inversion_attribute} to load configuration data
           #   from node attributes. To specify a nested attribute pass an array
           #   of strings corresponding to the keys.
           #   @param val [String, Array<String>] Attribute path.
-          #   @return [Array<String>]
-          def inversion_attribute(val=nil)
-            if val
+          #   @return [Array<String>, nil]
+          def inversion_attribute(val=Poise::NOT_PASSED)
+            if val != Poise::NOT_PASSED
               # Coerce to an array of strings.
               val = Array(val).map {|name| name.to_s }
               @poise_inversion_attribute = val
             end
-            @poise_inversion_attribute || (superclass.respond_to?(:inversion_attribute) ? superclass.inversion_attribute : nil)
+            if defined?(@poise_inversion_attribute)
+              @poise_inversion_attribute
+            else
+              Poise::Utils.ancestor_send(self, :inversion_attribute, default: nil)
+            end
           end
 
           # Default attribute paths to check for inversion options. Based on
