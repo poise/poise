@@ -86,7 +86,7 @@ describe Poise::Helpers::ResourceSubclass do
     context 'with a non-poise parent' do
       resource(:non_poise_parent)
       resource(:poise_sub3, parent: :non_poise_parent) do
-        include described_class
+        include Poise
         provides(:poise_sub3)
         subclass_providers!
       end

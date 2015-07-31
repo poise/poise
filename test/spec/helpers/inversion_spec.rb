@@ -276,7 +276,7 @@ describe Poise::Helpers::Inversion do
         default_attributes['poise']['provider'] = 'auto'
       end
       resource(:poise_test_inversion, step_into: false) do
-        include Poise::Helpers::Inversion::Resource
+        include Poise
         provides(:poise_test_inversion)
       end
       provider(:poise_test_inversion) do
