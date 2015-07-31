@@ -267,13 +267,13 @@ module Poise
               # Class-level defaults.
               opts.update(default_inversion_options(node, resource))
               # Resource options for all providers.
-              opts.update(resource.options)
+              opts.update(resource.options) if resource.respond_to?(:options)
               # Global provider from node attributes.
               opts.update(provider: attrs['provider']) if attrs['provider']
               # Attribute options for all providers.
               opts.update(attrs['options']) if attrs['options']
               # Resource options for this provider.
-              opts.update(resource.options(provides))
+              opts.update(resource.options(provides)) if resource.respond_to?(:options)
               # Attribute options for this resource name.
               opts.update(attrs[resource.name]) if attrs[resource.name]
               # Options resource options for all providers.
