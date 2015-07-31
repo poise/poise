@@ -235,6 +235,7 @@ module Poise
           def resolve_inversion_attribute(node)
             # Default to using just the name of the cookbook.
             attribute_names = inversion_attribute || default_inversion_attributes(node)
+            return {} if attribute_names.empty?
             attribute_names.inject(node) do |memo, key|
               memo[key] || begin
                 raise Poise::Error.new("Attribute #{key} not set when expanding inversion attribute for #{self.name}: #{memo}")
