@@ -35,14 +35,63 @@ module PoiseTestSubclass
 end
 
 describe Poise::Helpers::ResourceSubclass do
-  resource(:poise_sub, parent: PoiseTestSubclass::Resource) do
-    provides(:poise_sub)
-    subclass_providers!
-  end
-  recipe do
-    poise_sub 'test'
-  end
+  describe '.subclass_providers!' do
+    resource(:poise_sub, parent: PoiseTestSubclass::Resource) do
+      provides(:poise_sub)
+      subclass_providers!
+    end
+    recipe do
+      poise_sub 'test'
+    end
 
-  it { is_expected.to run_poise_sub('test') }
-  it { expect(chef_run.node.run_state[:really_did_run]).to be true }
+    it { is_expected.to run_poise_sub('test') }
+    it { expect(chef_run.node.run_state[:really_did_run]).to be true }
+  end # /describe .subclass_providers!
+
+  describe '.subclass_resource_equivalents' do
+    let(:test_class) { nil }
+    subject { test_class.subclass_resource_equivalents }
+    resource(:poise_sub, parent: PoiseTestSubclass::Resource) do
+      provides(:poise_sub)
+      subclass_providers!
+    end
+
+    context 'with a top-level class' do
+      let(:test_class) { PoiseTestSubclass::Resource }
+      it { is_expected.to eq %i{poise_test_subclass} }
+    end # /context with a top-level class
+
+    context 'with a subclass' do
+      let(:test_class) { resource(:poise_sub) }
+      it { is_expected.to eq %i{poise_sub poise_test_subclass} }
+    end # /context with a subclass
+
+    context 'with an unpatched subclass' do
+      resource(:poise_sub2, parent: PoiseTestSubclass::Resource) do
+        provides(:poise_sub2)
+      end
+      let(:test_class) { resource(:poise_sub2) }
+      it { is_expected.to eq %i{poise_sub2} }
+    end # /context with an unpatched subclass
+
+    context 'with two subclasses' do
+      resource(:poise_sub2, parent: :poise_sub) do
+        provides(:poise_sub2)
+        subclass_providers!
+      end
+      let(:test_class) { resource(:poise_sub2) }
+      it { is_expected.to eq %i{poise_sub2 poise_sub poise_test_subclass} }
+    end # /context with two subclasses
+
+    context 'with a non-poise parent' do
+      resource(:non_poise_parent)
+      resource(:poise_sub3, parent: :non_poise_parent) do
+        include described_class
+        provides(:poise_sub3)
+        subclass_providers!
+      end
+      let(:test_class) { resource(:poise_sub3) }
+      it { is_expected.to eq %i{poise_sub3 non_poise_parent} }
+    end # /context with a non-poise parent
+  end # /describe .subclass_resource_equivalents
 end

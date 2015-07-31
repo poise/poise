@@ -44,8 +44,23 @@ module Poise
               map[resource_name] = map[superclass_resource_name].dup
             end
           end
+          # Add any needed equivalent names.
+          if superclass.respond_to?(:subclass_resource_equivalents)
+            subclass_resource_equivalents.concat(superclass.subclass_resource_equivalents)
+          else
+            subclass_resource_equivalents << superclass_resource_name
+          end
         end
 
+        # An array of names for the resources this class is equivalent to for
+        # the purposes of provider resolution.
+        #
+        # @return [Array<Symbol>]
+        def subclass_resource_equivalents
+          @subclass_resource_names ||= [resource_name]
+        end
+
+        # @api private
         def included(klass)
           super
           klass.extend(ClassMethods)
