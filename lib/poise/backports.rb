@@ -22,4 +22,6 @@ module Poise
   module Backports
     autoload :NOT_PASSED, 'poise/backports/not_passed'
   end
+
+  autoload :NOT_PASSED, 'poise/backports/not_passed'
 end

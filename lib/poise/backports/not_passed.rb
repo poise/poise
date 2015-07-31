@@ -43,4 +43,10 @@ module Poise
     end
 
   end
+
+  # An alias to {Backports::NOT_PASSED} to avoid typing so much.
+  #
+  # @since 2.3.0
+  # @see Backports::NOT_PASSED
+  NOT_PASSED = Backports::NOT_PASSED
 end

@@ -24,6 +24,7 @@ module Poise
   include Poise::Utils::ResourceProviderMixin
   autoload :Backports, 'poise/backports'
   autoload :Helpers, 'poise/helpers'
+  autoload :NOT_PASSED, 'poise/backports/not_passed'
   autoload :Provider, 'poise/provider'
   autoload :Resource, 'poise/resource'
   autoload :Subcontext, 'poise/subcontext'
