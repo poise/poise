@@ -14,6 +14,7 @@
 # limitations under the License.
 #
 
+require 'poise/error'
 require 'poise/helpers/resource_name'
 
 
@@ -26,9 +27,15 @@ module Poise
       include ResourceName
 
       module ClassMethods
-        def subclass_providers!
+        def subclass_providers!(superclass_resource_name=nil)
           resource_name = self.resource_name
-          superclass_resource_name = superclass.resource_name
+          superclass_resource_name ||= if superclass.respond_to?(:resource_name)
+            superclass.resource_name
+          elsif superclass.respond_to?(:dsl_name)
+            superclass.dsl_name
+          else
+            raise Poise::Error.new("Unable to determine superclass resource name for #{superclass}. Please specify name manually via subclass_providers!('name').")
+          end.to_sym
           # Deal with the node maps.
           node_maps = {}
           node_maps['handler map'] = Chef.provider_handler_map if defined?(Chef.provider_handler_map)
@@ -57,7 +64,7 @@ module Poise
         #
         # @return [Array<Symbol>]
         def subclass_resource_equivalents
-          @subclass_resource_names ||= [resource_name]
+          @subclass_resource_names ||= [resource_name.to_sym]
         end
 
         # @api private
