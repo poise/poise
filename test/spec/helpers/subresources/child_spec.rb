@@ -297,6 +297,20 @@ describe Poise::Helpers::Subresources::Child do
 
       it { is_expected.to run_poise_test('test').with(parent: chef_run.poise_container('first')) }
     end # /context with a default
+
+    context 'setting the parent to itself' do
+      resource(:poise_test) do
+        include described_class
+        parent_type :poise_test
+      end
+      recipe do
+        poise_test 'test' do
+          parent self
+        end
+      end
+
+      it { expect { subject }.to raise_error Poise::Error }
+    end # /context setting the parent to itself
   end # /describe #parent
 
   describe '.parent_type' do

@@ -139,6 +139,7 @@ module Poise
           else
             parent = parent_ref.resource
           end
+          raise Poise::Error.new("Cannot set the #{name} of #{self} to itself") if parent.object_id == self.object_id
           # Store the ivar back.
           instance_variable_set(:"@#{name}", parent_ref)
           # Return the actual resource.
