@@ -78,49 +78,73 @@ describe Poise::Helpers::OptionCollector do
     it { is_expected.to run_poise_test('test').with(options: {'one' => '1'}, value: 2) }
   end # /context with a normal attribute too
 
-  context 'with a parser Proc' do
-    resource(:poise_test) do
-      include Poise::Helpers::LWRPPolyfill
-      include described_class
-      attribute(:options, option_collector: true, parser: proc {|val| parse(val) })
-      def parse(val)
-        {name: val}
+  describe 'parser' do
+    context 'with a parser Proc' do
+      resource(:poise_test) do
+        include Poise::Helpers::LWRPPolyfill
+        include described_class
+        attribute(:options, option_collector: true, parser: proc {|val| parse(val) })
+        def parse(val)
+          {name: val}
+        end
       end
-    end
+      recipe do
+        poise_test 'test' do
+          options '1'
+        end
+      end
+
+      it { is_expected.to run_poise_test('test').with(options: {'name' => '1'}) }
+    end # /context with a parser Proc
+
+    context 'with a parser Symbol' do
+      resource(:poise_test) do
+        include Poise::Helpers::LWRPPolyfill
+        include described_class
+        attribute(:options, option_collector: true, parser: :parse)
+        def parse(val)
+          {name: val}
+        end
+      end
+      recipe do
+        poise_test 'test' do
+          options '1'
+        end
+      end
+
+      it { is_expected.to run_poise_test('test').with(options: {'name' => '1'}) }
+    end # /context with a parser Symbol
+
+    context 'with an invalid parser' do
+      it do
+        expect do
+          resource(:poise_test).send(:attribute, :options, option_collector: true, parser: 'invalid')
+        end.to raise_error(Poise::Error)
+      end
+    end # /context with an invalid parser
+  end # /describe parser
+
+  describe 'forced_keys' do
     recipe do
       poise_test 'test' do
-        options '1'
+        options do
+          name 'foo'
+        end
       end
     end
 
-    it { is_expected.to run_poise_test('test').with(options: {'name' => '1'}) }
-  end # /context with a parser Proc
+    context 'without forced_keys' do
+      it { is_expected.to run_poise_test('test').with(options: {}) }
+    end # /context without forced_keys
 
-  context 'with a parser Symbol' do
-    resource(:poise_test) do
-      include Poise::Helpers::LWRPPolyfill
-      include described_class
-      attribute(:options, option_collector: true, parser: :parse)
-      def parse(val)
-        {name: val}
+    context 'with forced_keys' do
+      resource(:poise_test) do
+        include described_class
+        attribute(:options, option_collector: true, forced_keys: %i{name})
       end
-    end
-    recipe do
-      poise_test 'test' do
-        options '1'
-      end
-    end
-
-    it { is_expected.to run_poise_test('test').with(options: {'name' => '1'}) }
-  end # /context with a parser Symbol
-
-  context 'with an invalid parse' do
-    it do
-      expect do
-        resource(:poise_test).send(:attribute, :options, option_collector: true, parser: 'invalid')
-      end.to raise_error(Poise::Error)
-    end
-  end # /context with an invalid parser
+      it { is_expected.to run_poise_test('test').with(options: {'name' => 'foo'}) }
+    end # /context with forced_keys
+  end # /describe forced_keys
 
   # TODO: Write tests for mixed symbol/string data
 end

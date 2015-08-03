@@ -44,18 +44,25 @@ module Poise
       class OptionEvalContext
         attr_reader :_options
 
-        def initialize(parent)
+        def initialize(parent, forced_keys)
           @parent = parent
+          @forced_keys = forced_keys
           @_options = {}
         end
 
         def method_missing(method_sym, *args, &block)
+          # Deal with forced keys.
+          if @forced_keys.include?(method_sym)
+            @_options[method_sym] = args.first || block if !args.empty? || block
+            return @_options[method_sym]
+          end
+          # Try the resource context.
           @parent.send(method_sym, *args, &block)
         rescue NameError
           # Even though method= in the block will set a variable instead of
           # calling method_missing, still try to cope in case of self.method=.
           method_sym = method_sym.to_s.chomp('=').to_sym
-          if args.length > 0 || block
+          if !args.empty? || block
             @_options[method_sym] = args.first || block
           elsif !@_options.include?(method_sym)
             # We haven't seen this name before, re-raise the NameError.
@@ -86,8 +93,12 @@ module Poise
         # @param parser [Proc, Symbol] Optional parser method. If a symbol it is
         #   called as a method on self. Takes a non-hash value and returns a
         #   hash of its parsed representation.
-        def option_collector_attribute(name, default: {}, parser: nil)
+        # @param forced_keys [Array<Symbol>, Set<Symbol>] Method names that will be forced
+        #   to be options rather than calls to the parent resource.
+        def option_collector_attribute(name, default: {}, parser: nil, forced_keys: Set.new)
           raise Poise::Error.new("Parser must be a Proc or Symbol: #{parser.inspect}") if parser && !(parser.is_a?(Proc) || parser.is_a?(Symbol))
+          # Cast to a set at definition time.
+          forced_keys = Set.new(forced_keys) unless forced_keys.is_a?(Set)
           # Unlike LWRPBase.attribute, I don't care about Ruby 1.8. Worlds tiniest violin.
           define_method(name.to_sym) do |arg=nil, &block|
             iv_sym = :"@#{name}"
@@ -110,7 +121,7 @@ module Poise
               value.update(arg)
             end
             if block
-              ctx = OptionEvalContext.new(self)
+              ctx = OptionEvalContext.new(self, forced_keys)
               ctx.instance_exec(&block)
               value.update(ctx._options)
             end

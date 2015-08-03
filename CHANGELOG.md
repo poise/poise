@@ -9,6 +9,8 @@
 * New feature: parent attribute defaults. You can set a `parent_default` to
   provide a default value for the parent of a resource. This supports the
   `lazy { }` helper as with normal default values.
+* New feature: use `forced_keys: [:name]` on an option collector property to
+  force keys that would otherwise be clobbered by resource methods.
 * Can enable verbose logging mode via a node attribute in addition to an
   environment variable.
 
