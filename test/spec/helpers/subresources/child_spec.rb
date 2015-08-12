@@ -352,6 +352,15 @@ describe Poise::Helpers::Subresources::Child do
       it { is_expected.to eq :something }
     end # /context set to a symbol
 
+    context 'set to true' do
+      resource(:poise_test) do
+        include described_class
+        parent_type true
+      end
+
+      it { is_expected.to eq true }
+    end # /context set to true
+
     context 'set to an invalid value' do
       resource(:poise_test) do
         include described_class
@@ -385,6 +394,20 @@ describe Poise::Helpers::Subresources::Child do
 
       it { is_expected.to eq :something }
     end # /context set via a mixin
+
+    context 'set to true via a mixin' do
+      # Various scoping shenanigans.
+      described = described_class
+      test_mod = Module.new do
+        include described
+        parent_type true
+      end
+      resource(:poise_test) do
+        include test_mod
+      end
+
+      it { is_expected.to eq true }
+    end # /context set to true via a mixin
 
     context 'set via multiple mixins' do
       # Various scoping shenanigans.
