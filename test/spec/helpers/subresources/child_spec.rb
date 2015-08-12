@@ -384,7 +384,26 @@ describe Poise::Helpers::Subresources::Child do
       end
 
       it { is_expected.to eq :something }
-    end
+    end # /context set via a mixin
+
+    context 'set via multiple mixins' do
+      # Various scoping shenanigans.
+      described = described_class
+      test_mod1 = Module.new do
+        include described
+        parent_type :something
+      end
+      test_mod2 = Module.new do
+        include described
+        parent_type true
+      end
+      resource(:poise_test) do
+        include test_mod1
+        include test_mod2
+      end
+
+      it { is_expected.to eq :something }
+    end # context set via multiple mixins
   end # /describe .parent_type
 
   describe '.parent_optional' do
