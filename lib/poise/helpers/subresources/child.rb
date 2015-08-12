@@ -160,7 +160,7 @@ module Poise
               # Setting to true shouldn't actually do anything if a type was already set.
               @parent_type = type unless type == true && !@parent_type.nil?
             end
-            @parent_type || Poise::Utils.ancestor_send(self, :parent_type, default: Chef::Resource)
+            @parent_type || Poise::Utils.ancestor_send(self, :parent_type, ignore: [Chef::Resource, true]) || Poise::Utils.ancestor_send(self, :parent_type, default: Chef::Resource)
           end
 
           # @overload parent_optional()
