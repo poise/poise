@@ -219,6 +219,37 @@ describe Poise::Utils do
       end
 
       its(:poise_test_val) { is_expected.to eq :child1 }
+
+      context 'with ignorable values' do
+        let(:mod_parent) do
+          Module.new do
+            class_methods = Module.new do
+              def poise_test_val(val=nil)
+                if val
+                  @poise_test_val = val
+                end
+                @poise_test_val || Poise::Utils.ancestor_send(self, :poise_test_val, ignore: [true])
+              end
+
+              define_method(:included) do |klass|
+                super(klass)
+                klass.extend(class_methods)
+              end
+            end
+
+            extend class_methods
+          end
+        end
+        let(:mod_child2) do
+          parent = mod_parent
+          Module.new do
+            include parent
+            poise_test_val(true)
+          end
+        end
+
+        its(:poise_test_val) { is_expected.to eq :child1 }
+      end # /context with ignorable values
     end # /context with a branching ancestor tree
   end # /describe .ancestor_send
 end

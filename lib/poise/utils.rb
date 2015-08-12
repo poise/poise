@@ -69,14 +69,17 @@ module Poise
     # Try to find an ancestor to call a method on.
     #
     # @since 2.2.3
+    # @since 2.3.0
+    #   Added ignore parameter.
     # @param obj [Object] Self from the caller.
     # @param msg [Symbol] Method to try to call.
     # @param args [Array<Object>] Method arguments.
     # @param default [Object] Default return value if no valid ancestor exists.
+    # @param ignore [Array<Object>] Return value to ignore when scanning ancesors.
     # @return [Object]
     # @example
     #   val = @val || Poise::Utils.ancestor_send(self, :val)
-    def ancestor_send(obj, msg, *args, default: nil)
+    def ancestor_send(obj, msg, *args, default: nil, ignore: [default])
       # Class is a subclass of Module, if we get something else use its class.
       obj = obj.class unless obj.is_a?(Module)
       ancestors = []
@@ -90,7 +93,7 @@ module Poise
         if mod.respond_to?(msg)
           val = mod.send(msg, *args)
           # If we get the default back, assume we should keep trying.
-          return val if val != default
+          return val unless ignore.include?(val)
         end
       end
       # Nothing valid found, use the default.
