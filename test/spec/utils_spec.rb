@@ -194,5 +194,31 @@ describe Poise::Utils do
 
       its(:poise_test_val) { is_expected.to be_nil }
     end # /context with no value set
+
+    context 'with a branching ancestor tree' do
+      let(:mod_child1) do
+        parent = mod_parent
+        Module.new do
+          include parent
+          poise_test_val(:child1)
+        end
+      end
+      let(:mod_child2) do
+        parent = mod_parent
+        Module.new do
+          include parent
+        end
+      end
+      subject do
+        mod1 = mod_child1
+        mod2 = mod_child2
+        Class.new do
+          include mod1
+          include mod2
+        end
+      end
+
+      its(:poise_test_val) { is_expected.to eq :child1 }
+    end # /context with a branching ancestor tree
   end # /describe .ancestor_send
 end

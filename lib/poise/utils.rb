@@ -86,12 +86,15 @@ module Poise
       end
       # Make sure we don't check obj itself.
       ancestors.concat(obj.ancestors.drop(1))
-      ancestor = ancestors.find {|mod| mod.respond_to?(msg) }
-      if ancestor
-        ancestor.send(msg, *args)
-      else
-        default
+      ancestors.each do |mod|
+        if mod.respond_to?(msg)
+          val = mod.send(msg, *args)
+          # If we get the default back, assume we should keep trying.
+          return val if val != default
+        end
       end
+      # Nothing valid found, use the default.
+      default
     end
 
   end
