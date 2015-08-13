@@ -59,6 +59,16 @@ module ResourceProviderMixinTest
     include Test
     include Test2
   end
+
+  module Mixins
+    module Resource
+      include Test
+    end
+
+    module Provider
+      include Test
+    end
+  end
 end
 
 describe Poise::Utils::ResourceProviderMixin do
@@ -85,4 +95,16 @@ describe Poise::Utils::ResourceProviderMixin do
       it { is_expected.to be < ResourceProviderMixinTest::Test2::Provider }
     end
   end # /context with nested usage
+
+  context 'with a mixin' do
+    context 'in a resource' do
+      subject { ResourceProviderMixinTest::Mixins::Resource }
+      it { is_expected.to include ResourceProviderMixinTest::Test::Resource }
+    end
+
+    context 'in a provider' do
+      subject { ResourceProviderMixinTest::Mixins::Provider }
+      it { is_expected.to include ResourceProviderMixinTest::Test::Provider }
+    end
+  end # /context with a mixin
 end

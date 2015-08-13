@@ -48,10 +48,10 @@ module Poise
             # Cargo this .included to things which include us.
             inner_klass.extend(mod)
             # Dispatch to submodules, inner_klass is the most recent includer.
-            if inner_klass < Chef::Resource
+            if inner_klass < Chef::Resource || inner_klass.name.to_s.end_with?('::Resource')
               # Use klass::Resource to look up relative to the original module.
               inner_klass.class_exec { include klass::Resource }
-            elsif inner_klass < Chef::Provider
+            elsif inner_klass < Chef::Provider || inner_klass.name.to_s.end_with?('::Provider')
               # As above, klass::Provider.
               inner_klass.class_exec { include klass::Provider }
             end
