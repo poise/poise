@@ -100,5 +100,72 @@ module Poise
       default
     end
 
+    # Create a helper to invoke a module with some parameters.
+    #
+    # @since 2.3.0
+    # @param mod [Module] The module to wrap.
+    # @param block [Proc] The module to implement to parameterization.
+    # @return [void]
+    # @example
+    #   module MyMixin
+    #     def self.my_mixin_name(name)
+    #       # ...
+    #     end
+    #   end
+    #
+    #   Poise::Utils.parameterized_module(MyMixin) do |name|
+    #     my_mixin_name(name)
+    #   end
+    def parameterized_module(mod, &block)
+      raise Poise::Error.new("Cannot parameterize an anonymous module") unless mod.name && !mod.name.empty?
+      parent_name_parts = mod.name.split(/::/)
+      # Grab the last piece which will be the method name.
+      mod_name = parent_name_parts.pop
+      # Find the enclosing module or class object.
+      parent = parent_name_parts.inject(Object) {|memo, name| memo.const_get(name) }
+      # Object is a special case since we need #define_method instead.
+      method_type = if parent == Object
+        :define_method
+      else
+        :define_singleton_method
+      end
+      # Scoping hack.
+      self_ = self
+      # Construct the method.
+      parent.send(method_type, mod_name) do |*args|
+        self_.send(:check_block_arity!, block, args)
+        # Create a new anonymous module to be returned from the method.
+        Module.new do
+          # Fake the name.
+          define_singleton_method(:name) do
+            super() || mod.name
+          end
+
+          # When the stub module gets included, activate our behaviors.
+          define_singleton_method(:included) do |klass|
+            super(klass)
+            klass.send(:include, mod)
+            klass.instance_exec(*args, &block)
+          end
+        end
+      end
+    end
+
+    private
+
+    # Check that the given arguments match the given block. This is needed
+    # because Ruby will nil-pad mismatched argspecs on blocks rather than error.
+    #
+    # @since 2.3.0
+    # @param block [Proc] Block to check.
+    # @param args [Array<Object>] Arguments to check.
+    # @return [void]
+    def check_block_arity!(block, args)
+      required_args = block.arity < 0 ? ~block.arity : block.arity
+      if args.length < required_args || (block.arity >= 0 && args.length > block.arity)
+        raise ArgumentError.new("wrong number of arguments (#{args.length} for #{required_args}#{block.arity < 0 ? '+' : ''})")
+      end
+    end
+
   end
 end

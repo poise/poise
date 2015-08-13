@@ -17,6 +17,48 @@
 require 'spec_helper'
 require 'chef/cookbook_version'
 
+module PoiseUtilsSpecTopLevel
+  module ClassMethods
+    def something(name=nil)
+      @something = name if name
+      @something
+    end
+
+    def included(klass)
+      super
+      klass.extend(ClassMethods)
+    end
+  end
+
+  extend ClassMethods
+end
+
+Poise::Utils.parameterized_module(PoiseUtilsSpecTopLevel) do |name|
+  something(name)
+end
+
+module PoiseUtilsSpecNested
+  module Inner
+    module ClassMethods
+      def something(name=nil)
+        @something = name if name
+        @something
+      end
+
+      def included(klass)
+        super
+        klass.extend(ClassMethods)
+      end
+    end
+
+    extend ClassMethods
+  end
+end
+
+Poise::Utils.parameterized_module(PoiseUtilsSpecNested::Inner) do |name|
+  something(name)
+end
+
 describe Poise::Utils do
   describe '.find_cookbook_name' do
     let(:cookbooks) { [] }
@@ -252,4 +294,89 @@ describe Poise::Utils do
       end # /context with ignorable values
     end # /context with a branching ancestor tree
   end # /describe .ancestor_send
+
+  describe '.parameterized_module' do
+    context 'with a top-level module' do
+      subject do
+        Module.new do
+          include PoiseUtilsSpecTopLevel('top')
+        end
+      end
+
+      its(:something) { is_expected.to eq 'top' }
+    end # /context with a top-level module
+
+    context 'with a nested module' do
+      subject do
+        Module.new do
+          include PoiseUtilsSpecNested::Inner('inner')
+        end
+      end
+
+      its(:something) { is_expected.to eq 'inner' }
+    end # /context with a nested module
+
+    context 'with an anonymous module' do
+      subject { Poise::Utils.parameterized_module(Module.new) }
+      it { expect { subject }.to raise_error Poise::Error }
+    end # /context with an anonymous module
+
+    context 'with the wrong arugments' do
+      subject { PoiseUtilsSpecTopLevel('top', 'other') }
+      it { expect { subject }.to raise_error ArgumentError }
+    end # /context with the wrong arugments
+  end # /describe .parameterized_module
+
+  describe '.check_block_arity!' do
+    let(:block) { }
+    let(:args) { }
+    subject { Poise::Utils.send(:check_block_arity!, block, args) }
+
+    context 'with a positive arity' do
+      let(:block) do
+        proc {|a, b| nil }
+      end
+
+      context 'with 0 arguments' do
+        let(:args) { [] }
+        it { expect { subject }.to raise_error ArgumentError, /wrong number of arguments \(0 for 2\)/ }
+      end # /context with 0 arguments
+
+      context 'with 1 argument' do
+        let(:args) { [1] }
+        it { expect { subject }.to raise_error ArgumentError, /wrong number of arguments \(1 for 2\)/ }
+      end # /context with 1 argument
+
+      context 'with 2 arguments' do
+        let(:args) { [1, 2] }
+        it { expect { subject }.to_not raise_error }
+      end # /context with 2 arguments
+
+      context 'with 3 arguments' do
+        let(:args) { [1, 2, 3] }
+        it { expect { subject }.to raise_error ArgumentError, /wrong number of arguments \(3 for 2\)/ }
+      end # /context with 3 arguments
+    end # /context with a positive arity
+
+    context 'with a negative arity' do
+      let(:block) do
+        proc {|a, *b| nil }
+      end
+
+      context 'with 0 arguments' do
+        let(:args) { [] }
+        it { expect { subject }.to raise_error ArgumentError, /wrong number of arguments \(0 for 1\+\)/ }
+      end # /context with 0 arguments
+
+      context 'with 1 argument' do
+        let(:args) { [1] }
+        it { expect { subject }.to_not raise_error }
+      end # /context with 1 argument
+
+      context 'with 2 arguments' do
+        let(:args) { [1, 2] }
+        it { expect { subject }.to_not raise_error }
+      end # /context with 2 arguments
+    end # /context with a negative arity
+  end # /describe .check_block_arity!
 end
