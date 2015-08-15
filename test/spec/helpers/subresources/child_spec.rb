@@ -40,6 +40,16 @@ describe Poise::Helpers::Subresources::Child do
       it { is_expected.to run_poise_test('test').with(parent: container) }
     end # /context with an automatic parent
 
+    context 'with an automatic parent and an extra container' do
+      recipe do
+        poise_container 'test'
+        poise_test 'test'
+        poise_container 'other'
+      end
+
+      it { is_expected.to run_poise_test('test').with(parent: container) }
+    end # /context with an automatic parent and an extra container
+
     context 'with a resource parent' do
       recipe do
         c = poise_container 'test'
@@ -50,6 +60,18 @@ describe Poise::Helpers::Subresources::Child do
 
       it { is_expected.to run_poise_test('test').with(parent: container) }
     end # /context with a resource parent
+
+    context 'with a resource parent and an extra container' do
+      recipe do
+        c = poise_container 'test'
+        poise_container 'other'
+        poise_test 'test' do
+          parent c
+        end
+      end
+
+      it { is_expected.to run_poise_test('test').with(parent: container) }
+    end # /context with a resource parent and an extra container
 
     context 'with a string name parent' do
       recipe do
@@ -597,4 +619,22 @@ describe Poise::Helpers::Subresources::Child do
       it { is_expected.to include 'parent nil' }
     end # /context without a parent
   end # /describe ParentRef
+
+  describe 'regression test for ordering bug' do
+    resource(:poise_test) do
+      include Poise
+      include Module.new {
+        include Poise::Resource
+        poise_subresource(true)
+        parent_attribute(:container, type: :poise_container, optional: true)
+      }
+    end
+    recipe do
+      poise_container 'one'
+      poise_test 'test'
+      poise_container 'two'
+    end
+
+    it { is_expected.to run_poise_test('test').with(parent_container: chef_run.poise_container('one')) }
+  end # /describe regression test for ordering bug
 end

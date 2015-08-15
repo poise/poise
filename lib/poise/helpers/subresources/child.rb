@@ -245,7 +245,7 @@ module Poise
           def parent_attributes
             {}.tap do |attrs|
               # Grab superclass's attributes if possible.
-              attrs.update(superclass.parent_attributes) if superclass.respond_to?(:parent_attributes)
+              attrs.update(Poise::Utils.ancestor_send(self, :parent_attributes, default: {}))
               # Local default parent.
               attrs[:parent] = parent_type
               # Extra locally defined parents.
