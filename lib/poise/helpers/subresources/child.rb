@@ -71,7 +71,7 @@ module Poise
           super
           self.class.parent_attributes.each_key do |name|
             parent = self.send(name)
-            parent.register_subresource(self) if parent
+            parent.register_subresource(self) if parent && parent.respond_to?(:register_subresource)
           end
         end
 
