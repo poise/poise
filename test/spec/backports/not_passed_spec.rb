@@ -18,8 +18,12 @@ require 'spec_helper'
 
 describe Poise::Backports::NOT_PASSED do
   it { is_expected.to be_truthy }
+  its(:to_s) { is_expected.to eq 'NOT_PASSED' }
+  its(:inspect) { is_expected.to eq 'NOT_PASSED' }
 end
 
 describe Poise::NOT_PASSED do
   it { is_expected.to be_truthy }
+  its(:to_s) { is_expected.to eq 'NOT_PASSED' }
+  its(:inspect) { is_expected.to eq 'NOT_PASSED' }
 end
