@@ -118,6 +118,9 @@ module Poise
               define_singleton_method(:name) do
                 "#{enclosing_class}::OptionsResource"
               end
+              define_singleton_method(:inversion_resource_class) do
+                enclosing_class
+              end
               provides(options_resource_name)
               inversion_resource(name)
             end
@@ -126,6 +129,9 @@ module Poise
               include Poise::Helpers::Inversion::OptionsProvider
               define_singleton_method(:name) do
                 "#{enclosing_class}::OptionsProvider"
+              end
+              define_singleton_method(:inversion_resource_class) do
+                enclosing_class
               end
               provides(options_resource_name)
             end
