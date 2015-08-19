@@ -78,6 +78,18 @@ describe Poise::Helpers::OptionCollector do
     it { is_expected.to run_poise_test('test').with(options: {'one' => '1'}, value: 2) }
   end # /context with a normal attribute too
 
+  context 'with an invalid key' do
+    recipe do
+      poise_test 'test' do
+        options do
+          one two
+        end
+      end
+    end
+
+    it { expect { subject }.to raise_error NoMethodError }
+  end # /context with an invalid key
+
   describe 'parser' do
     context 'with a parser Proc' do
       resource(:poise_test) do

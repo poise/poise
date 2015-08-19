@@ -304,6 +304,7 @@ describe Poise::Utils do
       end
 
       its(:something) { is_expected.to eq 'top' }
+      it { expect(PoiseUtilsSpecTopLevel('top').name).to eq 'PoiseUtilsSpecTopLevel' }
     end # /context with a top-level module
 
     context 'with a nested module' do
@@ -314,6 +315,7 @@ describe Poise::Utils do
       end
 
       its(:something) { is_expected.to eq 'inner' }
+      it { expect(PoiseUtilsSpecNested::Inner('inner').name).to eq 'PoiseUtilsSpecNested::Inner' }
     end # /context with a nested module
 
     context 'with an anonymous module' do
