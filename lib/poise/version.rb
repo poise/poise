@@ -16,5 +16,5 @@
 
 
 module Poise
-  VERSION = '2.3.0.pre'
+  VERSION = '2.3.0'
 end
