@@ -131,7 +131,7 @@ module Poise
               # Automatic sibling lookup for sequential composition.
               # Find the last instance of the parent class as the default parent.
               # This is super flaky and should only be a last resort.
-              parent = Poise::Helpers::Subresources::DefaultContainers.find(parent_type, run_context)
+              parent = Poise::Helpers::Subresources::DefaultContainers.find(parent_type, run_context, self_resource: self)
             end
             # Can't find a valid parent, if it wasn't optional raise an error.
             raise Poise::Error.new("No #{name} found for #{self}") unless parent || parent_optional
