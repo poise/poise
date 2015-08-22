@@ -333,6 +333,23 @@ describe Poise::Helpers::Subresources::Child do
 
       it { expect { subject }.to raise_error Poise::Error }
     end # /context setting the parent to itself
+
+    context 'when possibly setting to self via default' do
+      resource(:poise_test) do
+        include described_class
+        include Poise::Helpers::ResourceName
+        include Poise::Helpers::Subresources::Container
+        parent_type :poise_test
+        parent_optional true
+      end
+      recipe do
+        poise_test 'one'
+        poise_test 'two'
+      end
+
+      it { is_expected.to run_poise_test('one').with(parent: nil) }
+      it { is_expected.to run_poise_test('two').with(parent: chef_run.poise_test('one')) }
+    end # /context when possibly setting to self via default
   end # /describe #parent
 
   describe '.parent_type' do
