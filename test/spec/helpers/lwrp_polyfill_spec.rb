@@ -149,6 +149,18 @@ describe Poise::Helpers::LWRPPolyfill do
         it { is_expected.to be_a Chef::Resource }
         it { is_expected.to_not be_a resource(:poise_test) }
       end # context with no new_resource
+
+      context 'calling super' do
+        provider(:poise_test, auto: false) do
+          include described_class
+          def load_current_resource
+            super.tap do |current_resource|
+              current_resource.name('other')
+            end
+          end
+        end
+        its(:name) { is_expected.to eq 'other' }
+      end # /context calling super
     end # /describe load_current_resource override
 
     describe 'Chef::DSL::Recipe include' do
