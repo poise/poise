@@ -380,5 +380,21 @@ describe Poise::Utils do
         it { expect { subject }.to_not raise_error }
       end # /context with 2 arguments
     end # /context with a negative arity
+
+    context 'with **' do
+      let(:block) do
+        proc {|a, **b| nil }
+      end
+
+      context 'with 0 arguments' do
+        let(:args) { [] }
+        it { expect { subject }.to raise_error ArgumentError, /wrong number of arguments \(0 for 1\+\)/ }
+      end # /context with 0 arguments
+
+      context 'with 1 argument' do
+        let(:args) { [1] }
+        it { expect { subject }.to_not raise_error }
+      end # /context with 1 argument
+    end # /context with **
   end # /describe .check_block_arity!
 end
