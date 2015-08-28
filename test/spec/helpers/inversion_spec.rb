@@ -15,6 +15,7 @@
 #
 
 require 'spec_helper'
+require 'chef/provider_resolver'
 
 describe Poise::Helpers::Inversion do
   describe Poise::Helpers::Inversion::Resource do
