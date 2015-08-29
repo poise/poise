@@ -224,4 +224,66 @@ describe Poise::Helpers::Subresources::Container do
     it { is_expected.to run_poise_sub('test') }
     it { is_expected.to run_inner('test::one') }
   end # /describe subclassing a container
+
+  describe 'triple nesting' do
+    resource(:poise_grandparent) do
+      include described_class
+      attr_accessor :order
+    end
+    provider(:poise_grandparent) do
+      def action_run
+        new_resource.order = (node.run_state[:order] += 1)
+      end
+    end
+    resource(:poise_parent) do
+      include described_class
+      include Poise::Helpers::Subresources::Child
+      parent_type :poise_grandparent
+      attr_accessor :order
+    end
+    provider(:poise_parent) do
+      def action_run
+        new_resource.order = (node.run_state[:order] += 1)
+      end
+    end
+    resource(:poise_child) do
+      include described_class
+      include Poise::Helpers::Subresources::Child
+      parent_type :poise_parent
+      attr_accessor :order
+    end
+    provider(:poise_child) do
+      def action_run
+        new_resource.order = (node.run_state[:order] += 1)
+      end
+    end
+
+    context 'nested' do
+      recipe do
+        node.run_state[:order] = 0
+        poise_grandparent 'one' do
+          poise_parent 'two' do
+            poise_child 'three'
+          end
+        end
+      end
+
+      it { is_expected.to run_poise_grandparent('one').with(order: 1) }
+      it { is_expected.to run_poise_parent('one::two').with(parent: chef_run.poise_grandparent('one'), order: 2) }
+      it { is_expected.to run_poise_child('one::two::three').with(parent: chef_run.poise_parent('one::two'), order: 3) }
+    end # /context nested
+
+    context 'un-nested' do
+      recipe do
+        node.run_state[:order] = 0
+        poise_grandparent 'one'
+        poise_parent 'two'
+        poise_child 'three'
+      end
+
+      it { is_expected.to run_poise_grandparent('one').with(order: 1) }
+      it { is_expected.to run_poise_parent('two').with(parent: chef_run.poise_grandparent('one'), order: 2) }
+      it { is_expected.to run_poise_child('three').with(parent: chef_run.poise_parent('two'), order: 3) }
+    end # /context un-nested
+  end # /describe triple nesting
 end
