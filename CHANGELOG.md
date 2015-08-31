@@ -1,5 +1,9 @@
 # Changelog
 
+## v2.3.2
+
+* Improve handling of deeply nested subresources.
+
 ## v2.3.1
 
 * Ensure a container with a parent link to its own type doesn't use self as the
