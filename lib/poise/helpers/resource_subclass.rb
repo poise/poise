@@ -57,6 +57,7 @@ module Poise
           else
             subclass_resource_equivalents << superclass_resource_name
           end
+          subclass_resource_equivalents.uniq!
         end
 
         # An array of names for the resources this class is equivalent to for
