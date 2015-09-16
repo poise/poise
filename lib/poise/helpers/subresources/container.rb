@@ -144,11 +144,19 @@ module Poise
           resource.first
         end
 
+        # Register a resource as part of this container. Returns true if the
+        # resource was added to the collection and false if it was already
+        # known.
+        #
+        # @note Return value added in 2.4.0.
+        # @return [Boolean]
         def register_subresource(resource)
           subresources.lookup(resource)
+          false
         rescue Chef::Exceptions::ResourceNotFound
           Chef::Log.debug("[#{self}] Adding #{resource} to subresources")
           subresources.insert(resource)
+          true
         end
 
         private
