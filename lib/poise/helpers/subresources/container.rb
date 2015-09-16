@@ -84,11 +84,23 @@ module Poise
             end
             @run_context.resource_collection.insert(order_fixer)
             @subcontexts.each do |ctx|
+              # Copy all resources to the outer context.
               ctx.resource_collection.each do |r|
                 Chef::Log.debug("   * #{r}")
                 # Fix the subresource to use the outer run context.
                 r.run_context = @run_context
                 @run_context.resource_collection.insert(r)
+              end
+              # Copy all notifications to the outer context.
+              %w{immediate delayed}.each do |notification_type|
+                ctx.send(:"#{notification_type}_notification_collection").each do |key, notifications|
+                  notifications.each do |notification|
+                    parent_notifications = @run_context.send(:"#{notification_type}_notification_collection")[key]
+                    unless parent_notifications.any? { |existing_notification| existing_notification.duplicates?(notification) }
+                      parent_notifications << notification
+                    end
+                  end
+                end
               end
             end
             Chef::Log.debug("Collection: #{@run_context.resource_collection.map(&:to_s).join(', ')}")

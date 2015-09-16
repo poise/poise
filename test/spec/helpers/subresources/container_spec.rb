@@ -286,4 +286,54 @@ describe Poise::Helpers::Subresources::Container do
       it { is_expected.to run_poise_child('three').with(parent: chef_run.poise_parent('two'), order: 3) }
     end # /context un-nested
   end # /describe triple nesting
+
+  describe 'subresources with notifications' do
+    step_into(:ruby_block)
+    resource(:poise_parent) do
+      include described_class
+    end
+    provider(:poise_parent)
+    resource(:poise_child) do
+      include Poise::Helpers::Subresources::Child
+      parent_type :poise_parent
+    end
+    provider(:poise_child) do
+      def action_run
+        new_resource.updated_by_last_action(true)
+      end
+    end
+    subject { chef_run.node.run_state['poise_notified'] }
+
+    context 'delayed notification' do
+      recipe(subject: false) do
+        ruby_block 'one' do
+          action :nothing
+          block { node.run_state['poise_notified'] = true }
+        end
+        poise_parent 'two' do
+          poise_child 'three' do
+            notifies :run, 'ruby_block[one]', :delayed
+          end
+        end
+      end
+
+      it { is_expected.to be true }
+    end # /context delayed notification
+
+    context 'immediate notification' do
+      recipe(subject: false) do
+        ruby_block 'one' do
+          action :nothing
+          block { node.run_state['poise_notified'] = true }
+        end
+        poise_parent 'two' do
+          poise_child 'three' do
+            notifies :run, 'ruby_block[one]', :immediately
+          end
+        end
+      end
+
+      it { is_expected.to be true }
+    end # /context immediate notification
+  end # /describe subresources with notifications
 end
