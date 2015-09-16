@@ -31,6 +31,10 @@ module Poise
         # is used to show the value of @subresources during Chef's error formatting.
         # @api private
         class NoPrintingResourceCollection < Chef::ResourceCollection
+          def inspect
+            to_text
+          end
+
           def to_text
             "[#{all_resources.map(&:to_s).join(', ')}]"
           end
@@ -193,6 +197,7 @@ module Poise
             super
             klass.extend(ClassMethods)
             klass.const_get(:HIDDEN_IVARS) << :@subcontexts
+            klass.const_get(:FORBIDDEN_IVARS) << :@subcontexts
           end
         end
 

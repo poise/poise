@@ -37,6 +37,10 @@ module Poise
             @resource = resource
           end
 
+          def inspect
+            to_text
+          end
+
           def to_text
             if @resource.nil?
               'nil'
