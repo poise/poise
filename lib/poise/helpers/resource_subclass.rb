@@ -27,8 +27,8 @@ module Poise
       include ResourceName
 
       module ClassMethods
-        def subclass_providers!(superclass_resource_name=nil)
-          resource_name = self.resource_name
+        def subclass_providers!(superclass_resource_name=nil, resource_name: nil)
+          resource_name ||= self.resource_name
           superclass_resource_name ||= if superclass.respond_to?(:resource_name)
             superclass.resource_name
           elsif superclass.respond_to?(:dsl_name)
