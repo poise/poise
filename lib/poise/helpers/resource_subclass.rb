@@ -51,6 +51,10 @@ module Poise
               map[resource_name] = map[superclass_resource_name].dup
             end
           end
+          # Copy any inversion map entries.
+          superclass_inversion_node_map = Poise::Helpers::Inversion.provider_map(superclass_resource_name)
+          superclass_inversion_map = superclass_inversion_node_map.respond_to?(:map, true) ? superclass_inversion_node_map.send(:map) : superclass_inversion_node_map.instance_variable_get(:@map)
+          Poise::Helpers::Inversion.provider_map(resource_name).instance_variable_set(:@map, superclass_inversion_map)
           # Add any needed equivalent names.
           if superclass.respond_to?(:subclass_resource_equivalents)
             subclass_resource_equivalents.concat(superclass.subclass_resource_equivalents)
