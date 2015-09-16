@@ -29,7 +29,7 @@ module PoiseTestSubclass
     include Poise
     provides(:poise_test_subclass)
     def action_run
-      node.run_state[:really_did_run] = true
+      (node.run_state[:really_did_run] ||= []) << new_resource.name
     end
   end
 end
@@ -45,7 +45,24 @@ describe Poise::Helpers::ResourceSubclass do
     end
 
     it { is_expected.to run_poise_sub('test') }
-    it { expect(chef_run.node.run_state[:really_did_run]).to be true }
+    it { expect(chef_run.node.run_state[:really_did_run]).to eq %w{test} }
+
+    context 'with multiple resource names' do
+      before { step_into << :poise_test_subclass_other_name }
+      resource(:poise_sub, parent: PoiseTestSubclass::Resource) do
+        provides(:poise_sub)
+        provides(:poise_test_subclass_other_name)
+        subclass_providers!
+      end
+      recipe do
+        poise_sub 'test'
+        poise_test_subclass_other_name 'test2'
+      end
+
+      it { is_expected.to run_poise_sub('test') }
+      it { is_expected.to ChefSpec::Matchers::ResourceMatcher.new('poise_test_subclass_other_name', 'run', 'test2') }
+      it { expect(chef_run.node.run_state[:really_did_run]).to eq %w{test test2} }
+    end # /context with multiple resource names
   end # /describe .subclass_providers!
 
   describe '.subclass_resource_equivalents' do
