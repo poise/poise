@@ -1,5 +1,13 @@
 # Changelog
 
+## v2.4.0
+
+* Added return value to `Container#register_subresource` to track if the resource
+  was already added.
+* Improve inspect output for subresources and containers.
+* Ensure notifications work with subresources.
+* Inversion providers process name equivalences.
+
 ## v2.3.2
 
 * Improve handling of deeply nested subresources.
