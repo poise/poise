@@ -26,13 +26,8 @@ module Poise
     #
     # @api private
     # @since 1.0.0
-    class ResourceCollection < Chef::ResourceCollection
+    module ResourceCollection
       attr_accessor :parent
-
-      def initialize(parent)
-        @parent = parent
-        super()
-      end
 
       def lookup(resource)
         super

@@ -29,29 +29,36 @@ module Poise
       def subcontext_block(parent_context=nil, &block)
         # Setup a subcontext.
         parent_context ||= @run_context
-        sub_run_context = parent_context.dup
-        # Reset state for the subcontext. In 12.4+ this uses the built-in
-        # support, otherwise do it manually.
-        if defined?(sub_run_context.initialize_child_state)
-          sub_run_context.initialize_child_state
+        if defined?(parent_context.create_child)
+          # In 12.4+, we can just use create_child to wire up the parent and child
+          sub_run_context = parent_context.create_child
         else
+          # Pre-12.4, we need to do the init manually
+          sub_run_context = parent_context.dup
+          # Reset state for the subcontext.
           # Audits was added in 12.1 I thin.
           sub_run_context.audits = {} if defined?(sub_run_context.audits)
           # Dup and clear to preserve the default behavior without copy-pasta.
           sub_run_context.immediate_notification_collection = parent_context.immediate_notification_collection.dup.clear
           sub_run_context.delayed_notification_collection = parent_context.delayed_notification_collection.dup.clear
+          # Create an accessor for the parent run context.
+          sub_run_context.define_singleton_method(:parent_run_context) { parent_context }
+          # Create a new resource collection for the child
+          sub_run_context.resource_collection = Chef::ResourceCollection.new
         end
-        # Create the subcollection.
-        sub_run_context.resource_collection = Poise::Subcontext::ResourceCollection.new(parent_context.resource_collection)
-        # Create an accessor for the parent run context.
-        sub_run_context.define_singleton_method(:parent_run_context) { parent_context }
+
+        # Wire up parent notifications to the resource collection
+        class<<sub_run_context.resource_collection
+          prepend Poise::Subcontext::ResourceCollection
+        end
+        sub_run_context.resource_collection.parent = parent_context.resource_collection
 
         # Declare sub-resources within the sub-run-context. Since they
         # are declared here, they do not pollute the parent run-context.
         begin
           outer_run_context = @run_context
           @run_context = sub_run_context
-          instance_eval(&block)
+          instance_eval(&block) if block
         ensure
           @run_context = outer_run_context
         end

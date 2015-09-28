@@ -17,10 +17,13 @@
 require 'spec_helper'
 
 describe Poise::Subcontext::ResourceCollection do
-  let(:top) { Chef::ResourceCollection.new }
-  let(:sub) { described_class.new(top) }
-  let(:inner) { described_class.new(sub) }
-  let(:sibling) { described_class.new(top) }
+  include Poise::Helpers::SubcontextBlock
+  let(:top_run_context) { Chef::RunContext.new(Chef::Node.new, nil, nil) }
+  let(:top) { top_run_context.resource_collection }
+  let(:sub_run_context) { subcontext_block(top_run_context) }
+  let(:sub) { sub_run_context.resource_collection }
+  let(:inner) { subcontext_block(sub_run_context).resource_collection }
+  let(:sibling) { subcontext_block(top_run_context).resource_collection }
   subject(:subject_context) { sub }
 
   # Helper for use in #before.
