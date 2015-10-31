@@ -89,6 +89,17 @@ module Poise
           super
         end
 
+        # Set or return the array of provider names to be blocked from
+        # auto-resolution.
+        #
+        # @param val [String, Array<String>] Value to set.
+        # @return [Array<String>]
+        def provider_no_auto(val=nil)
+          # Coerce to an array.
+          val = Array(val).map(&:to_s) if val
+          set_or_return(:provider_no_auto, val, kind_of: Array, default: [])
+        end
+
         # @!classmethods
         module ClassMethods
           # Options resource class.
@@ -353,7 +364,7 @@ module Poise
             return false unless resource_name_equivalents[inversion_resource]
             provider_name = resolve_inversion_provider(node, resource)
             Chef::Log.debug("[#{resource}] Checking provides? on #{self.name}. Got provider_name #{provider_name.inspect}")
-            provider_name == provides.to_s || ( provider_name == 'auto' && provides_auto?(node, resource) )
+            provider_name == provides.to_s || ( provider_name == 'auto' && !resource.provider_no_auto.include?(provides.to_s) && provides_auto?(node, resource) )
           end
 
           # Subclass hook to provide auto-detection for providers.

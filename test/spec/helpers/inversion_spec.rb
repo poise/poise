@@ -279,6 +279,7 @@ describe Poise::Helpers::Inversion do
       resource(:poise_test_inversion, step_into: false) do
         include Poise
         provides(:poise_test_inversion)
+        attribute(:provider_no_auto, default: [])
       end
       provider(:poise_test_inversion) do
         include described_class
@@ -341,6 +342,17 @@ describe Poise::Helpers::Inversion do
         its(:enabled_handlers) { is_expected.to eq [provider(:poise_test_inversion), provider(:poise_test_inversion_other)] }
         its(:resolve) { is_expected.to eq provider(:poise_test_inversion) }
       end # /context with a subclassed resource using subclass_providers!
+
+      context 'with provider_no_auto' do
+        recipe(subject: false) do
+          poise_test_inversion 'test' do
+            provider_no_auto %w{inverted}
+          end
+        end
+        let(:test_resource) { chef_run.poise_test_inversion('test') }
+
+        its(:resolve) { is_expected.to eq provider(:poise_test_inversion_other) }
+      end # /context with provider_no_auto
     end # /describe provider resolution
   end # /describe Poise::Helpers::Inversion::Provider
 end
