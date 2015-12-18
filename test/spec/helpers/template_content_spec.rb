@@ -68,7 +68,7 @@ describe Poise::Helpers::TemplateContent do
     end
   end # /context with a template
 
-  context 'with some template variables' do
+  context 'with some template options' do
     recipe do
       poise_test 'test' do
         source 'test.erb'
@@ -81,6 +81,21 @@ describe Poise::Helpers::TemplateContent do
     let(:required_template_options) { {'one' => '1', 'two' => 2} }
 
     it { is_expected.to run_poise_test('test').with(source: 'test.erb', options: required_template_options, content: 'rendered template') }
+  end # /context with some template options
+
+  context 'with some template variables' do
+    recipe do
+      poise_test 'test' do
+        source 'test.erb'
+        variables do
+          one '1'
+          two 2
+        end
+      end
+    end
+    let(:required_template_options) { {'one' => '1', 'two' => 2} }
+
+    it { is_expected.to run_poise_test('test').with(source: 'test.erb', variables: required_template_options, content: 'rendered template') }
   end # /context with some template variables
 
   context 'with explicit content' do
