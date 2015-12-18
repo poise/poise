@@ -146,7 +146,7 @@ describe Poise::Helpers::TemplateContent do
       attribute(:config, template: true, required: true)
     end
 
-    it { expect{chef_run}.to raise_error(Chef::Exceptions::ValidationFailed) }
+    it { expect{chef_run}.to raise_error Chef::Exceptions::ValidationFailed }
   end # /context with required content
 
   context 'with both source and content' do
@@ -157,6 +157,26 @@ describe Poise::Helpers::TemplateContent do
       end
     end
 
-    it { expect{chef_run}.to raise_error(Chef::Exceptions::ValidationFailed) }
+    it { expect{chef_run}.to raise_error Chef::Exceptions::ValidationFailed }
   end # /context with both source and content
+
+  context 'with required content and a non-default action' do
+    resource(:poise_test) do
+      include Poise
+      attribute(:config, template: true, required: true)
+      actions(:one, :two)
+    end
+    provider(:poise_test) do
+      def action_one; end
+      def action_two; end
+    end
+    recipe do
+      poise_test 'test' do
+        action :two
+      end
+    end
+
+    it { run_chef }
+    it { expect { chef_run.poise_test('test').config_content }.to raise_error Chef::Exceptions::ValidationFailed }
+  end # /context with required content and a non-default action
 end

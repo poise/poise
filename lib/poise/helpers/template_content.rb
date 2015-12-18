@@ -100,7 +100,7 @@ module Poise
               old_after_created = instance_method(:after_created)
               define_method(:after_created) do
                 old_after_created.bind(self).call
-                send("_#{name_prefix}validate")
+                send("_#{name_prefix}validate") if Array(action) == Array(self.class.default_action)
               end
             end
 
