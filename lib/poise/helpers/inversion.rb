@@ -83,7 +83,7 @@ module Poise
             resource_names.concat(self.class.subclass_resource_equivalents) if self.class.respond_to?(:subclass_resource_equivalents)
             # Silly ruby tricks to find the first provider that exists and no more.
             provider_class = resource_names.lazy.map {|name| Poise::Helpers::Inversion.provider_for(name, node, val) }.select {|x| x }.first
-            Chef::Log.debug("[#{self}] Checking for an inversion provider for #{val}: #{provider_class && provider_class.name}")
+            Poise.debug("[#{self}] Checking for an inversion provider for #{val}: #{provider_class && provider_class.name}")
             val = provider_class if provider_class
           end
           super
@@ -363,7 +363,7 @@ module Poise
             end
             return false unless resource_name_equivalents[inversion_resource]
             provider_name = resolve_inversion_provider(node, resource)
-            Chef::Log.debug("[#{resource}] Checking provides? on #{self.name}. Got provider_name #{provider_name.inspect}")
+            Poise.debug("[#{resource}] Checking provides? on #{self.name}. Got provider_name #{provider_name.inspect}")
             provider_name == provides.to_s || ( provider_name == 'auto' && !resource.provider_no_auto.include?(provides.to_s) && provides_auto?(node, resource) )
           end
 

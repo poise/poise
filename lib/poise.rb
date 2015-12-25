@@ -30,6 +30,27 @@ module Poise
   autoload :Subcontext, 'poise/subcontext'
   autoload :Utils, 'poise/utils'
   autoload :VERSION, 'poise/version'
+
+  # Check if Poise's extra debugging output is enabled. This produces a *lot*
+  # of logging.
+  #
+  # @param node [Chef::Node, Chef::RunContext] Optional node to check for
+  #   attributes. If not given, Chef.node is used instead.
+  # @return [Boolean]
+  def self.debug?(node=nil)
+    node = node.node if node.is_a?(Chef::RunContext)
+    node ||= Chef.node
+    !!(ENV['POISE_DEBUG'] || (node && node['POISE_DEBUG']))
+  end
+
+  # Log a message only if Poise's extra debugging output is enabled.
+  #
+  # @see #debug?
+  # @param msg [String] Log message.
+  # @return [void]
+  def self.debug(msg)
+    Chef::Log.debug(msg) if debug?
+  end
 end
 
 # Callable form to allow passing in options:
