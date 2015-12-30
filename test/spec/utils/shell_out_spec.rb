@@ -81,6 +81,15 @@ describe Poise::Utils::ShellOut do
       let(:expect_args) { [arg, {user: 'testuser', group: 501, environment: {'HOME' => '/home/testuser', 'USER' => 'testuser', 'LOGNAME' => 'testuser', 'FOO' => 'BAR'}}] }
       it { is_expected.to be cmd }
     end # /context with an env option
+
+    context 'on Windows' do
+      let(:command_args) { [arg, {user: 'testuser'}] }
+      let(:expect_args) { [arg, {user: 'testuser', environment: {}}] }
+      before do
+        allow(Etc).to receive(:getpwnam).with('testuser').and_return(nil)
+      end
+      it { is_expected.to be cmd }
+    end # /context on Windows
   end # /describe .poise_shell_out
 
   describe '.poise_shell_out!' do
