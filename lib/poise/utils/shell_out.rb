@@ -33,6 +33,11 @@ module Poise
       # An enhanced version of Chef's `shell_out` which sets some default
       # parameters. If possible it will set $HOME, $USER, $LOGNAME, and the
       # group to run as.
+      #
+      # @param command_args [Array] Command arguments to be passed to `shell_out`.
+      # @param options [Hash<Symbol, Object>] Options to be passed to `shell_out`,
+      #   with modifications.
+      # @return [Mixlib::ShellOut]
       def poise_shell_out(*command_args, **options)
         # Allow the env option shorthand.
         options[:environment] ||= {}
@@ -71,7 +76,7 @@ module Poise
       # The `error!` version of {#poise_shell_out}.
       #
       # @see #poise_shell_out
-      # @return Mixlib::ShellOut
+      # @return [Mixlib::ShellOut]
       def poise_shell_out!(*command_args)
         poise_shell_out(*command_args).tap(&:error!)
       end
