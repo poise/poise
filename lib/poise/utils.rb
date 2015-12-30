@@ -20,6 +20,7 @@ require 'poise/error'
 module Poise
   module Utils
     autoload :ResourceProviderMixin, 'poise/utils/resource_provider_mixin'
+    autoload :ShellOut, 'poise/utils/shell_out'
 
     extend self
 
