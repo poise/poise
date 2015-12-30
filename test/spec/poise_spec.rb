@@ -265,7 +265,7 @@ describe Poise do
 
     context 'with a run_context' do
       before { default_attributes['poise_debug'] = true }
-      subject { described_class.debug?(chef_runner.node.run_context) }
+      subject { described_class.debug?(chef_run.run_context) }
       it { is_expected.to be true }
     end # /context with a run_context
   end # /describe .debug?
