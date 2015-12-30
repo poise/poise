@@ -101,3 +101,7 @@ def Poise(options={})
 
   mod
 end
+
+# Display a message if poise_debug is enabled. Off in ChefSpec so I don't get
+# extra logging stuff that I don't care about.
+Poise.debug('[Poise] Extra verbose logging enabled') unless defined?(ChefSpec)
