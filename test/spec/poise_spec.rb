@@ -182,4 +182,94 @@ describe Poise do
   it 'has a fake name when used a function' do
     expect(Poise().name).to eq 'Poise'
   end # /it has a fake name when used a function
+
+  describe '.debug?' do
+    let(:debug_files) { [] }
+    before do
+      allow(File).to receive(:exist?).and_call_original
+      expect(File).to receive(:exist?).with(/\/poise_debug/i).twice {|path| debug_files.include?(path) }
+    end
+    around do |ex|
+      # Reset the stat checks both before and after.
+      begin
+        Poise.remove_instance_variable(:@debug_file_upper) if Poise.instance_variable_defined?(:@debug_file_upper)
+        Poise.remove_instance_variable(:@debug_file_lower) if Poise.instance_variable_defined?(:@debug_file_lower)
+        ex.run
+      ensure
+        Poise.remove_instance_variable(:@debug_file_upper) if Poise.instance_variable_defined?(:@debug_file_upper)
+        Poise.remove_instance_variable(:@debug_file_lower) if Poise.instance_variable_defined?(:@debug_file_lower)
+      end
+    end
+    subject { described_class.debug?(chef_runner.node) }
+
+    context 'with no flags' do
+      it { is_expected.to be false }
+    end # /context with no flags
+
+    context 'with $POISE_DEBUG' do
+      around do |ex|
+        begin
+          old = ENV['POISE_DEBUG']
+          ENV['POISE_DEBUG'] = '1'
+          ex.run
+        ensure
+          ENV['POISE_DEBUG'] = old
+        end
+      end
+
+      it { is_expected.to be true }
+    end # /context with $POISE_DEBUG
+
+    context 'with $poise_debug' do
+      around do |ex|
+        begin
+          old = ENV['poise_debug']
+          ENV['poise_debug'] = '1'
+          ex.run
+        ensure
+          ENV['poise_debug'] = old
+        end
+      end
+
+      it { is_expected.to be true }
+    end # /context with $poise_debug
+
+    context 'with node["POISE_DEBUG"]' do
+      before { default_attributes['POISE_DEBUG'] = true }
+      it { is_expected.to be true }
+    end # /context with node["POISE_DEBUG"]
+
+    context 'with node["poise_debug"]' do
+      before { default_attributes['poise_debug'] = true }
+      it { is_expected.to be true }
+    end # /context with node["poise_debug"]
+
+    context 'with /POISE_DEBUG' do
+      let(:debug_files) { %w{/POISE_DEBUG} }
+      it { is_expected.to be true }
+    end # /context with /POISE_DEBUG
+
+    context 'with /poise_debug' do
+      let(:debug_files) { %w{/poise_debug} }
+      it { is_expected.to be true }
+    end # /context with /poise_debug
+  end # /describe .debug?
+
+  describe '.debug' do
+    context 'with debugging disabled' do
+      before { allow(described_class).to receive(:debug?).and_return(false) }
+      it do
+        expect(Chef::Log).to_not receive(:debug)
+        Poise.debug('msg')
+      end
+    end # /context with debugging disabled
+
+    context 'with debugging enabled' do
+      before { allow(described_class).to receive(:debug?).and_return(true) }
+      it do
+        expect(Chef::Log).to receive(:debug).with('msg')
+        Poise.debug('msg')
+      end
+    end # /context with debugging enabled
+  end # /describe .debug
 end
