@@ -39,8 +39,17 @@ module Poise
   # @return [Boolean]
   def self.debug?(node=nil)
     node = node.node if node.is_a?(Chef::RunContext)
-    node ||= Chef.node
-    !!(ENV['POISE_DEBUG'] || (node && node['POISE_DEBUG']))
+    node ||= Chef.node if defined?(Chef.node)
+    @debug_file_upper = ::File.exist?('/POISE_DEBUG') unless defined?(@debug_file_upper)
+    @debug_file_lower = ::File.exist?('/poise_debug') unless defined?(@debug_file_lower)
+    !!(
+      ENV['POISE_DEBUG'] || \
+      ENV['poise_debug'] || \
+      (node && node['POISE_DEBUG']) || \
+      (node && node['poise_debug']) || \
+      @debug_file_upper || \
+      @debug_file_lower
+    )
   end
 
   # Log a message only if Poise's extra debugging output is enabled.
