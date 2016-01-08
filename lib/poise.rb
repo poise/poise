@@ -43,11 +43,11 @@ module Poise
     @debug_file_upper = ::File.exist?('/POISE_DEBUG') unless defined?(@debug_file_upper)
     @debug_file_lower = ::File.exist?('/poise_debug') unless defined?(@debug_file_lower)
     !!(
-      ENV['POISE_DEBUG'] || \
-      ENV['poise_debug'] || \
-      (node && node['POISE_DEBUG']) || \
-      (node && node['poise_debug']) || \
-      @debug_file_upper || \
+      (ENV['POISE_DEBUG'] && ENV['POISE_DEBUG'] != 'false') ||
+      (ENV['poise_debug'] && ENV['poise_debug'] != 'false') ||
+      (node && node['POISE_DEBUG']) ||
+      (node && node['poise_debug']) ||
+      @debug_file_upper ||
       @debug_file_lower
     )
   end

@@ -220,6 +220,20 @@ describe Poise do
       it { is_expected.to be true }
     end # /context with $POISE_DEBUG
 
+    context 'with $POISE_DEBUG = false' do
+      around do |ex|
+        begin
+          old = ENV['POISE_DEBUG']
+          ENV['POISE_DEBUG'] = 'false'
+          ex.run
+        ensure
+          ENV['POISE_DEBUG'] = old
+        end
+      end
+
+      it { is_expected.to be false }
+    end # /context with $POISE_DEBUG = false
+
     context 'with $poise_debug' do
       around do |ex|
         begin
@@ -233,6 +247,20 @@ describe Poise do
 
       it { is_expected.to be true }
     end # /context with $poise_debug
+
+    context 'with $poise_debug = false' do
+      around do |ex|
+        begin
+          old = ENV['poise_debug']
+          ENV['poise_debug'] = 'false'
+          ex.run
+        ensure
+          ENV['poise_debug'] = old
+        end
+      end
+
+      it { is_expected.to be false }
+    end # /context with $poise_debug = false
 
     context 'with node["POISE_DEBUG"]' do
       before { default_attributes['POISE_DEBUG'] = true }
