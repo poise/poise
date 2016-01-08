@@ -301,6 +301,8 @@ module Poise
               opts.update(run_state['*']) if run_state['*']
               # Options resource options for this provider.
               opts.update(run_state[provides]) if run_state[provides]
+              # Vomitdebug output for tracking down weirdness.
+              Poise.debug("[#{resource}] Resolved inversion options: #{opts.inspect}")
             end
           end
 
