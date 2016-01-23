@@ -87,4 +87,45 @@ describe Poise::Helpers::LazyDefault do
 
     it { is_expected.to run_poise_test('test').with(value: [1, 2]) }
   end # /context with a mutable value
+
+  context 'with a broken default' do
+    resource(:poise_test) do
+      include Poise::Helpers::LWRPPolyfill
+      include described_class
+      attribute(:value, default: lazy { raise RuntimeError })
+    end
+    provider(:poise_test) do
+      def action_run
+        new_resource.value
+      end
+    end
+
+    context 'with no value' do
+      recipe do
+        poise_test 'test'
+      end
+
+      it { expect { subject }.to raise_error RuntimeError }
+    end # /context with no value
+
+    context 'with true' do
+      recipe do
+        poise_test 'test' do
+          value true
+        end
+      end
+
+      it { is_expected.to run_poise_test('test') }
+    end # /context with true
+
+    context 'with false' do
+      recipe do
+        poise_test 'test' do
+          value false
+        end
+      end
+
+      it { is_expected.to run_poise_test('test') }
+    end # /context with false
+  end # /context with a broken default
 end
