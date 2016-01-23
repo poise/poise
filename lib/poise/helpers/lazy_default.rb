@@ -45,7 +45,7 @@ module Poise
       # default value. This only actually matters when it is called from a class
       # level context via #attributes.
       def set_or_return(symbol, arg, validation)
-        if LazyDefault.needs_polyfill? && validation && validation[:default].is_a?(Chef::DelayedEvaluator)
+        if LazyDefault.needs_polyfill? && validation && validation[:default].is_a?(Chef::DelayedEvaluator) && (arg.nil? || arg == Poise::NOT_PASSED) && (!instance_variable_defined?(:"@#{symbol}") || instance_variable_get(:"@#{symbol}").nil?)
           validation = validation.dup
           validation[:default] = instance_eval(&validation[:default])
         end
