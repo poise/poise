@@ -1,5 +1,5 @@
 #
-# Copyright 2013-2015, Noah Kantrowitz
+# Copyright 2015, Noah Kantrowitz
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,7 +14,12 @@
 # limitations under the License.
 #
 
+require 'spec_helper'
 
-module Poise
-  VERSION = '2.6.0.pre'
+describe Poise::Backports::VERIFY_PATH, if: defined?(Chef::Resource::File::Verification) do
+  it do
+    verifier = Chef::Resource::File::Verification.new(nil, "mycmd #{subject}", nil)
+    expect(Chef::GuardInterpreter).to receive(:for_resource).with(nil, 'mycmd /path', nil).and_return(double(evaluate: nil))
+    verifier.verify_command('/path', nil)
+  end
 end
