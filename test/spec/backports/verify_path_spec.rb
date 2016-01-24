@@ -16,6 +16,8 @@
 
 require 'spec_helper'
 
+# Disable this test if Chef::Resource::File::Verification doesn't exist because
+# it doesn't matter anyway.
 describe Poise::Backports::VERIFY_PATH, if: defined?(Chef::Resource::File::Verification) do
   it do
     verifier = Chef::Resource::File::Verification.new(nil, "mycmd #{subject}", nil)
