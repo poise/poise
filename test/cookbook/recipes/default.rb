@@ -23,3 +23,5 @@ end
 app_config 'user' do
   content 'user config'
 end
+
+include_recipe '::inversion'
