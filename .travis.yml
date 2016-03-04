@@ -8,6 +8,7 @@ env:
   - secure: ax5czUwK8PVHXu/B3qbRZ8AACqXW4scIElQbn4sBuLp+VyTeutGax1uO6yTi7yv3xJUbEL3Z6gdZD/sOZpSKm8SL0YhkijoSs68HJCsau8cl7fvPJ0+JIlKqWazKEA1PaCmJHQv5J9TEyPyeSxZaIyacqOwOcUTyOkRDGyC+im8=
   - secure: jEiZqcy6E5WC1nBmfJBSLPpYOUBFdpoo7DsLrvIpKVRpOw7slb+VgIru5AzbONvVD/8CYstgqiVVoGaCP/ywWWqakOQ2thp0BqWN/OVlsuPiemAdLRMMsmekkaFUdAa5l8QUUI0YiTSpSLUXQFWZrXbiARCALGAvDBbsqF1JhgA=
   - secure: e3TH/N8tcx54wShV7s96OXDXuDbo9YnekLK3L3WrYrCK12gHVcW7xlMxPctGy14h6VaP1PBXJfUjd7cdzmHgudTo8HlR4Ui0kpjp85XrohPsLmVaFDxjAstLFm4VKMpsoKUZoPZY5J8bO9b606p872M5yO4rwKy3bVK/CP6mTBY=
+before_install: "gem install bundler"
 bundler_args: "--binstubs=$PWD/bin --jobs 3 --retry 3"
 script:
 - "./bin/rake travis"
