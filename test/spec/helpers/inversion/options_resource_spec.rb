@@ -93,6 +93,16 @@ describe Poise::Helpers::Inversion::OptionsResource do
 
       it { is_expected.to run_poise_test_options('test').with(_options: {'foo' => 'chefspec.local', 'baz' => 'chefspec.locala'}) }
     end # /context with derived options
+
+    context 'with a provider' do
+      recipe do
+        poise_test_options 'test' do
+          provider :other
+        end
+      end
+
+      it { is_expected.to run_poise_test_options('test').with(_options: {'provider' => :other}) }
+    end # /context with a provider
   end # /describe #_options
 
   describe 'provider options' do
