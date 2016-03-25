@@ -353,6 +353,23 @@ describe Poise::Helpers::Inversion do
 
         its(:resolve) { is_expected.to eq provider(:poise_test_inversion_other) }
       end # /context with provider_no_auto
+
+      context 'with a symbol provider via options' do
+        provider(:poise_test_inversion_subclass, parent: :poise_test_inversion) do
+          provides(:inverted_subclass)
+        end
+        recipe(subject: false) do
+          node.run_state['poise_inversion'] ||= {}
+          node.run_state['poise_inversion'][:poise_test_inversion] ||= {}
+          node.run_state['poise_inversion'][:poise_test_inversion]['test'] ||= {}
+          node.run_state['poise_inversion'][:poise_test_inversion]['test']['*'] ||= {}
+          node.run_state['poise_inversion'][:poise_test_inversion]['test']['*']['provider'] = :inverted_subclass
+          poise_test_inversion 'test'
+        end
+        let(:test_resource) { chef_run.poise_test_inversion('test') }
+
+        its(:resolve) { is_expected.to eq provider(:poise_test_inversion_subclass) }
+      end # /context with a symbol provider via options
     end # /describe provider resolution
   end # /describe Poise::Helpers::Inversion::Provider
 end
