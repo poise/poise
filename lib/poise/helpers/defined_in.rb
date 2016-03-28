@@ -42,7 +42,7 @@ module Poise
 
       # Path to the root of Chef's code.
       # @see #poise_defined!
-      CHEF_LIB_ROOT = ::Gem::Specification.find_by_name('chef').gem_dir
+      CHEF_LIB_ROOT = ::File.join(::Gem::Specification.find_by_name('chef').gem_dir, 'lib')
 
       # Wrapper for {.poise_defined_in_cookbook} to pass the run context for you.
       #
