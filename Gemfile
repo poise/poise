@@ -30,3 +30,6 @@ end
 dev_gem 'halite'
 dev_gem 'poise-boiler'
 dev_gem 'poise-profiler'
+
+# Pending https://github.com/customink/fauxhai/commit/d89f1e2de609478046e7a387f2b8d97729a68983
+gem 'fauxhai', github: 'customink/fauxhai'
