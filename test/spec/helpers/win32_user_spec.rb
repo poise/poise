@@ -40,7 +40,7 @@ describe Poise::Helpers::Win32User do
       end # /context on Linux
 
       context 'on Windows' do
-        let(:chefspec_options) { {platform: 'windows', version: '2012r2'} }
+        let(:chefspec_options) { {platform: 'windows', version: '2012R2'} }
         it { is_expected.to run_poise_test('test').with(user: 'Administrator') }
       end # /context on Windows
     end # /context with a default
@@ -57,7 +57,7 @@ describe Poise::Helpers::Win32User do
       end # /context on Linux
 
       context 'on Windows' do
-        let(:chefspec_options) { {platform: 'windows', version: '2012r2'} }
+        let(:chefspec_options) { {platform: 'windows', version: '2012R2'} }
         it { is_expected.to run_poise_test('test').with(user: 'other') }
       end # /context on Windows
     end # /context with a value
@@ -80,7 +80,7 @@ describe Poise::Helpers::Win32User do
       end # /context on Linux
 
       context 'on Windows' do
-        let(:chefspec_options) { {platform: 'windows', version: '2012r2'} }
+        let(:chefspec_options) { {platform: 'windows', version: '2012R2'} }
         it { is_expected.to run_poise_test('test').with(owner: 'Administrator') }
       end # /context on Windows
     end # /context with a default
@@ -97,7 +97,7 @@ describe Poise::Helpers::Win32User do
       end # /context on Linux
 
       context 'on Windows' do
-        let(:chefspec_options) { {platform: 'windows', version: '2012r2'} }
+        let(:chefspec_options) { {platform: 'windows', version: '2012R2'} }
         it { is_expected.to run_poise_test('test').with(owner: 'other') }
       end # /context on Windows
     end # /context with a value
@@ -120,7 +120,7 @@ describe Poise::Helpers::Win32User do
       end # /context on Linux
 
       context 'on Windows' do
-        let(:chefspec_options) { {platform: 'windows', version: '2012r2'} }
+        let(:chefspec_options) { {platform: 'windows', version: '2012R2'} }
         # This test is written to be silly because Fauxhai doesn't have
         # root_group data for Windows.
         it { is_expected.to run_poise_test('test').with(group: chef_run.node['root_group']) }
@@ -144,14 +144,14 @@ describe Poise::Helpers::Win32User do
       end # /context on Linux
 
       context 'on Windows' do
-        let(:chefspec_options) { {platform: 'windows', version: '2012r2'} }
+        let(:chefspec_options) { {platform: 'windows', version: '2012R2'} }
         it { is_expected.to run_poise_test('test').with(group: 'other') }
       end # /context on Windows
     end # /context with a value
   end # /context group property
 
   describe 'interaction with lazy defaults' do
-    let(:chefspec_options) { {platform: 'windows', version: '2012r2'} }
+    let(:chefspec_options) { {platform: 'windows', version: '2012R2'} }
     recipe do
       poise_test 'test'
     end
