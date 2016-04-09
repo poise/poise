@@ -51,6 +51,9 @@ module Poise
         else
           Chef::CookbookVersion::COOKBOOK_SEGMENTS.each do |seg|
             ver.segment_filenames(seg).each do |file|
+              if ::File::ALT_SEPARATOR
+                file = file.gsub(::File::ALT_SEPARATOR, ::File::SEPARATOR)
+              end
               # Put this behind an environment variable because it is verbose
               # even for normal debugging-level output.
               Poise.debug("[Poise] Checking #{seg} in #{name}: #{file.inspect}")
