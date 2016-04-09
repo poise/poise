@@ -14,9 +14,6 @@
 # limitations under the License.
 #
 
-require 'chef/mash'
-
-require 'poise/error'
 require 'poise/utils/win32'
 
 
@@ -40,9 +37,16 @@ module Poise
     #     attribute(:group, default: lazy { 'root' })
     #   end
     module Win32User
+      # User-ish property names.
+      # @api private
       USER_PROPERTIES = ['user', :user, 'owner', :owner]
+
+      # Group-ish property names.
+      # @api private
       GROUP_PROPERTIES = ['group', :group]
 
+      # Intercept property access to swap out the default value.
+      # @api private
       def set_or_return(symbol, arg, options={})
         if options && options[:default] == 'root'
           if USER_PROPERTIES.include?(symbol) && node.platform_family?('windows')
