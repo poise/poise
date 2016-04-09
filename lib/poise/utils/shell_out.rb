@@ -69,6 +69,18 @@ module Poise
         end
         # Set the default group on Unix.
         options[:group] ||= ent.gid if ent
+        # Mixlib-ShellOut doesn't support array commands on Windows and has
+        # super wonky escaping for cmd.exe.
+        if respond_to?(:node) && node.platform_family?('windows')
+          if command_args.length == 1 && command_args.first.is_a?(String)
+            # Reparse using Bash rules and then generate a cmd.exe-safe string.
+            # Except not tonight because I'm tired.
+            raise "try again tomorrow"
+          else
+            # Convert a command array to something that will work with cmd.exe.
+            command_args = [command_args.flatten.map {|cmd| "\"#{cmd}\"" }.join(' ')]
+          end
+        end
         # Call Chef's shell_out wrapper.
         shell_out(*command_args, **options)
       end
