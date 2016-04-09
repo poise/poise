@@ -1,5 +1,5 @@
 #
-# Copyright 2015-2016, Noah Kantrowitz
+# Copyright 2013-2016, Noah Kantrowitz
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,30 +14,23 @@
 # limitations under the License.
 #
 
-require 'serverspec'
-set :backend, :exec
+is_windows = os.windows?
 
-describe file('/inversion/a') do
-  it { is_expected.to be_a_file }
+describe file('/app') do
+  it { is_expected.to be_a_directory }
+  it { is_expected.to be_owned_by 'root' } unless is_windows
 end
 
-describe file('/inversion/b') do
+describe file('/app/defaults.conf') do
   it { is_expected.to be_a_file }
-  its(:content) { is_expected.to eq 'one' }
+  it { is_expected.to be_owned_by 'root' } unless is_windows
+  # Pending https://github.com/chef/train/issues/81.
+  its(:content) { is_expected.to match /^some defaults\s*$/ }
 end
 
-describe file('/inversion/c') do
+describe file('/app/user.conf') do
   it { is_expected.to be_a_file }
-  its(:content) { is_expected.to eq 'two' }
+  it { is_expected.to be_owned_by 'root' } unless is_windows
+  # Pending https://github.com/chef/train/issues/81.
+  its(:content) { is_expected.to match /^user config\s*$/ }
 end
-
-describe file('/inversion/d') do
-  it { is_expected.to be_a_file }
-  its(:content) { is_expected.to eq 'd-three' }
-end
-
-describe file('/inversion/e') do
-  it { is_expected.to be_a_file }
-  its(:content) { is_expected.to eq 'e-three' }
-end
-
