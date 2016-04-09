@@ -20,7 +20,8 @@ require 'poise'
 class Chef
   class Resource::App < Resource
     include Poise(container: true)
-    default_action(:install)
+    provides(:app)
+    actions(:install)
 
     attribute(:path, kind_of: String, name_attribute: true)
     attribute(:user, kind_of: String, default: 'root')

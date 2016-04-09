@@ -19,7 +19,8 @@ require_relative 'app'
 class Chef
   class Resource::AppConfig < Resource
     include Poise(App)
-    default_action(:create)
+    provides(:app_config)
+    actions(:create)
 
     attribute('', template: true, required: true)
     attribute(:config_name, kind_of: String, default: lazy { name.split('::').last })
