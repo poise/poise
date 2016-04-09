@@ -14,7 +14,7 @@
 # limitations under the License.
 #
 
-app '/srv/app' do
+app '/app' do
   app_config 'defaults' do
     content 'some defaults'
   end
