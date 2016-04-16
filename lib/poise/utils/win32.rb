@@ -14,6 +14,10 @@
 # limitations under the License.
 #
 
+require 'shellwords'
+
+require 'mixlib/shellout/windows'
+
 
 module Poise
   module Utils
@@ -43,6 +47,68 @@ module Poise
       # @return [String]
       def admin_user
         wmi_property_from_query(:name, "select * from Win32_UserAccount where sid like 'S-1-5-21-%-500' and LocalAccount=True")
+      end
+
+      # Escaping that is compatible with CommandLineToArgvW. Based on
+      # https://blogs.msdn.microsoft.com/twistylittlepassagesallalike/2011/04/23/everyone-quotes-command-line-arguments-the-wrong-way/
+      #
+      # @api private
+      # @param string [String] String to escape.
+      # @return [String]
+      def argv_quote(string, force_quote: false)
+        if !force_quote && !string.empty? && string !~ /[ \t\n\v"]/
+          # Nothing fancy, no escaping needed.
+          string
+        else
+          command_line = '"'
+          i = 0
+          while true
+            number_backslashes = 0
+
+            while i != string.size && string[i] == '\\'
+              i += 1
+              number_backslashes += 1
+            end
+
+            if i == string.size
+              # Escape all backslashes, but let the terminating
+              # double quotation mark we add below be interpreted
+              # as a metacharacter.
+              command_line << '\\' * (number_backslashes * 2)
+              break
+            elsif string[i] == '"'
+              # Escape all backslashes and the following
+              # double quotation mark.
+              command_line << '\\' * ((number_backslashes * 2) + 1)
+              command_line << '"'
+            else
+              # Backslashes aren't special here.
+              command_line << '\\' * number_backslashes
+              command_line << string[i]
+            end
+            i += 1
+          end
+          command_line << '"'
+          command_line
+        end
+      end
+
+      # Take a string or array command in the format used by shell_out et al and
+      # create something we can use on Windows.
+      #
+      # @
+      def reparse_command(*args)
+        array_mode = !(args.length == 1 && args.first.is_a?(String))
+        # At some point when mixlib-shellout groks array commands on Windows,
+        # we should support that here.
+        parsed_args = array_mode ? args.flatten : Shellwords.split(args.first)
+        cmd = parsed_args.map {|s| argv_quote(s) }.join(' ')
+        if array_mode && Mixlib::ShellOut::Windows::Utils.should_run_under_cmd?(cmd)
+          # If we are in array mode, try to make cmd.exe keep its grubby paws
+          # off our metacharacters.
+          cmd = cmd.each_char.map {|c| '^'+c }.join('')
+        end
+        cmd
       end
 
     end

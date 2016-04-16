@@ -1,5 +1,5 @@
 #
-# Copyright 2013-2016, Noah Kantrowitz
+# Copyright 2016, Noah Kantrowitz
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,11 +14,17 @@
 # limitations under the License.
 #
 
-require 'poise_boiler/spec_helper'
 
-# If we aren't on Windows, inject our fake win32/process module.
-unless RbConfig::CONFIG['host_os'] =~ /mswin|mingw|cygwin/
-  $LOAD_PATH.insert(0, File.expand_path('../utils/win32_helper', __FILE__))
+# A fake module to use for win32/process on non-windows systems so the code can
+# work for testing.
+#
+# @api private
+module Process
+  module Functions
+    def self.method_missing(*args)
+    end
+  end
+
+  module Constants
+  end
 end
-
-require 'poise'

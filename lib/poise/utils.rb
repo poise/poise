@@ -21,6 +21,7 @@ module Poise
   module Utils
     autoload :ResourceProviderMixin, 'poise/utils/resource_provider_mixin'
     autoload :ShellOut, 'poise/utils/shell_out'
+    autoload :Win32, 'poise/utils/win32'
 
     extend self
 
