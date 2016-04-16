@@ -16,13 +16,6 @@
 
 require 'shellwords'
 
-# This fails on non-Windows because of win32/process. Unit tests have the
-# file stubbed, ignore load failures elsewhere.
-begin
-  require 'mixlib/shellout/windows'
-rescue LoadError
-end
-
 
 module Poise
   module Utils
@@ -111,10 +104,14 @@ module Poise
         # we should support that here.
         parsed_args = array_mode ? args.flatten : Shellwords.split(args.first)
         cmd = parsed_args.map {|s| argv_quote(s) }.join(' ')
-        if array_mode && defined?(Mixlib::ShellOut::Windows) && Mixlib::ShellOut::Windows::Utils.should_run_under_cmd?(cmd)
-          # If we are in array mode, try to make cmd.exe keep its grubby paws
-          # off our metacharacters.
-          cmd = cmd.each_char.map {|c| '^'+c }.join('')
+        if array_mode
+          # This fails on non-Windows because of win32/process.
+          require 'mixlib/shellout/windows'
+          if Mixlib::ShellOut::Windows::Utils.should_run_under_cmd?(cmd)
+            # If we are in array mode, try to make cmd.exe keep its grubby paws
+            # off our metacharacters.
+            cmd = cmd.each_char.map {|c| '^'+c }.join('')
+          end
         end
         cmd
       end
