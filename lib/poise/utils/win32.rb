@@ -21,6 +21,9 @@ require 'mixlib/shellout/windows'
 
 module Poise
   module Utils
+    # Utilities for working with Windows.
+    #
+    # @since 2.7.0
     module Win32
       extend self
 
