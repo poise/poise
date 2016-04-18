@@ -47,7 +47,13 @@ module Poise
       #
       # @return [String]
       def admin_user
-        wmi_property_from_query(:name, "select * from Win32_UserAccount where sid like 'S-1-5-21-%-500' and LocalAccount=True")
+        if defined?(::WIN32OLE)
+          wmi_property_from_query(:name, "select * from Win32_UserAccount where sid like 'S-1-5-21-%-500' and LocalAccount=True")
+        else
+          # Warn except under ChefSpec because it will just annoy people.
+          Chef::Log.warn('[Poise::Utils::Win32] Unable to query admin user, WIN32OLE not available') unless defined?(ChefSpec)
+          'Administrator'
+        end
       end
 
       # Escaping that is compatible with CommandLineToArgvW. Based on
