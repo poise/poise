@@ -36,7 +36,7 @@ describe Poise::Helpers::ResourceCloning do
   context 'with a resource that should be cloned' do
     # Baseline to make sure my test harness works.
     it do
-      expect(Chef::Log).to receive(:warn).exactly(3).times
+      expect(Chef::Log).to receive(:warn).at_least(:once)
       run_chef
     end
   end # /context with a resource that should be cloned
