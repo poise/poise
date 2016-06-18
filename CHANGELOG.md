@@ -1,5 +1,9 @@
 # Changelog
 
+## v2.7.1
+
+* Minor tweak for compatability with Chef master.
+
 ## v2.7.0
 
 * More compatibility improvements for Chef 12.9.
