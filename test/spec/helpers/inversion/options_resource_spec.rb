@@ -46,7 +46,7 @@ describe Poise::Helpers::Inversion::OptionsResource do
         end
       end
 
-      it { is_expected.to run_poise_test_options('test').with(_options: {'foo' => 'bar', 'baz' => 'chefspec.local'}) }
+      it { is_expected.to run_poise_test_options('test').with(_options: {'foo' => 'bar', 'baz' => 'fauxhai.local'}) }
     end # /context with node options
 
     context 'with new_resource-based options' do
@@ -91,7 +91,7 @@ describe Poise::Helpers::Inversion::OptionsResource do
         end
       end
 
-      it { is_expected.to run_poise_test_options('test').with(_options: {'foo' => 'chefspec.local', 'baz' => 'chefspec.locala'}) }
+      it { is_expected.to run_poise_test_options('test').with(_options: {'foo' => 'fauxhai.local', 'baz' => 'fauxhai.locala'}) }
     end # /context with derived options
 
     context 'with a provider' do
