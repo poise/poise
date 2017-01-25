@@ -17,6 +17,7 @@
 require 'spec_helper'
 
 describe Poise::Helpers::Inversion::OptionsResource do
+  let(:chefspec_options) { {platform: 'ubuntu', version: '16.04'} }
   let(:default_attributes) do
     {'poise-test' => {}}
   end
