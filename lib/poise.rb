@@ -16,6 +16,7 @@
 
 require 'chef/provider'
 require 'chef/resource'
+require 'chef/run_context'
 
 require 'poise/utils/resource_provider_mixin'
 
