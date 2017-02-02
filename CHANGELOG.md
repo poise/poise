@@ -1,5 +1,9 @@
 # Changelog
 
+## v2.7.2
+
+* Test harness fixes for Chef.
+
 ## v2.7.1
 
 * Minor tweak for compatability with Chef master.
