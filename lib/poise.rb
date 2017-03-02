@@ -69,7 +69,7 @@ end
 #   include Poise(container: true)
 def Poise(options={})
   # Allow passing a class as a shortcut
-  if options.is_a?(Class)
+  if options.is_a?(Class) || options.is_a?(Symbol)
     options = {parent: options}
   end
 
