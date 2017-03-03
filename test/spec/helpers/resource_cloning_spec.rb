@@ -33,13 +33,15 @@ describe Poise::Helpers::ResourceCloning do
     end
   end
 
-  context 'with a resource that should be cloned' do
-    # Baseline to make sure my test harness works.
-    it do
-      expect(Chef::Log).to receive(:warn).at_least(:once)
-      run_chef
-    end
-  end # /context with a resource that should be cloned
+  if ::Gem::Requirement.create('< 13').satisfied_by?(::Gem::Version.create(Chef::VERSION))
+    context 'with a resource that should be cloned' do
+      # Baseline to make sure my test harness works.
+      it do
+        expect(Chef::Log).to receive(:warn).at_least(:once)
+        run_chef
+      end
+    end # /context with a resource that should be cloned
+  end
 
   context 'a resource using the helper' do
     resource(:poise_test) do
