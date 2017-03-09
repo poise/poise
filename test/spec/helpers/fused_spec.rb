@@ -74,6 +74,8 @@ describe Poise::Helpers::Fused do
   end # /context with setting a default action
 
   context 'with an explicit provider' do
+    resource(:poise_test2) do
+    end
     provider(:poise_test2) do
       include Poise
       def action_run
