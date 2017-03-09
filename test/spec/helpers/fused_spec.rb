@@ -80,9 +80,12 @@ describe Poise::Helpers::Fused do
         ruby_block 'explicit'
       end
     end
+    before do
+      stub_const('PoiseExplicitProvider', provider(:poise_test2))
+    end
     recipe do
       poise_test 'test' do
-        provider :poise_test2
+        provider PoiseExplicitProvider
       end
     end
 
