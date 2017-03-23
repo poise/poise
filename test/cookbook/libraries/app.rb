@@ -14,31 +14,38 @@
 # limitations under the License.
 #
 
+require 'chef/provider'
+require 'chef/resource'
+
 require 'poise'
 
 
-class Chef
-  class Resource::App < Resource
-    include Poise(container: true)
-    provides(:app)
-    actions(:install)
+module PoiseTest
+  module App
+    class Resource < Chef::Resource
+      include Poise(container: true)
+      provides(:app)
+      actions(:install)
 
-    attribute(:path, kind_of: String, name_attribute: true)
-    attribute(:user, kind_of: String, default: 'root')
-    attribute(:group, kind_of: String, default: 'root')
-  end
+      attribute(:path, kind_of: String, name_attribute: true)
+      attribute(:user, kind_of: String, default: 'root')
+      attribute(:group, kind_of: String, default: 'root')
+    end
 
-  class Provider::App < Provider
-    include Poise
+    class Provider < Chef::Provider
+      include Poise
+      provides(:app)
 
-    def action_install
-      notifying_block do
-        directory new_resource.path do
-          owner new_resource.user
-          group new_resource.group
-          mode '755'
+      def action_install
+        notifying_block do
+          directory new_resource.path do
+            owner new_resource.user
+            group new_resource.group
+            mode '755'
+          end
         end
       end
     end
+
   end
 end

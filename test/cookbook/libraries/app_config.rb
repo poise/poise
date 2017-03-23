@@ -14,34 +14,42 @@
 # limitations under the License.
 #
 
-require_relative 'app'
+require 'chef/provider'
+require 'chef/resource'
 
-class Chef
-  class Resource::AppConfig < Resource
-    include Poise(App)
-    provides(:app_config)
-    actions(:create)
+require 'poise'
 
-    attribute('', template: true, required: true)
-    attribute(:config_name, kind_of: String, default: lazy { name.split('::').last })
 
-    def path
-      ::File.join(parent.path, config_name+'.conf')
+module PoiseTest
+  module AppConfig
+    class Resource < Chef::Resource
+      include Poise(:app)
+      provides(:app_config)
+      actions(:create)
+
+      attribute('', template: true, required: true)
+      attribute(:config_name, kind_of: String, default: lazy { name.split('::').last })
+
+      def path
+        ::File.join(parent.path, config_name+'.conf')
+      end
     end
-  end
 
-  class Provider::AppConfig < Provider
-    include Poise
+    class Provider < Chef::Provider
+      include Poise
+      provides(:app_config)
 
-    def action_create
-      notifying_block do
-        file new_resource.path do
-          owner new_resource.parent.user
-          group new_resource.parent.group
-          mode '644'
-          content new_resource.content
+      def action_create
+        notifying_block do
+          file new_resource.path do
+            owner new_resource.parent.user
+            group new_resource.parent.group
+            mode '644'
+            content new_resource.content
+          end
         end
       end
     end
+
   end
 end
