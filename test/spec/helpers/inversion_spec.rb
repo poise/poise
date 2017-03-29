@@ -276,19 +276,19 @@ describe Poise::Helpers::Inversion do
         default_attributes['poise'] ||= {}
         default_attributes['poise']['provider'] = 'auto'
       end
-      resource(:poise_test_inversion, step_into: false) do
+      resource(:poise_test_inversion_provider_resolution, step_into: false, patch: false) do
         include Poise
-        provides(:poise_test_inversion)
+        provides(:poise_test_inversion_provider_resolution)
         attribute(:provider_no_auto, default: [])
       end
-      provider(:poise_test_inversion) do
+      provider(:poise_test_inversion_provider_resolution, patch: false) do
         include described_class
-        inversion_resource(:poise_test_inversion)
+        inversion_resource(:poise_test_inversion_provider_resolution)
         inversion_attribute([])
         provides(:inverted)
         def self.provides_auto?(*args); true; end
       end
-      provider(:poise_test_inversion_other, parent: :poise_test_inversion) do
+      provider(:poise_test_inversion_provider_resolution_other, parent: :poise_test_inversion_provider_resolution, patch: false) do
         provides(:other)
       end
       let(:test_resource) { nil }
@@ -296,12 +296,12 @@ describe Poise::Helpers::Inversion do
 
       context 'with an inversion resource' do
         recipe(subject: false) do
-          poise_test_inversion 'test'
+          poise_test_inversion_provider_resolution 'test'
         end
-        let(:test_resource) { chef_run.poise_test_inversion('test') }
+        let(:test_resource) { chef_run.poise_test_inversion_provider_resolution('test') }
 
-        its(:enabled_handlers) { is_expected.to eq [provider(:poise_test_inversion), provider(:poise_test_inversion_other)] }
-        its(:resolve) { is_expected.to eq provider(:poise_test_inversion) }
+        its(:enabled_handlers) { is_expected.to eq [provider(:poise_test_inversion_provider_resolution), provider(:poise_test_inversion_provider_resolution_other)] }
+        its(:resolve) { is_expected.to eq provider(:poise_test_inversion_provider_resolution) }
       end # /context with an inversion resource
 
       context 'with a resource that has no providers' do
@@ -316,7 +316,7 @@ describe Poise::Helpers::Inversion do
       end # /context with a resource that has no providers
 
       context 'with a subclassed resource' do
-        resource(:poise_inversion_sub, parent: :poise_test_inversion, step_into: false) do
+        resource(:poise_inversion_sub, parent: :poise_test_inversion_provider_resolution, step_into: false) do
           provides(:poise_inversion_sub)
         end
         recipe(subject: false) do
@@ -329,7 +329,7 @@ describe Poise::Helpers::Inversion do
       end # /context with a subclassed resource
 
       context 'with a subclassed resource using subclass_providers!' do
-        resource(:poise_inversion_subproviders, parent: :poise_test_inversion, step_into: false) do
+        resource(:poise_inversion_subproviders, parent: :poise_test_inversion_provider_resolution, step_into: false) do
           include Poise::Helpers::ResourceSubclass
           provides(:poise_inversion_subproviders)
           subclass_providers!
@@ -339,34 +339,34 @@ describe Poise::Helpers::Inversion do
         end
         let(:test_resource) { chef_run.find_resource(:poise_inversion_subproviders, 'test') }
 
-        its(:enabled_handlers) { is_expected.to eq [provider(:poise_test_inversion), provider(:poise_test_inversion_other)] }
-        its(:resolve) { is_expected.to eq provider(:poise_test_inversion) }
+        its(:enabled_handlers) { is_expected.to eq [provider(:poise_test_inversion_provider_resolution), provider(:poise_test_inversion_provider_resolution_other)] }
+        its(:resolve) { is_expected.to eq provider(:poise_test_inversion_provider_resolution) }
       end # /context with a subclassed resource using subclass_providers!
 
       context 'with provider_no_auto' do
         recipe(subject: false) do
-          poise_test_inversion 'test' do
+          poise_test_inversion_provider_resolution 'test' do
             provider_no_auto %w{inverted}
           end
         end
-        let(:test_resource) { chef_run.poise_test_inversion('test') }
+        let(:test_resource) { chef_run.poise_test_inversion_provider_resolution('test') }
 
-        its(:resolve) { is_expected.to eq provider(:poise_test_inversion_other) }
+        its(:resolve) { is_expected.to eq provider(:poise_test_inversion_provider_resolution_other) }
       end # /context with provider_no_auto
 
       context 'with a symbol provider via options' do
-        provider(:poise_test_inversion_subclass, parent: :poise_test_inversion) do
+        provider(:poise_test_inversion_subclass, parent: :poise_test_inversion_provider_resolution) do
           provides(:inverted_subclass)
         end
         recipe(subject: false) do
           node.run_state['poise_inversion'] ||= {}
-          node.run_state['poise_inversion'][:poise_test_inversion] ||= {}
-          node.run_state['poise_inversion'][:poise_test_inversion]['test'] ||= {}
-          node.run_state['poise_inversion'][:poise_test_inversion]['test']['*'] ||= {}
-          node.run_state['poise_inversion'][:poise_test_inversion]['test']['*']['provider'] = :inverted_subclass
-          poise_test_inversion 'test'
+          node.run_state['poise_inversion'][:poise_test_inversion_provider_resolution] ||= {}
+          node.run_state['poise_inversion'][:poise_test_inversion_provider_resolution]['test'] ||= {}
+          node.run_state['poise_inversion'][:poise_test_inversion_provider_resolution]['test']['*'] ||= {}
+          node.run_state['poise_inversion'][:poise_test_inversion_provider_resolution]['test']['*']['provider'] = :inverted_subclass
+          poise_test_inversion_provider_resolution 'test'
         end
-        let(:test_resource) { chef_run.poise_test_inversion('test') }
+        let(:test_resource) { chef_run.poise_test_inversion_provider_resolution('test') }
 
         its(:resolve) { is_expected.to eq provider(:poise_test_inversion_subclass) }
       end # /context with a symbol provider via options
