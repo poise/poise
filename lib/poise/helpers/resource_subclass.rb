@@ -39,7 +39,11 @@ module Poise
           # Deal with the node maps.
           node_maps = {}
           node_maps['handler map'] = Chef.provider_handler_map if defined?(Chef.provider_handler_map)
-          node_maps['priority map'] = Chef.provider_priority_map if defined?(Chef.provider_priority_map)
+          node_maps['priority map'] = if defined?(Chef.provider_priority_map)
+            Chef.provider_priority_map
+          else
+            Chef::Platform::ProviderPriorityMap.instance.send(:priority_map)
+          end
           # Patch anything in the descendants tracker.
           Chef::Provider.descendants.each do |provider|
             node_maps["#{provider} node map"] = provider.node_map if defined?(provider.node_map)
