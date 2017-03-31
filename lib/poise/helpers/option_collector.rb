@@ -99,6 +99,8 @@ module Poise
           raise Poise::Error.new("Parser must be a Proc or Symbol: #{parser.inspect}") if parser && !(parser.is_a?(Proc) || parser.is_a?(Symbol))
           # Cast to a set at definition time.
           forced_keys = Set.new(forced_keys) unless forced_keys.is_a?(Set)
+          # Never allow name to be called accidentally since it does really wonky things.
+          forced_keys.add(:name)
           # Unlike LWRPBase.attribute, I don't care about Ruby 1.8. Worlds tiniest violin.
           define_method(name.to_sym) do |arg=nil, &block|
             iv_sym = :"@#{name}"

@@ -137,10 +137,17 @@ describe Poise::Helpers::OptionCollector do
   end # /describe parser
 
   describe 'forced_keys' do
+    resource(:poise_test) do
+      include described_class
+      def foo(*args)
+        'foo'
+      end
+      attribute(:options, option_collector: true)
+    end
     recipe do
       poise_test 'test' do
         options do
-          name 'foo'
+          foo 'bar'
         end
       end
     end
@@ -152,9 +159,24 @@ describe Poise::Helpers::OptionCollector do
     context 'with forced_keys' do
       resource(:poise_test) do
         include described_class
-        attribute(:options, option_collector: true, forced_keys: %i{name})
+        def foo(*args)
+          'foo'
+        end
+        attribute(:options, option_collector: true, forced_keys: %i{foo})
       end
-      it { is_expected.to run_poise_test('test').with(options: {'name' => 'foo'}) }
+      it { is_expected.to run_poise_test('test').with(options: {'foo' => 'bar'}) }
+    end # /context with forced_keys
+
+    context 'with implicit forced_keys' do
+      recipe do
+        poise_test 'test' do
+          options do
+            name 'bar'
+          end
+        end
+      end
+      it { is_expected.to run_poise_test('test').with(options: {'name' => 'bar'}) }
+      it { is_expected.to_not run_poise_test('bar') }
     end # /context with forced_keys
   end # /describe forced_keys
 
