@@ -66,6 +66,26 @@ describe Poise::Utils do
     let(:filename) { '/test/my_cookbook/libraries/default.rb' }
     subject { described_class.find_cookbook_name(run_context, filename) }
 
+    def add_file(ver, segment, path)
+      # Use CookbookVersion#files_for as a feature test for ManifestV2. This
+      # can be changed to ::Gem::Requirement.create('>= 13').satisfied_by?(::Gem::Version.create(Chef::VERSION))
+      # once https://github.com/chef/chef/pull/5929 is merged.
+      if defined?(c.files_for)
+        # plural = case segment
+        # when :library
+        #   'libraries'
+        # when :recipe
+        #   'recipes'
+        # else
+        #   raise "unknown segment #{segment}"
+        # end
+        ver.all_files << path
+        ver.cookbook_manifest.reset!
+      else
+        ver.send("#{segment}_filenames") << path
+      end
+    end
+
     context 'with no cookbooks' do
       it { expect { subject }.to raise_error Poise::Error }
     end # /context with no cookbooks
@@ -73,7 +93,7 @@ describe Poise::Utils do
     context 'with one cookbook' do
       before do
         cookbooks << Chef::CookbookVersion.new('my_cookbook', '/test/my_cookbook').tap do |ver|
-          ver.library_filenames << '/test/my_cookbook/libraries/default.rb'
+          add_file(ver, :library, '/test/my_cookbook/libraries/default.rb')
         end
       end
       it { is_expected.to eq 'my_cookbook' }
@@ -82,12 +102,12 @@ describe Poise::Utils do
     context 'with many cookbooks' do
       before do
         cookbooks << Chef::CookbookVersion.new('other_cookbook', '/test/other_cookbook').tap do |ver|
-          ver.library_filenames << '/test/other_cookbook/libraries/default.rb'
-          ver.recipe_filenames << '/test/other_cookbook/recipe/default.rb'
+          add_file(ver, :library, '/test/other_cookbook/libraries/default.rb')
+          add_file(ver, :recipe, '/test/other_cookbook/recipe/default.rb')
         end
         cookbooks << Chef::CookbookVersion.new('my_cookbook', '/test/my_cookbook').tap do |ver|
-          ver.library_filenames << '/test/my_cookbook/libraries/default.rb'
-          ver.recipe_filenames << '/test/my_cookbook/recipe/default.rb'
+          add_file(ver, :library, '/test/my_cookbook/libraries/default.rb')
+          add_file(ver, :recipe, '/test/my_cookbook/recipe/default.rb')
         end
       end
       it { is_expected.to eq 'my_cookbook' }
@@ -96,11 +116,11 @@ describe Poise::Utils do
     context 'with many non-matching cookbooks' do
       before do
         cookbooks << Chef::CookbookVersion.new('other_cookbook', '/test/other_cookbook').tap do |ver|
-          ver.library_filenames << '/test/other_cookbook/libraries/default.rb'
-          ver.recipe_filenames << '/test/other_cookbook/recipe/default.rb'
+          add_file(ver, :library, '/test/other_cookbook/libraries/default.rb')
+          add_file(ver, :recipe, '/test/other_cookbook/recipe/default.rb')
         end
         cookbooks << Chef::CookbookVersion.new('my_cookbook', '/test/my_cookbook').tap do |ver|
-          ver.recipe_filenames << '/test/my_cookbook/recipe/default.rb'
+          add_file(ver, :recipe, '/test/my_cookbook/recipe/default.rb')
         end
       end
       it { expect { subject }.to raise_error Poise::Error }
@@ -110,8 +130,8 @@ describe Poise::Utils do
       let(:filename) { '/source/halite_cookbook/lib/something.rb' }
       before do
         cookbooks << Chef::CookbookVersion.new('other_cookbook', '/test/other_cookbook').tap do |ver|
-          ver.library_filenames << '/test/other_cookbook/libraries/default.rb'
-          ver.recipe_filenames << '/test/other_cookbook/recipe/default.rb'
+          add_file(ver, :library, '/test/other_cookbook/libraries/default.rb')
+          add_file(ver, :recipe, '/test/other_cookbook/recipe/default.rb')
         end
         cookbooks << Chef::CookbookVersion.new('halite_cookbook', '/test/halite_cookbook').tap do |ver|
           def ver.halite_root
@@ -119,7 +139,7 @@ describe Poise::Utils do
           end
         end
         cookbooks << Chef::CookbookVersion.new('my_cookbook', '/test/my_cookbook').tap do |ver|
-          ver.recipe_filenames << '/test/my_cookbook/recipe/default.rb'
+          add_file(ver, :recipe, '/test/my_cookbook/recipe/default.rb')
         end
       end
       it { is_expected.to eq 'halite_cookbook' }
@@ -129,8 +149,8 @@ describe Poise::Utils do
       let(:filename) { '/source/halite_cookbook_other/lib/something.rb' }
       before do
         cookbooks << Chef::CookbookVersion.new('other_cookbook', '/test/other_cookbook').tap do |ver|
-          ver.library_filenames << '/test/other_cookbook/libraries/default.rb'
-          ver.recipe_filenames << '/test/other_cookbook/recipe/default.rb'
+          add_file(ver, :library, '/test/other_cookbook/libraries/default.rb')
+          add_file(ver, :recipe, '/test/other_cookbook/recipe/default.rb')
         end
         cookbooks << Chef::CookbookVersion.new('halite_cookbook', '/test/halite_cookbook').tap do |ver|
           def ver.halite_root
@@ -143,7 +163,7 @@ describe Poise::Utils do
           end
         end
         cookbooks << Chef::CookbookVersion.new('my_cookbook', '/test/my_cookbook').tap do |ver|
-          ver.recipe_filenames << '/test/my_cookbook/recipe/default.rb'
+          add_file(ver, :recipe, '/test/my_cookbook/recipe/default.rb')
         end
       end
       it { is_expected.to eq 'halite_cookbook_other' }
@@ -153,8 +173,8 @@ describe Poise::Utils do
       let(:filename) { '/source/halite_cookbook/vendor/other/lib/something.rb' }
       before do
         cookbooks << Chef::CookbookVersion.new('other_cookbook', '/test/other_cookbook').tap do |ver|
-          ver.library_filenames << '/test/other_cookbook/libraries/default.rb'
-          ver.recipe_filenames << '/test/other_cookbook/recipe/default.rb'
+          add_file(ver, :library, '/test/other_cookbook/libraries/default.rb')
+          add_file(ver, :recipe, '/test/other_cookbook/recipe/default.rb')
         end
         cookbooks << Chef::CookbookVersion.new('halite_cookbook', '/test/halite_cookbook').tap do |ver|
           def ver.halite_root
@@ -167,7 +187,7 @@ describe Poise::Utils do
           end
         end
         cookbooks << Chef::CookbookVersion.new('my_cookbook', '/test/my_cookbook').tap do |ver|
-          ver.recipe_filenames << '/test/my_cookbook/recipe/default.rb'
+          add_file(ver, :recipe, '/test/my_cookbook/recipe/default.rb')
         end
       end
       it { is_expected.to eq 'halite_cookbook_other' }
