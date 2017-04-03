@@ -70,15 +70,7 @@ describe Poise::Utils do
       # Use CookbookVersion#files_for as a feature test for ManifestV2. This
       # can be changed to ::Gem::Requirement.create('>= 13').satisfied_by?(::Gem::Version.create(Chef::VERSION))
       # once https://github.com/chef/chef/pull/5929 is merged.
-      if defined?(c.files_for)
-        # plural = case segment
-        # when :library
-        #   'libraries'
-        # when :recipe
-        #   'recipes'
-        # else
-        #   raise "unknown segment #{segment}"
-        # end
+      if defined?(ver.files_for)
         ver.all_files << path
         ver.cookbook_manifest.reset!
       else
