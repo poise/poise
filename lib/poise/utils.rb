@@ -52,8 +52,6 @@ module Poise
         else
           Chef::CookbookVersion::COOKBOOK_SEGMENTS.each do |seg|
             ver.segment_filenames(seg).each do |file|
-              # If segment_filenames is fixed before ManifestV2 is merged, remove this.
-              file = file['full_path'] if file.is_a?(Hash)
               if ::File::ALT_SEPARATOR
                 file = file.gsub(::File::ALT_SEPARATOR, ::File::SEPARATOR)
               end
