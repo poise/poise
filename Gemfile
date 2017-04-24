@@ -30,7 +30,3 @@ end
 dev_gem 'halite'
 dev_gem 'poise-boiler'
 dev_gem 'poise-profiler'
-
-gem 'chef', github: 'chef/chef', ref: 'tm/cookbook_v2'
-gem 'ohai', github: 'chef/ohai'
-#gem 'chef', '~> 12.3.0'
