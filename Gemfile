@@ -23,10 +23,14 @@ def dev_gem(name, path: File.join('..', name), github: nil)
   if File.exist?(path)
     gem name, path: path
   elsif github
-    gem name, git: "https://gitub.com/#{github}.git"
+    gem name, git: "https://github.com/#{github}.git"
   end
 end
 
 dev_gem 'halite'
 dev_gem 'poise-boiler'
 dev_gem 'poise-profiler'
+
+gem 'chef', github: 'chef/chef', ref: 'tm/cookbook_v2'
+gem 'ohai', github: 'chef/ohai'
+#gem 'chef', '~> 12.3.0'
