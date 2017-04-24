@@ -21,3 +21,7 @@ gem 'chef', '~> 12.7.2'
 # Disable "Thread.exclusive is deprecated, use Mutex" warnings because they
 # overflow the Travis logs.
 $VERBOSE = nil
+gem 'chefspec', '< 6'
+gem 'fauxhai', '<= 3.9.0'
+gem 'foodcritic', '< 8'
+gem 'rack', '< 2'
