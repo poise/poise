@@ -1,5 +1,12 @@
 # Changelog
 
+## v2.8.0
+
+* Chef 13 compatibility.
+* Passing a symbol for the parent now works with the `include Poise(:name)`
+  shortcut.
+* Fixed `subclass_providers!` on older versions of Chef.
+
 ## v2.7.2
 
 * Test harness fixes for Chef.
