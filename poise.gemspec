@@ -34,6 +34,7 @@ Gem::Specification.new do |spec|
   spec.test_files = spec.files.grep(%r{^(test|spec|features)/})
   spec.require_paths = %w{lib}
 
+  spec.add_dependency 'chef', '>= 12', '< 14'
   spec.add_dependency 'halite', '~> 1.0'
 
   spec.add_development_dependency 'fauxhai', '>= 3.3.0' # For now.
