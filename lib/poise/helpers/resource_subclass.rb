@@ -14,6 +14,12 @@
 # limitations under the License.
 #
 
+begin
+  require 'chef/chef_class'
+rescue LoadError
+  # This space left intentionally blank, fallback is below.
+end
+
 require 'poise/error'
 require 'poise/helpers/resource_name'
 
@@ -42,6 +48,7 @@ module Poise
           node_maps['priority map'] = if defined?(Chef.provider_priority_map)
             Chef.provider_priority_map
           else
+            require 'chef/platform/provider_priority_map'
             Chef::Platform::ProviderPriorityMap.instance.send(:priority_map)
           end
           # Patch anything in the descendants tracker.
