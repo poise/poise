@@ -24,6 +24,7 @@ module PoiseTestSubclass
   class Resource < Chef::Resource
     include Poise
     provides(:poise_test_subclass)
+    actions(:run)
   end
   class Provider < Chef::Provider
     include Poise
@@ -31,6 +32,10 @@ module PoiseTestSubclass
     def action_run
       (node.run_state[:really_did_run] ||= []) << new_resource.name
     end
+  end
+  class Sub < Resource
+    provides(:poise_test_subclass_sub)
+    subclass_providers!
   end
 end
 
@@ -63,6 +68,16 @@ describe Poise::Helpers::ResourceSubclass do
       it { is_expected.to ChefSpec::Matchers::ResourceMatcher.new('poise_test_subclass_other_name', 'run', 'test2') }
       it { expect(chef_run.node.run_state[:really_did_run]).to eq %w{test test2} }
     end # /context with multiple resource names
+
+    context 'with a non-DSL subclass' do
+      before { step_into << :poise_test_subclass_sub }
+      recipe do
+        poise_test_subclass_sub 'test'
+      end
+
+      it { is_expected.to run_poise_test_subclass_sub('test') }
+      it { expect(chef_run.node.run_state[:really_did_run]).to eq %w{test} }
+    end # /context with a non-DSL subclass
   end # /describe .subclass_providers!
 
   describe '.subclass_resource_equivalents' do
@@ -82,6 +97,11 @@ describe Poise::Helpers::ResourceSubclass do
       let(:test_class) { resource(:poise_sub) }
       it { is_expected.to eq %i{poise_sub poise_test_subclass} }
     end # /context with a subclass
+
+    context 'with a non-DSL subclass' do
+      let(:test_class) { PoiseTestSubclass::Sub }
+      it { is_expected.to eq %i{poise_test_subclass_sub poise_test_subclass} }
+    end # /context with a non-DSL subclass
 
     context 'with an unpatched subclass' do
       resource(:poise_sub2, parent: PoiseTestSubclass::Resource) do
