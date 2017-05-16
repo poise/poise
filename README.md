@@ -143,6 +143,16 @@ file new_resource.path do
 end
 ```
 
+Or:
+
+```ruby
+file new_resource.path do
+  content new_resource.name_content
+  owner 'app'
+  group 'app'
+end
+```
+
 As the content method returns the rendered template as a string, this can also
 be useful within other templates to build from partials.
 
