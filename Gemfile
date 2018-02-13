@@ -30,3 +30,4 @@ end
 dev_gem 'halite'
 dev_gem 'poise-boiler'
 dev_gem 'poise-profiler'
+gem 'kitchen-sync', git: 'https://github.com/coderanger/kitchen-sync.git'
