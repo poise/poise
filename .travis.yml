@@ -23,6 +23,10 @@ matrix:
       gemfile: test/gemfiles/chef-12.gemfile
     - rvm: 2.4.3
       gemfile: test/gemfiles/chef-13.gemfile
+    - rvm: 2.5.1
+      gemfile: test/gemfiles/chef-14.gemfile
+    - rvm: 2.5.1
+      gemfile: test/gemfiles/master.gemfile
     - rvm: 2.1.4
       gemfile: test/gemfiles/chef-12.0.gemfile
     - rvm: 2.1.4
@@ -63,6 +67,10 @@ matrix:
       gemfile: test/gemfiles/chef-12.18.gemfile
     - rvm: 2.3.1
       gemfile: test/gemfiles/chef-12.19.gemfile
+    - rvm: 2.3.1
+      gemfile: test/gemfiles/chef-12.20.gemfile
+    - rvm: 2.3.1
+      gemfile: test/gemfiles/chef-12.21.gemfile
     - rvm: 2.4.1
       gemfile: test/gemfiles/chef-13.0.gemfile
     - rvm: 2.4.1
@@ -78,6 +86,6 @@ matrix:
     - rvm: 2.4.2
       gemfile: test/gemfiles/chef-13.6.gemfile
     - rvm: 2.4.3
-      gemfile: test/gemfiles/chef-13.7.gemfile
-    - rvm: 2.5.0
-      gemfile: test/gemfiles/master.gemfile
+      gemfile: test/gemfiles/chef-13.8.gemfile
+    - rvm: 2.5.1
+      gemfile: test/gemfiles/chef-14.0.gemfile
