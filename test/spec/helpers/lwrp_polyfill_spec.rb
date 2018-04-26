@@ -141,15 +141,6 @@ describe Poise::Helpers::LWRPPolyfill do
         it { is_expected.to eq 'helper' }
       end # /context with an intermediary class
 
-      context 'with no new_resource' do
-        provider(:poise_test, auto: false) do
-          include described_class
-        end
-        subject { provider(:poise_test).new(nil, nil).load_current_resource }
-        it { is_expected.to be_a Chef::Resource }
-        it { is_expected.to_not be_a resource(:poise_test) }
-      end # context with no new_resource
-
       context 'calling super' do
         provider(:poise_test, auto: false) do
           include described_class
