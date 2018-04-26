@@ -17,7 +17,7 @@
 require 'spec_helper'
 
 describe Poise::Helpers::DefinedIn do
-  let(:run_context) { double('run context') }
+  let(:run_context) { double('run context', logger: double('logger', with_child: nil)) }
   subject { resource(:poise_test) }
   resource(:poise_test) do
     include described_class
