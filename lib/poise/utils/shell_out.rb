@@ -74,6 +74,10 @@ module Poise
         if respond_to?(:node) && node.platform_family?('windows')
           command_args = [Poise::Utils::Win32.reparse_command(*command_args)]
         end
+
+        # avoid linking against something in /opt/chef/embedded/
+        # see also: https://github.com/chef/chef/pull/6014
+        options[:environment]['PATH'] ||= ENV['PATH']
         # Call Chef's shell_out wrapper.
         shell_out(*command_args, **options)
       end
