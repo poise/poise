@@ -74,8 +74,9 @@ module Poise
         if respond_to?(:node) && node.platform_family?('windows')
           command_args = [Poise::Utils::Win32.reparse_command(*command_args)]
         end
-        # Call Chef's shell_out wrapper.
-        shell_out(*command_args, **options)
+        # Call Chef's shell_out_with_systems_locale wrapper.
+        # see also: https://github.com/chef/chef/pull/6014
+        shell_out_with_systems_locale(*command_args, **options)
       end
 
       # The `error!` version of {#poise_shell_out}.
